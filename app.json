@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5cf8478c-a2df-4a14-8074-1253a10859a6"
+      }
+    },
+    "owner": "bubba79797"
   }
 }
