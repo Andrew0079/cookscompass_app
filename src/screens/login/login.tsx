@@ -57,8 +57,9 @@ function Login() {
             </VStack>
             {/* Social Logins */}
             <HStack space={3} alignItems="center" marginTop={4}>
-              {SOCIAL_LOGINS.map(({ title, color }) => (
+              {SOCIAL_LOGINS.map(({ title, color }, index: number) => (
                 <IconButton
+                  key={`${title}-${index}`}
                   icon={<FontAwesome name={title} size={20} color="white" />}
                   backgroundColor={color}
                   width={10}
