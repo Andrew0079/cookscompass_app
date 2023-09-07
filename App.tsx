@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { LogBox, StyleSheet } from "react-native";
-import { NativeBaseProvider, View } from "native-base";
+import { LogBox } from "react-native";
+import { NativeBaseProvider } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import theme from "./theme";
 
 import { Login } from "./src/screens";
 
@@ -17,12 +18,13 @@ export default function App() {
   }, []);
 
   return (
-    <NativeBaseProvider>
+    <NativeBaseProvider theme={theme}>
       <NavigationContainer>
         <Navigator
           initialRouteName="Login"
           screenOptions={{
-            header: () => <View style={styles.navigator} />,
+            // header: () => <View style={styles.navigator} />,
+            headerShown: false,
           }}
         >
           <Screen name="Login" component={Login} />
@@ -32,12 +34,12 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
-  navigator: {
-    height: 55,
-    backgroundColor: "transparent",
-    alignItems: "center",
-    flexDirection: "row",
-    paddingLeft: 10,
-  },
-});
+// const styles = StyleSheet.create({
+//   navigator: {
+//     height: 55,
+//     backgroundColor: "transparent",
+//     alignItems: "center",
+//     flexDirection: "row",
+//     paddingLeft: 10,
+//   },
+// });
