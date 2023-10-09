@@ -1,45 +1,34 @@
-import React, { useEffect } from "react";
-import { LogBox } from "react-native";
+import React from "react";
 import { NativeBaseProvider } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import MainNavigator from "./src/screens/navigators/main-navigator";
+import AuthNavigator from "./src/screens/navigators/auth-navigator";
 import theme from "./theme";
-
-import { Login } from "./src/screens";
 
 const { Navigator, Screen } = createStackNavigator();
 
-const ANNOYING_BUG_MESSAGE =
-  "In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.";
+// Define common screen options to hide the header
+const commonScreenOptions = {
+  headerShown: false,
+};
 
 export default function App() {
-  useEffect(() => {
-    LogBox.ignoreLogs([ANNOYING_BUG_MESSAGE]);
-  }, []);
-
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer>
         <Navigator
-          initialRouteName="Login"
+          initialRouteName="Main"
           screenOptions={{
-            // header: () => <View style={styles.navigator} />,
+            ...commonScreenOptions,
             headerShown: false,
           }}
         >
-          <Screen name="Login" component={Login} />
+          <Screen name="Auth" component={AuthNavigator} />
+          <Screen name="Main" component={MainNavigator} />
+          {/* Add more screens as needed */}
         </Navigator>
       </NavigationContainer>
     </NativeBaseProvider>
   );
 }
-
-// const styles = StyleSheet.create({
-//   navigator: {
-//     height: 55,
-//     backgroundColor: "transparent",
-//     alignItems: "center",
-//     flexDirection: "row",
-//     paddingLeft: 10,
-//   },
-// });
