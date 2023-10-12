@@ -1,7 +1,8 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import Login from "../login/login";
-import Signup from "../signup/signup";
+import SignIn from "../sign-in/sign-in";
+import SignUp from "../sign-up/sign-up";
+import SignInOrSignUp from "../sign-in-or-sign-up/sign-in-or-sign-up";
 
 const Stack = createStackNavigator();
 
@@ -11,10 +12,11 @@ function AuthNavigator() {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="Login"
+      initialRouteName="SignInOrSignUp"
     >
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Signup" component={Signup} />
+      <Stack.Screen name="SignInOrSignUp" component={SignInOrSignUp} />
+      <Stack.Screen name="SignIn" component={SignIn} />
+      <Stack.Screen name="SignUp" component={SignUp} />
     </Stack.Navigator>
   );
 }

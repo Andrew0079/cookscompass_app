@@ -5,4 +5,9 @@ const getPlatFormStyle = () =>
     ? { paddingTop: StatusBar.currentHeight }
     : { paddingTop: 0 };
 
-export { getPlatFormStyle };
+const ROUTES = {
+  SIGN_IN: "SignIn",
+  SIGN_UP: "SignUp",
+  SIGN_IN_OR_SIGN_UP: "SignInOrSignUp",
+};
+export { getPlatFormStyle, ROUTES };

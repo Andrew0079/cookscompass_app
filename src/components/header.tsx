@@ -1,26 +1,21 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import { Box } from "native-base";
-import { Ionicons } from "@expo/vector-icons";
+import { HStack } from "native-base";
+import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-function Header({ navigation, children }: { navigation: any; children?: any }) {
+function Header({ children }) {
+  const safeAreaInsets = useSafeAreaInsets();
+  const isAndroid = Platform.OS === "android";
+
   return (
-    <Box style={styles.header}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Ionicons name="caret-back" size={24} />
-      </TouchableOpacity>
-      {/* Add any additional header components or stylings here */}
+    <HStack
+      space={2}
+      paddingLeft={2}
+      style={isAndroid ? { paddingTop: safeAreaInsets.top } : {}}
+    >
       {children}
-    </Box>
+    </HStack>
   );
 }
 
 export default Header;
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: "red",
-    marginLeft: 5,
-    marginRight: 5,
-  },
-});

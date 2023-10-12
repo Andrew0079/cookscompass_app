@@ -18,7 +18,7 @@ export default function App() {
     <NativeBaseProvider theme={theme}>
       <NavigationContainer>
         <Navigator
-          initialRouteName="Main"
+          initialRouteName="Auth"
           screenOptions={{
             ...commonScreenOptions,
             headerShown: false,
