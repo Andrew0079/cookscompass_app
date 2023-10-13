@@ -1,20 +1,11 @@
 import React from "react";
 import { VStack, Text } from "native-base";
 
-function Brand({ flex }) {
+function Brand({ flex }: { flex?: number }) {
   return (
     <VStack flex={flex} alignItems="center" justifyContent="center">
       <Text color="white" fontSize="4xl" fontStyle="italic" fontWeight="600">
-        Cook's Compass
-      </Text>
-      <Text
-        paddingTop={2}
-        color="white"
-        fontSize="3xl"
-        fontStyle="italic"
-        fontWeight="500"
-      >
-        Welcome
+        Munch
       </Text>
       <Text
         paddingTop={3}

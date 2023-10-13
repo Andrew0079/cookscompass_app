@@ -36,7 +36,7 @@ function SignIn({ navigation }) {
               variant="unstyled"
             />
           </Header>
-          <Brand flex={1} />
+
           <KeyboardAvoidingView
             style={styles.keyboardAvoidingView}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -49,7 +49,9 @@ function SignIn({ navigation }) {
               paddingRight={10}
               flex={1}
             >
+              <Brand />
               <Input
+                marginTop={10}
                 variant="rounded"
                 placeholder="Email"
                 height={10}
@@ -80,7 +82,7 @@ function SignIn({ navigation }) {
             paddingTop={5}
             alignItems="start"
             justifyContent="center"
-            flex={1}
+            marginBottom={5}
           >
             {SOCIAL_LOGINS.map(
               ({ title, backgroundColor, color }, index: number) => (

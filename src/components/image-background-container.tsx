@@ -5,7 +5,7 @@ function ImageBackgroundContainer({ children }) {
   return (
     <ImageBackground
       style={styles.imageBackground}
-      source={require("../../assets/backgrounds/background.jpg")}
+      source={require("../../assets/backgrounds/bowl.jpg")}
     >
       <View style={styles.overlay}>{children}</View>
     </ImageBackground>
