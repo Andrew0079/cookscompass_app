@@ -1,0 +1,15 @@
+{
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-munch-prod-182922-authRole",
+      "UnauthRoleArn": "arn:aws:iam::830915278453:role/amplify-munch-prod-182922-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::830915278453:role/amplify-munch-prod-182922-authRole",
+      "Region": "eu-west-1",
+      "DeploymentBucketName": "amplify-munch-prod-182922-deployment",
+      "UnauthRoleName": "amplify-munch-prod-182922-unauthRole",
+      "StackName": "amplify-munch-prod-182922",
+      "StackId": "arn:aws:cloudformation:eu-west-1:830915278453:stack/amplify-munch-prod-182922/d5868240-6aae-11ee-ab3f-0a743be9a853",
+      "AmplifyAppId": "d1lk4u7u4a66bw"
+    }
+  }
+}

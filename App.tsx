@@ -5,6 +5,10 @@ import { createStackNavigator } from "@react-navigation/stack";
 import MainNavigator from "./src/screens/navigators/main-navigator";
 import AuthNavigator from "./src/screens/navigators/auth-navigator";
 import theme from "./theme";
+import { Amplify } from "aws-amplify";
+import config from "./src/aws-exports";
+
+Amplify.configure(config);
 
 const { Navigator, Screen } = createStackNavigator();
 
