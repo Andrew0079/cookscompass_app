@@ -9,5 +9,6 @@ const ROUTES = {
   SIGN_IN: "SignIn",
   SIGN_UP: "SignUp",
   SIGN_IN_OR_SIGN_UP: "SignInOrSignUp",
+  VERIFICATION: "Verification",
 };
 export { getPlatFormStyle, ROUTES };

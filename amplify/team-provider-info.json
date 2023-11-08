@@ -10,6 +10,11 @@
       "StackName": "amplify-munch-prod-182922",
       "StackId": "arn:aws:cloudformation:eu-west-1:830915278453:stack/amplify-munch-prod-182922/d5868240-6aae-11ee-ab3f-0a743be9a853",
       "AmplifyAppId": "d1lk4u7u4a66bw"
+    },
+    "categories": {
+      "auth": {
+        "munch": {}
+      }
     }
   }
 }

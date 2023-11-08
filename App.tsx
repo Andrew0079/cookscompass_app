@@ -17,7 +17,7 @@ const commonScreenOptions = {
   headerShown: false,
 };
 
-export default function App() {
+function App() {
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer>
@@ -36,3 +36,5 @@ export default function App() {
     </NativeBaseProvider>
   );
 }
+
+export default App;

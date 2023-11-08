@@ -7,11 +7,11 @@ import {
   Image,
   StyleSheet,
 } from "react-native";
-import MainThread from "../main-thread/main-thread";
-import SearchRecipes from "../search-recipes/search-recipes";
-import Profile from "../profile/profile";
-import Settings from "../settings/settings";
-import Roulette from "../roulette/roulette";
+import MainThread from "../main-thread";
+import SearchRecipes from "../search-recipes";
+import Profile from "../profile";
+import Settings from "../settings";
+import Roulette from "../roulette";
 import { Ionicons } from "@expo/vector-icons"; // Import the icon library (Ionicons in this example)
 
 const Tab = createBottomTabNavigator();

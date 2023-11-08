@@ -40,7 +40,10 @@ function SignInOrSignUp({ navigation }) {
               Sign Up
             </Text>
           </Button>
-          <Button variant="unstyled" onPress={() => console.log("hello world")}>
+          <Button
+            variant="unstyled"
+            onPress={() => navigation.navigate(ROUTES.VERIFICATION)}
+          >
             <Text color="white" bold>
               I'll do it later
             </Text>
