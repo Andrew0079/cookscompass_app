@@ -10,10 +10,10 @@ import { VStack, Button, HStack, IconButton, Text, View } from "native-base";
 import React, { useEffect, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import validator from "validator";
-import { ROUTES } from "../../utils/common";
-import { Header, Modal, ActivityIndicator, Alert } from "../../components";
+import { ROUTES } from "../../../utils/common";
+import { Header, Modal, ActivityIndicator, Alert } from "../../../components";
 import { InputElement, TermsAndConditions } from "./components";
-import { api } from "../../api/api";
+import { api } from "../../../api/api";
 
 const SOCIAL_LOGINS: {
   title: "google" | "facebook" | "apple";

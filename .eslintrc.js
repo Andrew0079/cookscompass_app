@@ -9,5 +9,6 @@ module.exports = {
   },
   rules: {
     // Place any TypeScript-specific rules here
+    "@typescript-eslint/ban-ts-comment": "off",
   },
 };

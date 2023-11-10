@@ -1,8 +1,8 @@
 import React from "react";
 import { VStack, Button, Text } from "native-base";
 import { SafeAreaView, StyleSheet } from "react-native";
-import { ROUTES } from "../../utils/common";
-import { ImageBackgroundContainer, Brand } from "../../components";
+import { ROUTES } from "../../../utils/common";
+import { ImageBackgroundContainer, Brand } from "../../../components";
 import { StatusBar } from "expo-status-bar";
 
 function SignInOrSignUp({ navigation }) {
@@ -16,31 +16,32 @@ function SignInOrSignUp({ navigation }) {
           justifyContent="flex-end"
           paddingLeft={10}
           paddingRight={10}
+          paddingBottom={5}
           flex={1}
         >
           <Brand />
           <Button
-            marginTop={10}
+            variant="outline"
             borderRadius="25"
             onPress={() => navigation.navigate(ROUTES.SIGN_IN)}
-            width="90%"
-            backgroundColor="white"
+            width="50%"
           >
-            <Text color="black" fontWeight="800">
+            <Text color="white" fontWeight="800">
               Sign In
             </Text>
           </Button>
           <Button
+            variant="outline"
             borderRadius="25"
             onPress={() => navigation.navigate(ROUTES.SIGN_UP)}
-            width="90%"
-            backgroundColor="white"
+            width="50%"
           >
-            <Text color="black" fontWeight="800">
+            <Text color="white" fontWeight="800">
               Sign Up
             </Text>
           </Button>
           <Button
+            paddingTop={6}
             variant="unstyled"
             onPress={() => navigation.navigate(ROUTES.VERIFICATION)}
           >

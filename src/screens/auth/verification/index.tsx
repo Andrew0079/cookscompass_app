@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
 import { TextInput, StyleSheet, SafeAreaView, StatusBar } from "react-native";
 import { Text, Center, View, VStack, Button, IconButton } from "native-base";
-import { Header } from "../../components";
+import { Header } from "../../../components";
 import { FontAwesome } from "@expo/vector-icons";
-import { ROUTES } from "../../utils/common";
+import { ROUTES } from "../../../utils/common";
 
 function Verification({ navigation }) {
   const [code, setCode] = useState("");
