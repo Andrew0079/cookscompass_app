@@ -104,6 +104,26 @@ export default class Api {
     }
   }
 
+  // sendVerificationCode
+  async sendVerificationCode(email: string, verificationCode: string) {
+    try {
+      const response = await Auth.confirmSignUp(email, verificationCode);
+      return response;
+    } catch (error) {
+      this.handleAuthError(error);
+    }
+  }
+
+  // sendVerificationCode
+  async resendVerificationCode(email: string) {
+    try {
+      const response = await Auth.resendSignUp(email);
+      return response;
+    } catch (error) {
+      this.handleAuthError(error);
+    }
+  }
+
   // Handle authentication errors and throw appropriate exceptions
   handleAuthError(error) {
     // Handle authentication-specific errors here, such as incorrect username or password

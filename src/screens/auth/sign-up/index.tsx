@@ -1,3 +1,10 @@
+import React, { useState } from "react";
+import { FontAwesome } from "@expo/vector-icons";
+import validator from "validator";
+import { ROUTES } from "../../../utils/common";
+// @ts-ignore
+import { Header, Modal, ActivityIndicator, Alert } from "@components";
+import { InputElement, TermsAndConditions } from "./components";
 import {
   SafeAreaView,
   StyleSheet,
@@ -6,13 +13,15 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { VStack, Button, HStack, IconButton, Text, View } from "native-base";
-import React, { useEffect, useState } from "react";
-import { FontAwesome } from "@expo/vector-icons";
-import validator from "validator";
-import { ROUTES } from "../../../utils/common";
-import { Header, Modal, ActivityIndicator, Alert } from "../../../components";
-import { InputElement, TermsAndConditions } from "./components";
+import {
+  VStack,
+  Button,
+  HStack,
+  IconButton,
+  Text,
+  View,
+  Center,
+} from "native-base";
 import { api } from "../../../api/api";
 
 const SOCIAL_LOGINS: {
@@ -33,7 +42,6 @@ function SignUp({ navigation }) {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState(null);
-  const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
   const inputFieldsContainer = [
     {
@@ -54,7 +62,7 @@ function SignUp({ navigation }) {
     },
   ];
 
-  const validateForm = () => {
+  const validateForm = async () => {
     const errorList = [];
 
     // Check if username is at least four characters
@@ -72,7 +80,7 @@ function SignUp({ navigation }) {
     }
 
     if (!confirmPassword) {
-      errorList.push("* Confirm Passwords is required.");
+      errorList.push("* Confirm Password is required.");
     }
 
     // Check if password and confirm password match
@@ -92,39 +100,32 @@ function SignUp({ navigation }) {
     } else {
       // Clear the form error if there are no errors
       setFormError(null);
-      setVisible(false); // Hide the modal
-      setIsFormValid(true);
+      await handleSignUp();
       // Perform any other action you want on successful validation
     }
   };
 
-  useEffect(() => {
-    const handleSignUp = async () => {
-      if (isFormValid) {
-        try {
-          const response = await api.signUp(email, password, {
-            preferred_username: username,
-          });
-          console.log(response);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    };
+  const handleSignUp = async () => {
+    try {
+      setLoading(true);
+      await api.signUp(email, password, {
+        preferred_username: username,
+      });
 
-    handleSignUp();
-  }, [isFormValid]);
+      setLoading(false);
+      navigation.navigate(ROUTES.AUTH, { screen: ROUTES.VERIFICATION });
+    } catch (error) {
+      const authenticationError = `* ${error.message}`;
+      setLoading(false);
+      setFormError(authenticationError);
+      setVisible(true);
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.safeAreaView}>
-        <ActivityIndicator
-          loading={loading}
-          loadingTextColor="white"
-          spinColor="white"
-          spinSize="lg"
-          loadingText="Loading..."
-        />
+        <ActivityIndicator loading={loading} spinSize="lg" />
         <Modal visible={visible} onClose={setVisible}>
           <Alert
             backgroundColor="white"
@@ -134,9 +135,7 @@ function SignUp({ navigation }) {
         </Modal>
         <Header>
           <IconButton
-            icon={
-              <FontAwesome name="arrow-circle-left" size={28} color="black" />
-            }
+            icon={<FontAwesome name="chevron-left" size={18} color="black" />}
             onPress={() => navigation.navigate(ROUTES.SIGN_IN_OR_SIGN_UP)}
             variant="unstyled"
           />
@@ -159,7 +158,9 @@ function SignUp({ navigation }) {
             justifyContent="center"
             paddingLeft={10}
             paddingRight={10}
-            paddingBottom={50}
+            paddingBottom={30}
+            paddingTop={50}
+            backgroundColor="red"
             flex={1}
           >
             {inputFieldsContainer.map(
@@ -175,37 +176,41 @@ function SignUp({ navigation }) {
                 />
               )
             )}
-
-            <Button
-              marginTop={10}
-              borderRadius="10"
-              onPress={() => validateForm()}
-              width="50%"
-            >
-              <Text color="white" fontWeight="800">
-                Sign Up
-              </Text>
-            </Button>
-
-            <TermsAndConditions />
-
-            <HStack space={5} alignItems="start" justifyContent="center">
-              {SOCIAL_LOGINS.map(
-                ({ title, backgroundColor, color }, index: number) => (
-                  <IconButton
-                    key={`${title}-${index}`}
-                    icon={<FontAwesome name={title} size={20} color={color} />}
-                    backgroundColor={backgroundColor}
-                    width={10}
-                    height={10}
-                    borderRadius="full"
-                    onPress={() => console.log("Google login")}
-                  />
-                )
-              )}
-            </HStack>
           </VStack>
         </KeyboardAvoidingView>
+
+        <Center flex={1} justifyContent="flex-start" paddingTop={5}>
+          <Button
+            variant="outline"
+            marginBottom={2}
+            borderRadius="25"
+            onPress={() => validateForm()}
+            width="40%"
+          >
+            <Text fontWeight="800">Sign Up</Text>
+          </Button>
+          <TermsAndConditions />
+          <HStack
+            space={5}
+            marginTop={5}
+            alignItems="start"
+            justifyContent="center"
+          >
+            {SOCIAL_LOGINS.map(
+              ({ title, backgroundColor, color }, index: number) => (
+                <IconButton
+                  key={`${title}-${index}`}
+                  icon={<FontAwesome name={title} size={20} color={color} />}
+                  backgroundColor={backgroundColor}
+                  width={10}
+                  height={10}
+                  borderRadius="full"
+                  onPress={() => console.log("Google login")}
+                />
+              )
+            )}
+          </HStack>
+        </Center>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -217,7 +222,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "white",
   },
-  keyboardAvoidingView: { flex: 2 },
+  keyboardAvoidingView: { flex: 1 },
   errorAlert: {
     position: "absolute",
     top: 0,

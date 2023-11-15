@@ -1,12 +1,19 @@
 import React, { useState, useRef } from "react";
 import { TextInput, StyleSheet, SafeAreaView, StatusBar } from "react-native";
 import { Text, Center, View, VStack, Button, IconButton } from "native-base";
-import { Header } from "../../../components";
+// @ts-ignore
+import { Header, Alert, ActivityIndicator, Modal } from "@components";
 import { FontAwesome } from "@expo/vector-icons";
 import { ROUTES } from "../../../utils/common";
 
+// @ts-ignore
+import { api } from "@api/api";
+
 function Verification({ navigation }) {
   const [code, setCode] = useState("");
+  const [visible, setVisible] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const inputRefs = Array(6)
     .fill(0)
     .map(() => useRef(null));
@@ -31,16 +38,52 @@ function Verification({ navigation }) {
     }
   };
 
-  console.log(code);
+  const handleVerificationChange = async () => {
+    try {
+      setLoading(true);
+
+      const response = await api.sendVerificationCode(
+        "andrew.99strublics@gmail.com",
+        code
+      );
+      console.log(response);
+      setLoading(false);
+    } catch (error) {
+      const authenticationError = `* ${error.message}`;
+      setFormError(authenticationError);
+      setLoading(false);
+      setVisible(true);
+    }
+  };
+
+  const handleResendVerificationCode = async () => {
+    try {
+      setLoading(true);
+      await api.resendVerificationCode("andrew.99strublics@gmail.com");
+      setLoading(false);
+      navigation.navigate(ROUTES.AUTH, { screen: ROUTES.SIGN_IN });
+    } catch (error) {
+      const authenticationError = `* ${error.message}`;
+      setFormError(authenticationError);
+      setLoading(false);
+      setVisible(true);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="default" />
+      <Modal visible={visible} onClose={setVisible}>
+        <Alert
+          backgroundColor="white"
+          errorMessage={formError}
+          onPress={() => setVisible(false)}
+        />
+      </Modal>
+      <ActivityIndicator loading={loading} spinSize="lg" />
       <Header>
         <IconButton
-          icon={
-            <FontAwesome name="arrow-circle-left" size={28} color="black" />
-          }
+          icon={<FontAwesome name="chevron-left" size={18} color="black" />}
           onPress={() => navigation.navigate(ROUTES.SIGN_IN_OR_SIGN_UP)}
           variant="unstyled"
         />
@@ -76,7 +119,7 @@ function Verification({ navigation }) {
         </View>
         <Button
           variant="unstyled"
-          paddingBottom={45}
+          paddingBottom={19}
           onPress={() => {
             setCode("");
             inputRefs[0].current.focus();
@@ -84,10 +127,19 @@ function Verification({ navigation }) {
         >
           <Text underline>Clear</Text>
         </Button>
-        <Button width="50%" borderRadius="10">
-          <Text color="white">Verify</Text>
+        <Button
+          width="40%"
+          borderRadius="25"
+          variant="outline"
+          onPress={() => handleVerificationChange()}
+        >
+          <Text>Verify</Text>
         </Button>
-        <Button variant="unstyled" paddingBottom={45}>
+        <Button
+          variant="unstyled"
+          marginTop={4}
+          onPress={() => handleResendVerificationCode()}
+        >
           <Text color="blue.500">Resend Code</Text>
         </Button>
       </VStack>

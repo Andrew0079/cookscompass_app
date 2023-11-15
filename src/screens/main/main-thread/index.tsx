@@ -9,8 +9,8 @@ import {
   Image,
 } from "native-base";
 import { SafeAreaView, StyleSheet, ImageBackground } from "react-native";
-import { getPlatFormStyle } from "../../utils/common";
-import { api } from "../../api/api";
+import { getPlatFormStyle } from "../../../utils/common";
+import { api } from "../../../api/api";
 
 const getStyles = () =>
   StyleSheet.create({

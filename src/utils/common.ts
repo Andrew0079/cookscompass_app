@@ -6,9 +6,12 @@ const getPlatFormStyle = () =>
     : { paddingTop: 0 };
 
 const ROUTES = {
+  AUTH: "Auth",
+  MAIN: "Main",
   SIGN_IN: "SignIn",
   SIGN_UP: "SignUp",
   SIGN_IN_OR_SIGN_UP: "SignInOrSignUp",
   VERIFICATION: "Verification",
+  MAIN_THREAD: "MainThread",
 };
 export { getPlatFormStyle, ROUTES };

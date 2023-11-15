@@ -7,6 +7,7 @@ import AuthNavigator from "./src/screens/navigators/auth-navigator";
 import theme from "./theme";
 import { Amplify } from "aws-amplify";
 import config from "./src/aws-exports";
+import { ROUTES } from "./src/utils/common";
 
 Amplify.configure(config);
 
@@ -22,14 +23,14 @@ function App() {
     <NativeBaseProvider theme={theme}>
       <NavigationContainer>
         <Navigator
-          initialRouteName="Auth"
+          initialRouteName={ROUTES.AUTH}
           screenOptions={{
             ...commonScreenOptions,
             headerShown: false,
           }}
         >
-          <Screen name="Auth" component={AuthNavigator} />
-          <Screen name="Main" component={MainNavigator} />
+          <Screen name={ROUTES.AUTH} component={AuthNavigator} />
+          <Screen name={ROUTES.MAIN} component={MainNavigator} />
           {/* Add more screens as needed */}
         </Navigator>
       </NavigationContainer>

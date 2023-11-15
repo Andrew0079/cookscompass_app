@@ -74,6 +74,7 @@ function SignIn({ navigation }) {
       const response = await api.signIn(email, password);
       console.log(response);
       setLoading(false); // Turn off loading after a successful sign-in
+      navigation.navigate(ROUTES.MAIN, { screen: ROUTES.MAIN_THREAD });
     } catch (error) {
       setLoading(false); // Turn off loading in case of an error
       const errorMessage = `* ${error.message}`;
@@ -97,9 +98,7 @@ function SignIn({ navigation }) {
         <SafeAreaView style={styles.safeAreaView}>
           <Header>
             <IconButton
-              icon={
-                <FontAwesome name="arrow-circle-left" size={28} color="black" />
-              }
+              icon={<FontAwesome name="chevron-left" size={18} color="black" />}
               onPress={() => navigation.navigate(ROUTES.SIGN_IN_OR_SIGN_UP)}
               variant="unstyled"
             />
@@ -135,24 +134,27 @@ function SignIn({ navigation }) {
                 onChangeText={(inputValue) => setPassword(inputValue)}
                 secureTextEntry
               />
-              <Button variant="unstyled">
-                <Text color="blue.500">Forgot your password ?</Text>
-              </Button>
-              <Button
-                variant="outline"
-                borderRadius="25"
-                onPress={() => validateForm()}
-                color="white"
-                width="50%"
-              >
-                <Text fontWeight="800">Sign In</Text>
-              </Button>
             </VStack>
           </KeyboardAvoidingView>
+          <Center paddingTop={7}>
+            <Button
+              variant="outline"
+              borderRadius="25"
+              onPress={() => validateForm()}
+              marginBottom={3}
+              color="white"
+              width="40%"
+            >
+              <Text fontWeight="800">Sign In</Text>
+            </Button>
+            <Button variant="unstyled">
+              <Text color="blue.500">Forgot your password?</Text>
+            </Button>
+          </Center>
           <HStack
             flex={1}
             space={3}
-            paddingTop={5}
+            paddingTop={3}
             alignItems="start"
             justifyContent="center"
             marginBottom={5}
@@ -172,8 +174,15 @@ function SignIn({ navigation }) {
             )}
           </HStack>
           <HStack justifyContent="center">
-            <Button variant="unstyled">
-              <Text color="blue.500">Verify Account ?</Text>
+            <Button
+              variant="unstyled"
+              onPress={() =>
+                navigation.navigate(ROUTES.AUTH, {
+                  screen: ROUTES.VERIFICATION,
+                })
+              }
+            >
+              <Text color="blue.500">Verify Account?</Text>
             </Button>
           </HStack>
         </SafeAreaView>
