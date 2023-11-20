@@ -6,6 +6,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  TouchableOpacity,
 } from "react-native";
 import validator from "validator";
 import {
@@ -147,9 +148,9 @@ function SignIn({ navigation }) {
             >
               <Text fontWeight="800">Sign In</Text>
             </Button>
-            <Button variant="unstyled">
+            <TouchableOpacity>
               <Text color="blue.500">Forgot your password?</Text>
-            </Button>
+            </TouchableOpacity>
           </Center>
           <HStack
             flex={1}
@@ -174,8 +175,7 @@ function SignIn({ navigation }) {
             )}
           </HStack>
           <HStack justifyContent="center">
-            <Button
-              variant="unstyled"
+            <TouchableOpacity
               onPress={() =>
                 navigation.navigate(ROUTES.AUTH, {
                   screen: ROUTES.VERIFICATION,
@@ -183,7 +183,7 @@ function SignIn({ navigation }) {
               }
             >
               <Text color="blue.500">Verify Account?</Text>
-            </Button>
+            </TouchableOpacity>
           </HStack>
         </SafeAreaView>
       </TouchableWithoutFeedback>

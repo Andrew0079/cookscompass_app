@@ -1,5 +1,11 @@
 import React, { useState, useRef } from "react";
-import { TextInput, StyleSheet, SafeAreaView, StatusBar } from "react-native";
+import {
+  TextInput,
+  StyleSheet,
+  SafeAreaView,
+  StatusBar,
+  TouchableOpacity,
+} from "react-native";
 import { Text, Center, View, VStack, Button, IconButton } from "native-base";
 // @ts-ignore
 import { Header, Alert, ActivityIndicator, Modal } from "@components";
@@ -117,16 +123,16 @@ function Verification({ navigation }) {
               />
             ))}
         </View>
-        <Button
-          variant="unstyled"
-          paddingBottom={19}
+        <TouchableOpacity
           onPress={() => {
             setCode("");
             inputRefs[0].current.focus();
           }}
         >
-          <Text underline>Clear</Text>
-        </Button>
+          <Text paddingBottom={19} underline>
+            Clear
+          </Text>
+        </TouchableOpacity>
         <Button
           width="40%"
           borderRadius="25"
@@ -135,13 +141,11 @@ function Verification({ navigation }) {
         >
           <Text>Verify</Text>
         </Button>
-        <Button
-          variant="unstyled"
-          marginTop={4}
-          onPress={() => handleResendVerificationCode()}
-        >
-          <Text color="blue.500">Resend Code</Text>
-        </Button>
+        <TouchableOpacity onPress={() => handleResendVerificationCode()}>
+          <Text color="blue.500" marginTop={4}>
+            Resend Code
+          </Text>
+        </TouchableOpacity>
       </VStack>
     </SafeAreaView>
   );

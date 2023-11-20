@@ -74,18 +74,18 @@ function MainThread() {
 
   const styles = getStyles();
 
-  useEffect(() => {
-    const loadRandomRecipes = async () => {
-      try {
-        const response = await api.getRandomRecipes({ number: 10 });
-        setRecipes(response.recipes);
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
+  // useEffect(() => {
+  //   const loadRandomRecipes = async () => {
+  //     try {
+  //       const response = await api.getRandomRecipes({ number: 10 });
+  //       setRecipes(response.recipes);
+  //     } catch (error) {
+  //       console.log("error", error);
+  //     }
+  //   };
 
-    loadRandomRecipes();
-  }, []);
+  //   loadRandomRecipes();
+  // }, []);
 
   return (
     <SafeAreaView style={{ ...getPlatFormStyle(), ...styles.safeAreaView }}>
