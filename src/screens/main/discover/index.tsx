@@ -34,7 +34,7 @@ const getStyles = () =>
     },
   });
 
-function MainThread() {
+function Discover() {
   const [recipes, setRecipes] = useState([]);
 
   // Sample data for small horizontal cards at the top
@@ -151,4 +151,4 @@ function MainThread() {
   );
 }
 
-export default MainThread;
+export default Discover;

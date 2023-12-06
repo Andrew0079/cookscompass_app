@@ -114,11 +114,21 @@ export default class Api {
     }
   }
 
-  // sendVerificationCode
+  // reSendVerificationCode
   async resendVerificationCode(email: string) {
     try {
       const response = await Auth.resendSignUp(email);
       return response;
+    } catch (error) {
+      this.handleAuthError(error);
+    }
+  }
+
+  // Add a logout method
+  async logout() {
+    try {
+      await Auth.signOut();
+      // Optionally, you can perform any additional cleanup or actions after logging out
     } catch (error) {
       this.handleAuthError(error);
     }

@@ -12,6 +12,6 @@ const ROUTES = {
   SIGN_UP: "SignUp",
   SIGN_IN_OR_SIGN_UP: "SignInOrSignUp",
   VERIFICATION: "Verification",
-  MAIN_THREAD: "MainThread",
+  DISCOVER: "Discover",
 };
 export { getPlatFormStyle, ROUTES };

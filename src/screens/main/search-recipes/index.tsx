@@ -4,31 +4,31 @@ import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
 // @ts-ignore
 import { api } from "@api/api";
 // @ts-ignore
-import { Alert, Modal, ActivityIndicator } from "@components";
+import { Alert, Modal, ActivityIndicator, Header } from "@components";
 import { MaterialIcons } from "@expo/vector-icons";
 import { HorizontalCardListView } from "./component";
 
 function SearchRecipes() {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [randomRecipes, setRandomRecipes] = useState([]);
 
-  const loadRandomRecipes = useCallback(async () => {
-    try {
-      const response = await api.getRandomRecipes({ number: 10 });
-      setRandomRecipes([...randomRecipes, ...response.recipes]);
-      setLoading(false);
-    } catch (error) {
-      setError("* Unable to get recipes!");
-      setLoading(false);
-      setVisible(true);
-    }
-  }, []);
+  // const loadRandomRecipes = useCallback(async () => {
+  //   try {
+  //     const response = await api.getRandomRecipes({ number: 10 });
+  //     setRandomRecipes([...randomRecipes, ...response.recipes]);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     setError("* Unable to get recipes!");
+  //     setLoading(false);
+  //     setVisible(true);
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    loadRandomRecipes();
-  }, []);
+  // useEffect(() => {
+  //   loadRandomRecipes();
+  // }, []);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>

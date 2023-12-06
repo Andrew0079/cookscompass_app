@@ -73,9 +73,9 @@ function SignIn({ navigation }) {
   const handleSignIn = async () => {
     try {
       const response = await api.signIn(email, password);
-      console.log(response);
+      // console.log(response);
       setLoading(false); // Turn off loading after a successful sign-in
-      navigation.navigate(ROUTES.MAIN, { screen: ROUTES.MAIN_THREAD });
+      navigation.navigate(ROUTES.MAIN, { screen: ROUTES.DISCOVER });
     } catch (error) {
       setLoading(false); // Turn off loading in case of an error
       const errorMessage = `* ${error.message}`;

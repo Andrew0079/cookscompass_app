@@ -1,7 +1,8 @@
-import MainThread from "./main-thread";
+import Discover from "./discover";
 import Profile from "./profile";
 import Roulette from "./roulette";
 import SearchRecipes from "./search-recipes";
 import Settings from "./settings";
+import Community from "./community";
 
-export { MainThread, Profile, Roulette, SearchRecipes, Settings };
+export { Discover, Profile, Roulette, SearchRecipes, Settings, Community };

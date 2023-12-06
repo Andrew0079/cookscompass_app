@@ -3,8 +3,12 @@ import { View, Text, Avatar } from "native-base";
 import { SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 import { VStack, HStack } from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
 
 function Profile() {
+  const user = useSelector((state: RootState) => state.user.value);
+  console.log(user);
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <VStack>
@@ -16,7 +20,7 @@ function Profile() {
           marginTop={5}
         >
           <Text fontWeight="bold" fontSize="4xl" alignSelf="center">
-            Profile
+            {user.email}
           </Text>
           <Avatar
             size={60}
