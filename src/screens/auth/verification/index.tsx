@@ -5,6 +5,8 @@ import {
   SafeAreaView,
   StatusBar,
   TouchableOpacity,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Text, Center, View, VStack, Button, IconButton } from "native-base";
 // @ts-ignore
@@ -77,77 +79,83 @@ function Verification({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="default" />
-      <Modal visible={visible} onClose={setVisible}>
-        <Alert
-          backgroundColor="white"
-          errorMessage={formError}
-          onPress={() => setVisible(false)}
-        />
-      </Modal>
-      <ActivityIndicator loading={loading} spinSize="lg" />
-      <Header>
-        <IconButton
-          icon={<FontAwesome name="chevron-left" size={18} color="black" />}
-          onPress={() => navigation.navigate(ROUTES.SIGN_IN_OR_SIGN_UP)}
-          variant="unstyled"
-        />
-      </Header>
-      <VStack
-        justifyContent="flex-start"
-        alignItems="center"
-        flex={1}
-        paddingTop={50}
-      >
-        <Center>
-          <Text fontSize="3xl" fontWeight="bold">
-            Verification
-          </Text>
-          <Text>Enter the 6-digit code sent to </Text>
-          <Text>your email address.</Text>
-        </Center>
-        <View style={styles.container}>
-          {Array(6)
-            .fill(0)
-            .map((_, index) => (
-              <TextInput
-                key={index}
-                style={styles.input}
-                value={index < code.length ? code[index] : ""}
-                onChangeText={(text) => handleCodeChange(text, index)}
-                maxLength={1}
-                ref={inputRefs[index]}
-                keyboardType="numeric"
-                secureTextEntry
-              />
-            ))}
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            setCode("");
-            inputRefs[0].current.focus();
-          }}
-        >
-          <Text paddingBottom={19} underline>
-            Clear
-          </Text>
-        </TouchableOpacity>
-        <Button
-          width="40%"
-          borderRadius="25"
-          variant="outline"
-          onPress={() => handleVerificationChange()}
-        >
-          <Text>Verify</Text>
-        </Button>
-        <TouchableOpacity onPress={() => handleResendVerificationCode()}>
-          <Text color="blue.500" marginTop={4}>
-            Resend Code
-          </Text>
-        </TouchableOpacity>
-      </VStack>
-    </SafeAreaView>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.touchableWithoutFeedbackContent}>
+        <Header>
+          <IconButton
+            paddingLeft={5}
+            icon={<FontAwesome name="chevron-left" size={18} color="black" />}
+            onPress={() => navigation.navigate(ROUTES.SIGN_IN_OR_SIGN_UP)}
+            variant="unstyled"
+          />
+        </Header>
+        <SafeAreaView style={styles.safeArea}>
+          <StatusBar barStyle="default" />
+          <Modal visible={visible} onClose={setVisible}>
+            <Alert
+              backgroundColor="white"
+              errorMessage={formError}
+              onPress={() => setVisible(false)}
+            />
+          </Modal>
+          <ActivityIndicator loading={loading} />
+
+          <VStack
+            justifyContent="flex-start"
+            alignItems="center"
+            flex={1}
+            paddingTop={50}
+          >
+            <Center>
+              <Text fontSize="3xl" fontWeight="bold">
+                Verification
+              </Text>
+              <Text>Enter the 6-digit code sent to </Text>
+              <Text>your email address.</Text>
+            </Center>
+            <View style={styles.container}>
+              {Array(6)
+                .fill(0)
+                .map((_, index) => (
+                  <TextInput
+                    key={index}
+                    style={styles.input}
+                    value={index < code.length ? code[index] : ""}
+                    onChangeText={(text) => handleCodeChange(text, index)}
+                    maxLength={1}
+                    ref={inputRefs[index]}
+                    keyboardType="numeric"
+                    secureTextEntry
+                  />
+                ))}
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setCode("");
+                inputRefs[0].current.focus();
+              }}
+            >
+              <Text paddingBottom={19} underline>
+                Clear
+              </Text>
+            </TouchableOpacity>
+            <Button
+              width="40%"
+              borderRadius="25"
+              variant="outline"
+              onPress={() => handleVerificationChange()}
+            >
+              <Text>Verify</Text>
+            </Button>
+            <TouchableOpacity onPress={() => handleResendVerificationCode()}>
+              <Text color="blue.500" marginTop={4}>
+                Resend Code
+              </Text>
+            </TouchableOpacity>
+          </VStack>
+        </SafeAreaView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -162,6 +170,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 45,
     // paddingBottom: 45,
+  },
+  touchableWithoutFeedbackContent: {
+    flex: 1,
   },
   input: {
     width: 45,

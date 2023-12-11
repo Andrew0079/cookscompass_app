@@ -1,22 +1,26 @@
 import React from "react";
-import { VStack, Center, Spinner, Box, Text } from "native-base";
+import { VStack, Center, Box, Text } from "native-base";
+import LottieView from "lottie-react-native";
 
 function ActivityIndicator({
   loading,
-  spinColor,
-  spinSize,
   loadingText,
+  spinHeight,
+  spinWidth,
   loadingTextColor,
 }: {
   loading: boolean;
-  spinColor?: string;
-  spinSize?: string;
+  spinHeight?: number;
+  spinWidth?: number;
   loadingText?: string;
   loadingTextColor?: string;
 }) {
   if (!loading) {
     return null; // Return null when loading is false to hide the overlay
   }
+
+  const height = spinHeight ?? 100;
+  const width = spinWidth ?? 100;
 
   return (
     <Box
@@ -28,13 +32,14 @@ function ActivityIndicator({
       backgroundColor="rgba(0, 0, 0, 0.5)" // Adjust the overlay background color and opacity here
       justifyContent="center"
       alignItems="center"
-      zIndex={9999} // Ensure it's displayed above other components
+      zIndex={999999999999} // Ensure it's displayed above other components
     >
       <VStack space={2} alignItems="center">
-        <Spinner
-          color={spinColor ?? "white"}
-          size={spinSize ?? "sm"}
-          accessibilityLabel="Loading"
+        <LottieView
+          source={require("../../assets/animation/lottie/loading-indicator.json")}
+          autoPlay
+          loop
+          style={{ width, height }}
         />
         {loadingText && (
           <Center>

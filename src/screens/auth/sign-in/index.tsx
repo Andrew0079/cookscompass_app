@@ -31,6 +31,8 @@ import {
 } from "@components";
 // @ts-ignore
 import { api } from "@api/api";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../../redux/slices/user-slice";
 
 const SOCIAL_LOGINS: {
   title: "google" | "facebook" | "apple";
@@ -48,6 +50,8 @@ function SignIn({ navigation }) {
   const [formError, setFormError] = useState<string | null>(null);
   const [visible, setVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const dispatch = useDispatch();
 
   const validateForm = async () => {
     setLoading(true);
@@ -73,7 +77,22 @@ function SignIn({ navigation }) {
   const handleSignIn = async () => {
     try {
       const response = await api.signIn(email, password);
-      // console.log(response);
+      const userEmail = response.attributes.email;
+      const username = response.attributes.preferred_username;
+      const id = response.attributes.sub;
+      const jwtToken = response.signInUserSession.accessToken.jwtToken;
+      const refreshToken = response.signInUserSession.refreshToken.token;
+      const payload = response.signInUserSession.accessToken.payload;
+      dispatch(
+        setUser({
+          email: userEmail,
+          username,
+          id,
+          jwtToken,
+          refreshToken,
+          payload,
+        })
+      );
       setLoading(false); // Turn off loading after a successful sign-in
       navigation.navigate(ROUTES.MAIN, { screen: ROUTES.DISCOVER });
     } catch (error) {
@@ -94,98 +113,101 @@ function SignIn({ navigation }) {
           onPress={() => setVisible(false)}
         />
       </Modal>
-      <ActivityIndicator loading={loading} spinSize="lg" />
+      <ActivityIndicator loading={loading} />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={styles.safeAreaView}>
+        <View style={styles.touchableWithoutFeedbackContent}>
           <Header>
             <IconButton
+              paddingLeft={5}
               icon={<FontAwesome name="chevron-left" size={18} color="black" />}
               onPress={() => navigation.navigate(ROUTES.SIGN_IN_OR_SIGN_UP)}
               variant="unstyled"
             />
           </Header>
-          <KeyboardAvoidingView
-            style={styles.keyboardAvoidingView}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-          >
-            <VStack
-              space={4}
-              alignItems="center"
-              justifyContent="flex-end"
-              paddingLeft={10}
-              paddingRight={10}
-              flex={1}
+          <SafeAreaView style={styles.safeAreaView}>
+            <KeyboardAvoidingView
+              style={styles.keyboardAvoidingView}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
-              <Text fontWeight="bold" fontSize="4xl">
-                Sign In
-              </Text>
-              <Input
-                marginTop={5}
-                variant="rounded"
-                placeholder="Email"
-                height={10}
-                color="black"
-                onChangeText={(inputValue) => setEmail(inputValue)}
-              />
-              <Input
-                variant="rounded"
-                placeholder="Password"
-                color="black"
-                height={10}
-                onChangeText={(inputValue) => setPassword(inputValue)}
-                secureTextEntry
-              />
-            </VStack>
-          </KeyboardAvoidingView>
-          <Center paddingTop={7}>
-            <Button
-              variant="outline"
-              borderRadius="25"
-              onPress={() => validateForm()}
-              marginBottom={3}
-              color="white"
-              width="40%"
-            >
-              <Text fontWeight="800">Sign In</Text>
-            </Button>
-            <TouchableOpacity>
-              <Text color="blue.500">Forgot your password?</Text>
-            </TouchableOpacity>
-          </Center>
-          <HStack
-            flex={1}
-            space={3}
-            paddingTop={3}
-            alignItems="start"
-            justifyContent="center"
-            marginBottom={5}
-          >
-            {SOCIAL_LOGINS.map(
-              ({ title, backgroundColor, color }, index: number) => (
-                <IconButton
-                  key={`${title}-${index}`}
-                  icon={<FontAwesome name={title} size={20} color={color} />}
-                  backgroundColor={backgroundColor}
-                  width={10}
+              <VStack
+                space={4}
+                alignItems="center"
+                justifyContent="flex-end"
+                paddingLeft={10}
+                paddingRight={10}
+                flex={1}
+              >
+                <Text fontWeight="bold" fontSize="4xl">
+                  Sign In
+                </Text>
+                <Input
+                  marginTop={5}
+                  variant="rounded"
+                  placeholder="Email"
                   height={10}
-                  borderRadius="full"
-                  onPress={() => console.log("Google login")}
+                  color="black"
+                  onChangeText={(inputValue) => setEmail(inputValue)}
                 />
-              )
-            )}
-          </HStack>
-          <HStack justifyContent="center">
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate(ROUTES.AUTH, {
-                  screen: ROUTES.VERIFICATION,
-                })
-              }
+                <Input
+                  variant="rounded"
+                  placeholder="Password"
+                  color="black"
+                  height={10}
+                  onChangeText={(inputValue) => setPassword(inputValue)}
+                  secureTextEntry
+                />
+              </VStack>
+            </KeyboardAvoidingView>
+            <Center paddingTop={7}>
+              <Button
+                variant="outline"
+                borderRadius="25"
+                onPress={() => validateForm()}
+                marginBottom={3}
+                color="white"
+                width="40%"
+              >
+                <Text fontWeight="800">Sign In</Text>
+              </Button>
+              <TouchableOpacity>
+                <Text color="blue.500">Forgot your password?</Text>
+              </TouchableOpacity>
+            </Center>
+            <HStack
+              flex={1}
+              space={3}
+              paddingTop={3}
+              alignItems="start"
+              justifyContent="center"
+              marginBottom={5}
             >
-              <Text color="blue.500">Verify Account?</Text>
-            </TouchableOpacity>
-          </HStack>
-        </SafeAreaView>
+              {SOCIAL_LOGINS.map(
+                ({ title, backgroundColor, color }, index: number) => (
+                  <IconButton
+                    key={`${title}-${index}`}
+                    icon={<FontAwesome name={title} size={20} color={color} />}
+                    backgroundColor={backgroundColor}
+                    width={10}
+                    height={10}
+                    borderRadius="full"
+                    onPress={() => console.log("Google login")}
+                  />
+                )
+              )}
+            </HStack>
+            <HStack justifyContent="center">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(ROUTES.AUTH, {
+                    screen: ROUTES.VERIFICATION,
+                  })
+                }
+              >
+                <Text color="blue.500">Verify Account?</Text>
+              </TouchableOpacity>
+            </HStack>
+          </SafeAreaView>
+        </View>
       </TouchableWithoutFeedback>
     </View>
   );
@@ -195,6 +217,9 @@ const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
     justifyContent: "center",
+  },
+  touchableWithoutFeedbackContent: {
+    flex: 1,
   },
   keyboardAvoidingView: { flex: 1 },
 });

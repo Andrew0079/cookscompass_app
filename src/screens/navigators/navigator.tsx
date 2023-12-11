@@ -8,7 +8,9 @@ import { Auth } from "aws-amplify";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/slices/user-slice";
 import { ROUTES } from "../../utils/common";
+import { useSelector } from "react-redux";
 import theme from "../../../theme";
+import { RootState } from "../../redux/store";
 
 const { Navigator: StackNavigator, Screen } = createStackNavigator();
 
@@ -18,10 +20,12 @@ const commonScreenOptions = {
 };
 
 function Navigator() {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user.value);
+
   useEffect(() => {
     const isUserAuthenticated = async () => {
       try {
@@ -32,7 +36,6 @@ function Navigator() {
         const jwtToken = response.signInUserSession.accessToken.jwtToken;
         const refreshToken = response.signInUserSession.refreshToken.token;
         const payload = response.signInUserSession.accessToken.payload;
-
         dispatch(
           setUser({ email, username, id, jwtToken, refreshToken, payload })
         );
@@ -46,6 +49,14 @@ function Navigator() {
     // Check if the user is authenticated
     isUserAuthenticated();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [user]);
 
   return (
     <NativeBaseProvider theme={theme}>

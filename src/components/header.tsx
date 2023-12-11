@@ -1,20 +1,20 @@
 import React from "react";
-import { HStack } from "native-base";
+import { HStack, Box } from "native-base";
 import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-function Header({ children }) {
+function Header({ children }: { children: React.ReactNode }) {
   const safeAreaInsets = useSafeAreaInsets();
   const isAndroid = Platform.OS === "android";
 
   return (
-    <HStack
-      space={2}
-      paddingLeft={2}
-      style={isAndroid ? { paddingTop: safeAreaInsets.top } : {}}
+    <Box
+      backgroundColor="white"
+      paddingTop={isAndroid ? safeAreaInsets.top : 50}
+      zIndex={1}
     >
-      {children}
-    </HStack>
+      <HStack>{children}</HStack>
+    </Box>
   );
 }
 

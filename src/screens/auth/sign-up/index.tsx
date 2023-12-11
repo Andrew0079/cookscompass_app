@@ -124,94 +124,98 @@ function SignUp({ navigation }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={styles.safeAreaView}>
-        <ActivityIndicator loading={loading} spinSize="lg" />
-        <Modal visible={visible} onClose={setVisible}>
-          <Alert
-            backgroundColor="white"
-            errorMessage={formError}
-            onPress={() => setVisible(false)}
-          />
-        </Modal>
+      <View style={styles.touchableWithoutFeedbackContent}>
         <Header>
           <IconButton
+            paddingLeft={5}
             icon={<FontAwesome name="chevron-left" size={18} color="black" />}
             onPress={() => navigation.navigate(ROUTES.SIGN_IN_OR_SIGN_UP)}
             variant="unstyled"
           />
         </Header>
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoidingView}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <View paddingTop={50} paddingLeft={10}>
-            <Text fontSize="3xl" fontWeight="bold">
-              Create your
-            </Text>
-            <Text fontSize="3xl" fontWeight="bold" paddingLeft={3}>
-              free account
-            </Text>
-          </View>
-          <VStack
-            space={4}
-            alignItems="center"
-            justifyContent="center"
-            paddingLeft={10}
-            paddingRight={10}
-            paddingBottom={30}
-            paddingTop={50}
-            backgroundColor="red"
-            flex={1}
-          >
-            {inputFieldsContainer.map(
-              (
-                { placeholder, secureTextEntry, onChangeText },
-                index: number
-              ) => (
-                <InputElement
-                  key={`input-element-${index}`}
-                  placeholder={placeholder}
-                  secureTextEntry={secureTextEntry}
-                  onChangeText={onChangeText}
-                />
-              )
-            )}
-          </VStack>
-        </KeyboardAvoidingView>
+        <SafeAreaView style={styles.safeAreaView}>
+          <ActivityIndicator loading={loading} />
+          <Modal visible={visible} onClose={setVisible}>
+            <Alert
+              backgroundColor="white"
+              errorMessage={formError}
+              onPress={() => setVisible(false)}
+            />
+          </Modal>
 
-        <Center flex={1} justifyContent="flex-start" paddingTop={5}>
-          <Button
-            variant="outline"
-            marginBottom={2}
-            borderRadius="25"
-            onPress={() => validateForm()}
-            width="40%"
+          <KeyboardAvoidingView
+            style={styles.keyboardAvoidingView}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <Text fontWeight="800">Sign Up</Text>
-          </Button>
-          <TermsAndConditions />
-          <HStack
-            space={5}
-            marginTop={5}
-            alignItems="start"
-            justifyContent="center"
-          >
-            {SOCIAL_LOGINS.map(
-              ({ title, backgroundColor, color }, index: number) => (
-                <IconButton
-                  key={`${title}-${index}`}
-                  icon={<FontAwesome name={title} size={20} color={color} />}
-                  backgroundColor={backgroundColor}
-                  width={10}
-                  height={10}
-                  borderRadius="full"
-                  onPress={() => console.log("Google login")}
-                />
-              )
-            )}
-          </HStack>
-        </Center>
-      </SafeAreaView>
+            <View paddingTop={50} paddingLeft={10}>
+              <Text fontSize="3xl" fontWeight="bold">
+                Create your
+              </Text>
+              <Text fontSize="3xl" fontWeight="bold" paddingLeft={3}>
+                free account
+              </Text>
+            </View>
+            <VStack
+              space={4}
+              alignItems="center"
+              justifyContent="center"
+              paddingLeft={10}
+              paddingRight={10}
+              paddingBottom={30}
+              paddingTop={50}
+              backgroundColor="red"
+              flex={1}
+            >
+              {inputFieldsContainer.map(
+                (
+                  { placeholder, secureTextEntry, onChangeText },
+                  index: number
+                ) => (
+                  <InputElement
+                    key={`input-element-${index}`}
+                    placeholder={placeholder}
+                    secureTextEntry={secureTextEntry}
+                    onChangeText={onChangeText}
+                  />
+                )
+              )}
+            </VStack>
+          </KeyboardAvoidingView>
+
+          <Center flex={1} justifyContent="flex-start" paddingTop={5}>
+            <Button
+              variant="outline"
+              marginBottom={2}
+              borderRadius="25"
+              onPress={() => validateForm()}
+              width="40%"
+            >
+              <Text fontWeight="800">Sign Up</Text>
+            </Button>
+            <TermsAndConditions />
+            <HStack
+              space={5}
+              marginTop={5}
+              alignItems="start"
+              justifyContent="center"
+            >
+              {SOCIAL_LOGINS.map(
+                ({ title, backgroundColor, color }, index: number) => (
+                  <IconButton
+                    key={`${title}-${index}`}
+                    icon={<FontAwesome name={title} size={20} color={color} />}
+                    backgroundColor={backgroundColor}
+                    width={10}
+                    height={10}
+                    borderRadius="full"
+                    onPress={() => console.log("Google login")}
+                  />
+                )
+              )}
+            </HStack>
+          </Center>
+        </SafeAreaView>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
@@ -221,6 +225,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     backgroundColor: "white",
+  },
+  touchableWithoutFeedbackContent: {
+    flex: 1,
   },
   keyboardAvoidingView: { flex: 1 },
   errorAlert: {
