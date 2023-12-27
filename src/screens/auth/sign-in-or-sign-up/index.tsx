@@ -13,18 +13,20 @@ function SignInOrSignUp({ navigation }) {
         <VStack
           space={6}
           alignItems="center"
-          justifyContent="flex-end"
+          justifyContent="center"
           paddingLeft={10}
           paddingRight={10}
-          paddingBottom={5}
+          paddingBottom={50}
           flex={1}
         >
           <Brand />
           <Button
             variant="outline"
-            borderRadius="25"
-            onPress={() => navigation.navigate(ROUTES.SIGN_IN)}
-            width="50%"
+            borderRadius="20"
+            onPress={() => {
+              navigation.navigate(ROUTES.SIGN_IN);
+            }}
+            width="80%"
           >
             <Text color="white" fontWeight="800">
               Sign In
@@ -32,21 +34,14 @@ function SignInOrSignUp({ navigation }) {
           </Button>
           <Button
             variant="outline"
-            borderRadius="25"
-            onPress={() => navigation.navigate(ROUTES.SIGN_UP)}
-            width="50%"
+            borderRadius="20"
+            onPress={() => {
+              navigation.navigate(ROUTES.SIGN_UP);
+            }}
+            width="80%"
           >
             <Text color="white" fontWeight="800">
               Sign Up
-            </Text>
-          </Button>
-          <Button
-            paddingTop={6}
-            variant="unstyled"
-            onPress={() => navigation.navigate(ROUTES.VERIFICATION)}
-          >
-            <Text color="white" bold>
-              I'll do it later
             </Text>
           </Button>
         </VStack>

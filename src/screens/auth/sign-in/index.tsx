@@ -153,7 +153,7 @@ function SignIn({ navigation }) {
             <Center paddingTop={7}>
               <Button
                 variant="outline"
-                borderRadius="25"
+                borderRadius="20"
                 onPress={() => validateForm()}
                 marginBottom={3}
                 color="white"
@@ -162,7 +162,7 @@ function SignIn({ navigation }) {
                 <Text fontWeight="800">Sign In</Text>
               </Button>
               <TouchableOpacity>
-                <Text color="blue.500">Forgot your password?</Text>
+                <Text color="#006ee6">Forgot your password?</Text>
               </TouchableOpacity>
             </Center>
             <HStack
@@ -192,10 +192,11 @@ function SignIn({ navigation }) {
                 onPress={() =>
                   navigation.navigate(ROUTES.AUTH, {
                     screen: ROUTES.VERIFICATION,
+                    params: { manual: true },
                   })
                 }
               >
-                <Text color="blue.500">Verify Account?</Text>
+                <Text color="#006ee6">Verify Account?</Text>
               </TouchableOpacity>
             </HStack>
           </SafeAreaView>

@@ -5,7 +5,7 @@ function ImageBackgroundContainer({ children }) {
   return (
     <ImageBackground
       style={styles.imageBackground}
-      source={require("../../assets/backgrounds/bowl.jpg")}
+      source={require("../../assets/backgrounds/soup.jpg")}
     >
       <View style={styles.overlay}>{children}</View>
     </ImageBackground>
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.3)", // Adjust opacity as needed
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Adjust opacity as needed
   },
 });
 

@@ -111,7 +111,7 @@ function SignUp({ navigation }) {
       await api.signUp(email, password, username);
 
       setLoading(false);
-      navigation.navigate(ROUTES.AUTH, { screen: ROUTES.SIGN_IN });
+      navigation.navigate(ROUTES.AUTH, { screen: ROUTES.VERIFICATION });
     } catch (error) {
       const authenticationError = `* ${error.message}`;
       setLoading(false);

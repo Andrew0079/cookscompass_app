@@ -4,7 +4,7 @@ import { VStack, Text } from "native-base";
 function Brand({ flex }: { flex?: number }) {
   return (
     <VStack flex={flex} alignItems="center" justifyContent="center">
-      <Text color="white" fontSize="5xl" fontStyle="italic" fontWeight="600">
+      <Text color="white" fontSize="5xl" fontStyle="italic" fontWeight="800">
         Munch
       </Text>
       <Text
@@ -12,7 +12,7 @@ function Brand({ flex }: { flex?: number }) {
         color="white"
         fontSize="xl"
         fontStyle="italic"
-        fontWeight="400"
+        fontWeight="600"
         width="80%"
       >
         "Where Every Dish Tells a Story"

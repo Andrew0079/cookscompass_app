@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Center, Text } from "native-base";
 import { View, TouchableOpacity, SafeAreaView, StyleSheet } from "react-native";
-import { Discover, SearchRecipes, Roulette, Profile, Community } from "../main";
+import { Discover, SearchRecipes, Menu, Profile, Community } from "../main";
 
 import { Ionicons } from "@expo/vector-icons"; // Import the icon library (Ionicons in this example)
 
@@ -12,9 +12,9 @@ function BottomItem({ state, descriptors, navigation }) {
   const iconContainerByRouteName = {
     Discover: "fast-food-outline",
     Community: "people-outline",
-    Search: "search-sharp",
     Profile: "person-outline",
-    Roulette: "ios-star-outline",
+    Menu: "ios-grid-outline",
+    Search: "search-sharp",
   };
   return (
     <SafeAreaView style={styles.bottomItemSafeAreView}>
@@ -82,8 +82,8 @@ function MainNavigator() {
     >
       <Tab.Screen name="Discover" component={Discover} />
       <Tab.Screen name="Community" component={Community} />
+      <Tab.Screen name="Menu" component={Menu} />
       <Tab.Screen name="Search" component={SearchRecipes} />
-      <Tab.Screen name="Roulette" component={Roulette} />
       <Tab.Screen name="Profile" component={Profile} />
       {/* <Tab.Screen name="Settings" component={Settings} /> */}
     </Tab.Navigator>
