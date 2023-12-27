@@ -77,20 +77,12 @@ function SignIn({ navigation }) {
   const handleSignIn = async () => {
     try {
       const response = await api.signIn(email, password);
-      const userEmail = response.attributes.email;
-      const username = response.attributes.preferred_username;
-      const id = response.attributes.sub;
-      const jwtToken = response.signInUserSession.accessToken.jwtToken;
-      const refreshToken = response.signInUserSession.refreshToken.token;
-      const payload = response.signInUserSession.accessToken.payload;
       dispatch(
         setUser({
-          email: userEmail,
-          username,
-          id,
-          jwtToken,
-          refreshToken,
-          payload,
+          email: response.email,
+          token: response.stsTokenManager.accessToken,
+          id: response.uid,
+          username: response.displayName,
         })
       );
       setLoading(false); // Turn off loading after a successful sign-in

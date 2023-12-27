@@ -4,13 +4,14 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import MainNavigator from "./main-navigator";
 import AuthNavigator from "./auth-navigator";
-import { Auth } from "aws-amplify";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/slices/user-slice";
 import { ROUTES } from "../../utils/common";
 import { useSelector } from "react-redux";
 import theme from "../../../theme";
 import { RootState } from "../../redux/store";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../services/config";
 
 const { Navigator: StackNavigator, Screen } = createStackNavigator();
 
@@ -24,39 +25,44 @@ function Navigator() {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const user = useSelector((state: RootState) => state.user.value);
+  const currentUser = useSelector((state: RootState) => state.user.value);
 
   useEffect(() => {
-    const isUserAuthenticated = async () => {
-      try {
-        const response = await Auth.currentAuthenticatedUser();
-        const email = response.attributes.email;
-        const username = response.attributes.preferred_username;
-        const id = response.attributes.sub;
-        const jwtToken = response.signInUserSession.accessToken.jwtToken;
-        const refreshToken = response.signInUserSession.refreshToken.token;
-        const payload = response.signInUserSession.accessToken.payload;
-        dispatch(
-          setUser({ email, username, id, jwtToken, refreshToken, payload })
-        );
-        setIsAuthenticated(true); // User is authenticated
-        setLoading(false);
-      } catch (error) {
-        setIsAuthenticated(false); // User is not authenticated
-        setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        if (firebaseUser.emailVerified) {
+          const customUser = firebaseUser as unknown as {
+            email: string;
+            uid: string;
+            stsTokenManager: { accessToken: string };
+            displayName: string;
+          };
+          dispatch(
+            setUser({
+              email: customUser.email,
+              token: customUser.stsTokenManager.accessToken,
+              id: customUser.uid,
+              username: customUser.displayName,
+            })
+          );
+        } else {
+          dispatch(setUser(null));
+        }
+      } else {
+        dispatch(setUser(null));
       }
-    };
-    // Check if the user is authenticated
-    isUserAuthenticated();
-  }, []);
+    });
+
+    return () => unsubscribe(); // Cleanup the listener
+  }, [dispatch]);
 
   useEffect(() => {
-    if (user) {
+    if (currentUser) {
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
     }
-  }, [user]);
+  }, [currentUser]);
 
   return (
     <NativeBaseProvider theme={theme}>

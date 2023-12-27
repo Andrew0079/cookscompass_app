@@ -108,12 +108,10 @@ function SignUp({ navigation }) {
   const handleSignUp = async () => {
     try {
       setLoading(true);
-      await api.signUp(email, password, {
-        preferred_username: username,
-      });
+      await api.signUp(email, password, username);
 
       setLoading(false);
-      navigation.navigate(ROUTES.AUTH, { screen: ROUTES.VERIFICATION });
+      navigation.navigate(ROUTES.AUTH, { screen: ROUTES.SIGN_IN });
     } catch (error) {
       const authenticationError = `* ${error.message}`;
       setLoading(false);
