@@ -25,6 +25,7 @@ export default class Api {
 
   // Api Endpoints
   private RANDOM_RECIPES = "/random-recipes";
+  private SEARCH_RECIPES = "/search-recipes";
 
   constructor(baseURL) {
     this.api = axios.create({
@@ -139,6 +140,10 @@ export default class Api {
 
   getRandomRecipes(params = {}) {
     return this.get(this.RANDOM_RECIPES, params);
+  }
+
+  getRecipesByFilter(params = {}) {
+    return this.get(this.SEARCH_RECIPES, params);
   }
 }
 

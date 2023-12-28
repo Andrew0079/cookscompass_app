@@ -7,6 +7,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  StatusBar,
+  ScrollView,
 } from "react-native";
 import validator from "validator";
 import {
@@ -18,6 +20,8 @@ import {
   Text,
   Center,
   View,
+  Box,
+  Divider,
 } from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
 // @ts-ignore
@@ -26,13 +30,14 @@ import {
   Header,
   Modal,
   Alert,
-  ActivityIndicator,
   // @ts-ignore
 } from "@components";
 // @ts-ignore
 import { api } from "@api/api";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "../../../redux/slices/loading-slice";
 import { setUser } from "../../../redux/slices/user-slice";
+import { RootState } from "../../../redux/store";
 
 const SOCIAL_LOGINS: {
   title: "google" | "facebook" | "apple";
@@ -44,17 +49,21 @@ const SOCIAL_LOGINS: {
   { title: "apple", backgroundColor: "black", color: "white" },
 ];
 
-function SignIn({ navigation }) {
+const isIOS = Platform.OS === "ios";
+
+function SignIn({ navigation, route }) {
+  const loading = useSelector((state: RootState) => state.loading.value);
   const [email, setEmail] = useState<string | null>();
   const [password, setPassword] = useState<string | null>();
   const [formError, setFormError] = useState<string | null>(null);
   const [visible, setVisible] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
 
   const dispatch = useDispatch();
 
+  const isFromSignUp = route?.params?.isFromSignUp;
+
   const validateForm = async () => {
-    setLoading(true);
+    dispatch(setLoading(true));
     const errorList = [];
 
     if (!email || !validator.isEmail(email)) {
@@ -66,7 +75,7 @@ function SignIn({ navigation }) {
 
     if (errorList.length > 0) {
       setFormError(errorList.join("\n"));
-      setLoading(false);
+      dispatch(setLoading(false));
       setVisible(true);
     } else {
       setFormError(null);
@@ -85,10 +94,10 @@ function SignIn({ navigation }) {
           username: response.displayName,
         })
       );
-      setLoading(false); // Turn off loading after a successful sign-in
+      dispatch(setLoading(false)); // Turn off loading after a successful sign-in
       navigation.navigate(ROUTES.MAIN, { screen: ROUTES.DISCOVER });
     } catch (error) {
-      setLoading(false); // Turn off loading in case of an error
+      dispatch(setLoading(false)); // Turn off loading in case of an error
       const errorMessage = `* ${error.message}`;
       setVisible(true);
       setFormError(errorMessage);
@@ -96,8 +105,10 @@ function SignIn({ navigation }) {
   };
 
   return (
-    // <ImageBackgroundContainer>
     <View alignContent="center" flex={1} backgroundColor="white">
+      {!loading && (
+        <StatusBar barStyle="dark-content" backgroundColor="white" />
+      )}
       <Modal visible={visible} onClose={setVisible}>
         <Alert
           backgroundColor="white"
@@ -105,96 +116,145 @@ function SignIn({ navigation }) {
           onPress={() => setVisible(false)}
         />
       </Modal>
-      <ActivityIndicator loading={loading} />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.touchableWithoutFeedbackContent}>
           <Header>
             <IconButton
               paddingLeft={5}
               icon={<FontAwesome name="chevron-left" size={18} color="black" />}
-              onPress={() => navigation.navigate(ROUTES.SIGN_IN_OR_SIGN_UP)}
+              onPress={() => {
+                const prevRoute = isFromSignUp
+                  ? ROUTES.SIGN_UP
+                  : ROUTES.SIGN_IN_OR_SIGN_UP;
+                navigation.navigate(prevRoute);
+              }}
               variant="unstyled"
             />
           </Header>
           <SafeAreaView style={styles.safeAreaView}>
-            <KeyboardAvoidingView
-              style={styles.keyboardAvoidingView}
-              behavior={Platform.OS === "ios" ? "padding" : "height"}
-            >
-              <VStack
-                space={4}
-                alignItems="center"
-                justifyContent="flex-end"
-                paddingLeft={10}
-                paddingRight={10}
-                flex={1}
+            <ScrollView>
+              <KeyboardAvoidingView
+                style={styles.keyboardAvoidingView}
+                behavior="padding"
               >
-                <Text fontWeight="bold" fontSize="4xl">
-                  Sign In
-                </Text>
-                <Input
-                  marginTop={5}
-                  variant="rounded"
-                  placeholder="Email"
-                  height={10}
-                  color="black"
-                  onChangeText={(inputValue) => setEmail(inputValue)}
-                />
-                <Input
-                  variant="rounded"
-                  placeholder="Password"
-                  color="black"
-                  height={10}
-                  onChangeText={(inputValue) => setPassword(inputValue)}
-                  secureTextEntry
-                />
-              </VStack>
-            </KeyboardAvoidingView>
-            <Center paddingTop={7}>
-              <Button
-                variant="outline"
-                borderRadius="20"
-                onPress={() => validateForm()}
-                marginBottom={3}
-                color="white"
-                width="40%"
-              >
-                <Text fontWeight="800">Sign In</Text>
-              </Button>
-              <TouchableOpacity>
-                <Text color="#006ee6">Forgot your password?</Text>
-              </TouchableOpacity>
-            </Center>
+                <VStack
+                  space={6}
+                  alignItems="center"
+                  justifyContent="flex-start"
+                  paddingLeft={5}
+                  paddingRight={5}
+                  paddingTop={30}
+                >
+                  <Text fontWeight="bold" fontSize="4xl">
+                    Sign In
+                  </Text>
+                  <Text fontSize="md" marginTop={-3}>
+                    Hi! Welcome back. You've been missed.
+                  </Text>
+                  <Input
+                    variant="rounded"
+                    placeholder="Email"
+                    height={10}
+                    color="black"
+                    onChangeText={(inputValue) => setEmail(inputValue)}
+                  />
+                  <Input
+                    variant="rounded"
+                    placeholder="Password"
+                    color="black"
+                    height={10}
+                    onChangeText={(inputValue) => setPassword(inputValue)}
+                    secureTextEntry
+                  />
+                  <Box alignSelf="flex-end">
+                    <TouchableOpacity>
+                      <Text underline color="#006ee6">
+                        Forgot your password?
+                      </Text>
+                    </TouchableOpacity>
+                  </Box>
+
+                  <Button
+                    variant="outline"
+                    borderRadius="20"
+                    onPress={() => validateForm()}
+                    color="white"
+                    width="80%"
+                  >
+                    <Text textAlign="center" fontWeight="800">
+                      Sign In
+                    </Text>
+                  </Button>
+                </VStack>
+              </KeyboardAvoidingView>
+              <View flex={1}>
+                <HStack
+                  justifyContent="center"
+                  paddingTop={8}
+                  paddingBottom={8}
+                  alignItems="center"
+                  space={1}
+                >
+                  <Divider width={20} />
+                  <Text> Or sign in with</Text>
+                  <Divider width={20} />
+                </HStack>
+                <HStack
+                  space={5}
+                  alignItems="start"
+                  justifyContent="center"
+                  marginBottom={5}
+                >
+                  {SOCIAL_LOGINS.map(
+                    ({ title, backgroundColor, color }, index: number) => (
+                      <IconButton
+                        key={`${title}-${index}`}
+                        icon={
+                          <FontAwesome name={title} size={20} color={color} />
+                        }
+                        backgroundColor={backgroundColor}
+                        width={10}
+                        height={10}
+                        borderRadius="full"
+                        onPress={() => console.log("Google login")}
+                      />
+                    )
+                  )}
+                </HStack>
+                <HStack
+                  space={1}
+                  flex={1}
+                  paddingTop={5}
+                  alignItems="flex-start"
+                  justifyContent="center"
+                >
+                  <Text>Don't have an account?</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate(ROUTES.SIGN_UP, {
+                        isFromLogin: true,
+                      });
+                    }}
+                  >
+                    <Text underline color="#006ee6">
+                      Sign Up
+                    </Text>
+                  </TouchableOpacity>
+                </HStack>
+              </View>
+            </ScrollView>
             <HStack
               flex={1}
-              space={3}
-              paddingTop={3}
-              alignItems="start"
               justifyContent="center"
-              marginBottom={5}
+              alignItems="flex-end"
+              paddingBottom={isIOS ? 0 : 6}
             >
-              {SOCIAL_LOGINS.map(
-                ({ title, backgroundColor, color }, index: number) => (
-                  <IconButton
-                    key={`${title}-${index}`}
-                    icon={<FontAwesome name={title} size={20} color={color} />}
-                    backgroundColor={backgroundColor}
-                    width={10}
-                    height={10}
-                    borderRadius="full"
-                    onPress={() => console.log("Google login")}
-                  />
-                )
-              )}
-            </HStack>
-            <HStack justifyContent="center">
               <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate(ROUTES.AUTH, {
-                    screen: ROUTES.VERIFICATION,
-                    params: { manual: true },
-                  })
-                }
+                onPress={() => {
+                  navigation.navigate(ROUTES.VERIFICATION, {
+                    manual: true,
+                  });
+                }}
               >
                 <Text color="#006ee6">Verify Account?</Text>
               </TouchableOpacity>
@@ -209,7 +269,6 @@ function SignIn({ navigation }) {
 const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
-    justifyContent: "center",
   },
   touchableWithoutFeedbackContent: {
     flex: 1,

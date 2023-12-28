@@ -1,12 +1,21 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Center, Text } from "native-base";
-import { View, TouchableOpacity, SafeAreaView, StyleSheet } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  SafeAreaView,
+  StyleSheet,
+  Platform,
+  Dimensions,
+} from "react-native";
 import { Discover, SearchRecipes, Menu, Profile, Community } from "../main";
 
 import { Ionicons } from "@expo/vector-icons"; // Import the icon library (Ionicons in this example)
 
 const Tab = createBottomTabNavigator();
+
+const isIOS = Platform.OS === "ios";
 
 function BottomItem({ state, descriptors, navigation }) {
   const iconContainerByRouteName = {
@@ -16,6 +25,10 @@ function BottomItem({ state, descriptors, navigation }) {
     Menu: "ios-grid-outline",
     Search: "search-sharp",
   };
+
+  const screenWidth = Dimensions.get("window").width;
+  const tabWidth = screenWidth / state.routes.length;
+
   return (
     <SafeAreaView style={styles.bottomItemSafeAreView}>
       <View style={styles.bottomItemView}>
@@ -47,6 +60,7 @@ function BottomItem({ state, descriptors, navigation }) {
           return (
             <TouchableOpacity
               key={key}
+              style={{ width: tabWidth }}
               accessibilityRole="button"
               accessibilityState={isFocused ? { selected: true } : {}}
               accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -85,22 +99,20 @@ function MainNavigator() {
       <Tab.Screen name="Menu" component={Menu} />
       <Tab.Screen name="Search" component={SearchRecipes} />
       <Tab.Screen name="Profile" component={Profile} />
-      {/* <Tab.Screen name="Settings" component={Settings} /> */}
     </Tab.Navigator>
   );
 }
 
 const styles = StyleSheet.create({
-  bottomItemSafeAreView: { backgroundColor: "white", height: 80 },
-
+  bottomItemSafeAreView: {
+    backgroundColor: "white",
+    height: isIOS ? 80 : 65,
+  },
   bottomItemView: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingLeft: 25,
-    paddingRight: 25,
-    paddingTop: 12,
-    paddingBottom: 10,
+    paddingTop: isIOS ? 12 : 10,
     borderTopWidth: 1,
     borderColor: "#CACCCE", // Customize the border color here
   },

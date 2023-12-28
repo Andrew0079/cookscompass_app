@@ -1,39 +1,53 @@
 import React, { useState } from "react";
 import LottieView from "lottie-react-native";
 import { Center, HStack, Text, VStack, Button } from "native-base";
-import { SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  StatusBar,
+  Platform,
+} from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { ROUTES } from "../../../utils/common";
 import {
   Modal,
   Alert,
-  ActivityIndicator,
   // @ts-ignore
 } from "@components";
 import { emailVerification } from "../../../services/auth";
+import { setLoading } from "../../../redux/slices/loading-slice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
+
+const isIOS = Platform.OS === "ios";
 
 function Verification({ navigation, route }) {
+  const dispatch = useDispatch();
+  const loading = useSelector((state: RootState) => state.loading.value);
   const [formError, setFormError] = useState<string | null>(null);
   const [visible, setVisible] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [manualVerificationSent, setManualVerificationSent] = useState(false);
 
   const isManual = route?.params?.manual;
 
   const handleEmailVerification = async () => {
-    setLoading(true);
+    dispatch(setLoading(true));
     try {
       await emailVerification();
-      setLoading(false);
+      dispatch(setLoading(false));
     } catch (error) {
       setFormError("Unable to send verification email!");
       setVisible(true);
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
+      {!loading && (
+        <StatusBar barStyle="dark-content" backgroundColor="white" />
+      )}
       <Modal visible={visible} onClose={setVisible}>
         <Alert
           backgroundColor="white"
@@ -41,8 +55,7 @@ function Verification({ navigation, route }) {
           onPress={() => setVisible(false)}
         />
       </Modal>
-      <ActivityIndicator loading={loading} />
-      <VStack flex={1} justifyContent="flex-start">
+      <VStack flex={1} justifyContent="flex-start" paddingTop={isIOS ? 5 : 75}>
         <Center>
           <LottieView
             source={require("../../../../assets/animation/lottie/email.json")}
@@ -54,6 +67,7 @@ function Verification({ navigation, route }) {
             <Button
               borderRadius={20}
               variant="outline"
+              marginTop={5}
               marginBottom={5}
               onPress={() => {
                 handleEmailVerification();
@@ -81,6 +95,7 @@ function Verification({ navigation, route }) {
           )}
           <TouchableOpacity
             onPress={() => {
+              setManualVerificationSent(false);
               navigation.navigate(ROUTES.SIGN_IN);
             }}
           >

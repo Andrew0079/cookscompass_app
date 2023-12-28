@@ -9,10 +9,8 @@ import {
 
 function SearchScreenHeader({
   onSetIsFilterOpen,
-  onSetLoading,
 }: {
   onSetIsFilterOpen: (callback: (value: boolean) => boolean) => void;
-  onSetLoading: (value: boolean) => void;
 }) {
   return (
     <Header>

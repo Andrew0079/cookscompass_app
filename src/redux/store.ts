@@ -1,9 +1,10 @@
-// store.js
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import userReducer from "./slices/user-slice"; // Import your user slice
+import loadingReducer from "./slices/loading-slice";
 
 const rootReducer = combineReducers({
-  user: userReducer, // Add other slices here if needed
+  user: userReducer,
+  loading: loadingReducer,
 });
 
 const store = configureStore({

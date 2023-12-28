@@ -4,6 +4,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import MainNavigator from "./main-navigator";
 import AuthNavigator from "./auth-navigator";
+// @ts-ignore
+import { ActivityIndicator } from "@components";
+import { Recipe } from "../main";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/slices/user-slice";
 import { ROUTES } from "../../utils/common";
@@ -15,17 +18,16 @@ import { auth } from "../../services/config";
 
 const { Navigator: StackNavigator, Screen } = createStackNavigator();
 
-// Define common screen options to hide the header
 const commonScreenOptions = {
   headerShown: false,
 };
 
 function Navigator() {
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const currentUser = useSelector((state: RootState) => state.user.value);
+  const loading = useSelector((state: RootState) => state.loading.value);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -53,7 +55,7 @@ function Navigator() {
       }
     });
 
-    return () => unsubscribe(); // Cleanup the listener
+    return () => unsubscribe();
   }, [dispatch]);
 
   useEffect(() => {
@@ -67,6 +69,7 @@ function Navigator() {
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer>
+        <ActivityIndicator loading={loading} />
         <StackNavigator
           screenOptions={{
             ...commonScreenOptions,
@@ -74,12 +77,13 @@ function Navigator() {
           }}
         >
           {isAuthenticated ? (
-            <Screen name={ROUTES.MAIN} component={MainNavigator} />
+            <>
+              <Screen name={ROUTES.MAIN} component={MainNavigator} />
+              <Screen name={ROUTES.RECIPE} component={Recipe} />
+            </>
           ) : (
             <Screen name={ROUTES.AUTH} component={AuthNavigator} />
           )}
-
-          {/* Add more screens as needed */}
         </StackNavigator>
       </NavigationContainer>
     </NativeBaseProvider>

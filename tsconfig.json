@@ -37,7 +37,6 @@
     ],
     "@utils/*": [
       "src/utils/*"
-    ]
-    // Add more aliases as needed
+    ],
   }
 }

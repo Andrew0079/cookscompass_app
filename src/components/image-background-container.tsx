@@ -6,6 +6,7 @@ function ImageBackgroundContainer({ children }) {
     <ImageBackground
       style={styles.imageBackground}
       source={require("../../assets/backgrounds/soup.jpg")}
+      imageStyle={styles.image}
     >
       <View style={styles.overlay}>{children}</View>
     </ImageBackground>
@@ -19,6 +20,11 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Adjust opacity as needed
+  },
+
+  image: {
+    resizeMode: "cover",
+    top: -150, // Adjust this value to move the image upwards
   },
 });
 

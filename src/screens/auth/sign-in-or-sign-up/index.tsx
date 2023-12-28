@@ -1,8 +1,8 @@
 import React from "react";
-import { VStack, Button, Text } from "native-base";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { VStack, Button, Text, Center, HStack } from "native-base";
+import { SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 import { ROUTES } from "../../../utils/common";
-import { ImageBackgroundContainer, Brand } from "../../../components";
+import { ImageBackgroundContainer } from "../../../components";
 import { StatusBar } from "expo-status-bar";
 
 function SignInOrSignUp({ navigation }) {
@@ -10,40 +10,48 @@ function SignInOrSignUp({ navigation }) {
     <ImageBackgroundContainer>
       <StatusBar style="light" />
       <SafeAreaView style={styles.safeAreaView}>
-        <VStack
-          space={6}
-          alignItems="center"
-          justifyContent="center"
-          paddingLeft={10}
-          paddingRight={10}
-          paddingBottom={50}
-          flex={1}
-        >
-          <Brand />
-          <Button
-            variant="outline"
-            borderRadius="20"
-            onPress={() => {
-              navigation.navigate(ROUTES.SIGN_IN);
-            }}
-            width="80%"
-          >
-            <Text color="white" fontWeight="800">
-              Sign In
+        <VStack justifyContent="flex-end" flex={1} paddingBottom={70}>
+          <Center>
+            <HStack space={1}>
+              <Text color="white" fontSize="3xl" fontWeight="bold">
+                Your
+              </Text>
+              <Text color="gray.400" fontSize="3xl" fontWeight="bold">
+                Recipe Heaven
+              </Text>
+            </HStack>
+            <Text color="white" fontSize="2xl" fontWeight="bold">
+              Awaits Exploration!
             </Text>
-          </Button>
-          <Button
-            variant="outline"
-            borderRadius="20"
-            onPress={() => {
-              navigation.navigate(ROUTES.SIGN_UP);
-            }}
-            width="80%"
-          >
-            <Text color="white" fontWeight="800">
-              Sign Up
-            </Text>
-          </Button>
+            <Button
+              marginTop={5}
+              marginBottom={5}
+              variant="subtle"
+              borderRadius="20"
+              onPress={() => {
+                navigation.navigate(ROUTES.SIGN_UP);
+              }}
+              width="80%"
+            >
+              <Text color="black" fontWeight="800">
+                Let's Get Started
+              </Text>
+            </Button>
+            <HStack space={1}>
+              <Text color="white" fontSize="lg">
+                Already have an account?
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate(ROUTES.SIGN_IN);
+                }}
+              >
+                <Text color="white" fontSize="lg" underline>
+                  Sign In
+                </Text>
+              </TouchableOpacity>
+            </HStack>
+          </Center>
         </VStack>
       </SafeAreaView>
     </ImageBackgroundContainer>
