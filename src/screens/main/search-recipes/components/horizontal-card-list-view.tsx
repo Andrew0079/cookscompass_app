@@ -28,7 +28,7 @@ function HorizontalCardListView({ navigation, data }) {
               flexDirection="row"
               width="93%"
               backgroundColor="white"
-              marginBottom={3}
+              marginBottom={data[data.length - 1].node.id === node.id ? 70 : 3}
               padding={1}
             >
               <Image
@@ -88,8 +88,8 @@ const styles = StyleSheet.create({
   },
   flatList: {
     zIndex: 9999999,
-    marginTop: 10,
     paddingTop: 10,
+    paddingBottom: 25,
   },
   shadowProp: {
     shadowColor: "#000",

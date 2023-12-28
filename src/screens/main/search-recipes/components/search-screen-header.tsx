@@ -13,7 +13,7 @@ function SearchScreenHeader({
   onSetIsFilterOpen: (callback: (value: boolean) => boolean) => void;
 }) {
   return (
-    <Header>
+    <Header paddingBottom={5} borderBottomWidth={1} borderBottomColor="#CACCCE">
       <HStack
         space={2}
         width="100%"

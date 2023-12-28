@@ -65,7 +65,6 @@ const emailVerification = async () => {
     const user = auth.currentUser;
     await sendEmailVerification(user);
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };
