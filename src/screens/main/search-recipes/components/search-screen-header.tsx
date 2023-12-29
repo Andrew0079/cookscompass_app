@@ -8,8 +8,12 @@ import {
 } from "@components";
 
 function SearchScreenHeader({
+  onSearch,
+  onSetQuery,
   onSetIsFilterOpen,
 }: {
+  onSearch: (value: boolean) => void;
+  onSetQuery: (value: string | null) => void;
   onSetIsFilterOpen: (callback: (value: boolean) => boolean) => void;
 }) {
   return (
@@ -30,6 +34,10 @@ function SearchScreenHeader({
           height={9}
           variant="rounded"
           fontSize="14"
+          onChangeText={(text) => {
+            const searchQuery = text === "" ? null : text;
+            onSetQuery(searchQuery);
+          }}
         />
 
         <TouchableOpacity
@@ -40,7 +48,10 @@ function SearchScreenHeader({
         >
           <Icon size="6" color="gray.500" as={<MaterialIcons name="tune" />} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.touchableOpacity}>
+        <TouchableOpacity
+          style={styles.touchableOpacity}
+          onPress={() => onSearch(true)}
+        >
           <Icon
             size="6"
             color="gray.500"

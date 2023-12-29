@@ -3,12 +3,11 @@ import { FontAwesome } from "@expo/vector-icons";
 import validator from "validator";
 import { ROUTES } from "../../../utils/common";
 // @ts-ignore
-import { Header, Modal, Alert } from "@components";
+import { Header } from "@components";
 import {
   SafeAreaView,
   StyleSheet,
   KeyboardAvoidingView,
-  Platform,
   TouchableWithoutFeedback,
   Keyboard,
   StatusBar,
@@ -31,6 +30,7 @@ import { api } from "../../../api/api";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
+import { setError } from "../../../redux/slices/error-slice";
 
 const SOCIAL_LOGINS: {
   title: "google" | "facebook" | "apple";
@@ -45,8 +45,6 @@ const SOCIAL_LOGINS: {
 function SignUp({ navigation, route }) {
   const loading = useSelector((state: RootState) => state.loading.value);
   const dispatch = useDispatch();
-  const [formError, setFormError] = useState<string | null>(null);
-  const [visible, setVisible] = useState<boolean>(false);
   const [username, setUsername] = useState(null);
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
@@ -106,11 +104,10 @@ function SignUp({ navigation, route }) {
 
     // Set the form error message if there are errors
     if (errorList.length > 0) {
-      setFormError(errorList.join("\n"));
-      setVisible(true); // Show the modal
+      dispatch(setError({ error: errorList.join("\n"), visible: true }));
     } else {
       // Clear the form error if there are no errors
-      setFormError(null);
+      dispatch(setError({ error: null, visible: false }));
       await handleSignUp();
       // Perform any other action you want on successful validation
     }
@@ -126,8 +123,7 @@ function SignUp({ navigation, route }) {
     } catch (error) {
       const authenticationError = `* ${error.message}`;
       dispatch(setLoading(false));
-      setFormError(authenticationError);
-      setVisible(true);
+      dispatch(setError({ error: authenticationError, visible: true }));
     }
   };
 
@@ -137,13 +133,7 @@ function SignUp({ navigation, route }) {
         {!loading && (
           <StatusBar barStyle="dark-content" backgroundColor="white" />
         )}
-        <Modal visible={visible} onClose={setVisible}>
-          <Alert
-            backgroundColor="white"
-            errorMessage={formError}
-            onPress={() => setVisible(false)}
-          />
-        </Modal>
+
         <Header>
           <IconButton
             paddingLeft={5}

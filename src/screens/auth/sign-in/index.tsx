@@ -18,7 +18,6 @@ import {
   HStack,
   IconButton,
   Text,
-  Center,
   View,
   Box,
   Divider,
@@ -28,8 +27,6 @@ import { FontAwesome } from "@expo/vector-icons";
 import { ROUTES } from "@utils/common";
 import {
   Header,
-  Modal,
-  Alert,
   // @ts-ignore
 } from "@components";
 // @ts-ignore
@@ -37,6 +34,7 @@ import { api } from "@api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { setUser } from "../../../redux/slices/user-slice";
+import { setError } from "../../../redux/slices/error-slice";
 import { RootState } from "../../../redux/store";
 
 const SOCIAL_LOGINS: {
@@ -55,8 +53,6 @@ function SignIn({ navigation, route }) {
   const loading = useSelector((state: RootState) => state.loading.value);
   const [email, setEmail] = useState<string | null>();
   const [password, setPassword] = useState<string | null>();
-  const [formError, setFormError] = useState<string | null>(null);
-  const [visible, setVisible] = useState<boolean>(false);
 
   const dispatch = useDispatch();
 
@@ -74,12 +70,11 @@ function SignIn({ navigation, route }) {
     }
 
     if (errorList.length > 0) {
-      setFormError(errorList.join("\n"));
+      dispatch(setError({ error: errorList.join("\n"), visible: true }));
       dispatch(setLoading(false));
-      setVisible(true);
     } else {
-      setFormError(null);
-      await handleSignIn(); // Handle sign-in without showing the modal immediately
+      dispatch(setError({ error: null, visible: false }));
+      await handleSignIn();
     }
   };
 
@@ -94,13 +89,12 @@ function SignIn({ navigation, route }) {
           username: response.displayName,
         })
       );
-      dispatch(setLoading(false)); // Turn off loading after a successful sign-in
+      dispatch(setLoading(false));
       navigation.navigate(ROUTES.MAIN, { screen: ROUTES.DISCOVER });
     } catch (error) {
-      dispatch(setLoading(false)); // Turn off loading in case of an error
+      dispatch(setLoading(false));
       const errorMessage = `* ${error.message}`;
-      setVisible(true);
-      setFormError(errorMessage);
+      dispatch(setError({ error: errorMessage, visible: true }));
     }
   };
 
@@ -109,13 +103,6 @@ function SignIn({ navigation, route }) {
       {!loading && (
         <StatusBar barStyle="dark-content" backgroundColor="white" />
       )}
-      <Modal visible={visible} onClose={setVisible}>
-        <Alert
-          backgroundColor="white"
-          errorMessage={formError}
-          onPress={() => setVisible(false)}
-        />
-      </Modal>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.touchableWithoutFeedbackContent}>
           <Header>

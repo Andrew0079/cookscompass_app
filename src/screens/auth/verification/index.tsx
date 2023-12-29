@@ -10,23 +10,17 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { ROUTES } from "../../../utils/common";
-import {
-  Modal,
-  Alert,
-  // @ts-ignore
-} from "@components";
 import { emailVerification } from "../../../services/auth";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
+import { setError } from "../../../redux/slices/error-slice";
 
 const isIOS = Platform.OS === "ios";
 
 function Verification({ navigation, route }) {
   const dispatch = useDispatch();
   const loading = useSelector((state: RootState) => state.loading.value);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [visible, setVisible] = useState<boolean>(false);
   const [manualVerificationSent, setManualVerificationSent] = useState(false);
 
   const isManual = route?.params?.manual;
@@ -37,8 +31,9 @@ function Verification({ navigation, route }) {
       await emailVerification();
       dispatch(setLoading(false));
     } catch (error) {
-      setFormError("Unable to send verification email!");
-      setVisible(true);
+      dispatch(
+        setError({ error: "Unable to send verification email!", visible: true })
+      );
       dispatch(setLoading(false));
     }
   };
@@ -48,13 +43,6 @@ function Verification({ navigation, route }) {
       {!loading && (
         <StatusBar barStyle="dark-content" backgroundColor="white" />
       )}
-      <Modal visible={visible} onClose={setVisible}>
-        <Alert
-          backgroundColor="white"
-          errorMessage={formError}
-          onPress={() => setVisible(false)}
-        />
-      </Modal>
       <VStack flex={1} justifyContent="flex-start" paddingTop={isIOS ? 5 : 75}>
         <Center>
           <LottieView
