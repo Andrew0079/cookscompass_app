@@ -6,11 +6,11 @@ import { FilterBadge } from "@components";
 import { FlashList } from "@shopify/flash-list";
 
 const diet = [
-  "Gluten Free",
-  "Ketogenic",
+  "Gluten-Free",
+  "Keto-Friendly",
   "Vegetarian",
   "Vegan",
-  "Pescetarian",
+  "Pescatarian",
   "Paleo",
   "High-Protein",
   "High-Fiber",
@@ -19,16 +19,14 @@ const diet = [
 const cuisines = [
   "American",
   "Asian",
-  "Barbecue",
   "British",
   "Brazilian",
-  "Bulgogi",
   "Chinese",
   "Cajun & Creole",
-  "Central Europe",
+  "Central europe",
   "Cuban",
   "Caribbean",
-  "Eastern Europe",
+  "Eastern europe",
   "French",
   "Filipino",
   "Greek",
@@ -37,14 +35,12 @@ const cuisines = [
   "Hungarian",
   "Irish",
   "Indian",
-  "South East Asian",
+  "South east asian",
   "Jamaican",
   "Korean",
-  "Kosher",
-  "Kimchi",
   "Mexican",
   "Mediterranean",
-  "Middle Eastern",
+  "Middle eastern",
   "Moroccan",
   "Nordic",
   "Portuguese",
@@ -64,43 +60,23 @@ const difficulty = [
   "Under 15 minutes",
 ];
 
-const intolerances = [
-  "Dairy",
-  "Egg",
-  "Gluten",
-  "Grain",
-  "Peanut",
-  "Seafood",
-  "Sesame",
-  "Shellfish",
-  "Soy",
-  "Sulfite",
-  "Tree Nut",
-  "Wheat",
-];
-
 const calories = ["500", "550", "600", "650", "700"];
 
 const searchFilterItems = [
-  { key: "diet", title: "Diet", data: diet },
+  { key: "tags", title: "Diet", data: diet },
   {
-    key: "caloriesUnder",
+    key: "macroNutrientsRange",
     title: "Calories Under",
     data: calories,
   },
   {
-    key: "difficulty",
+    key: "maxPrepTime",
     title: "Difficulty",
     data: difficulty,
   },
   { key: "cuisines", title: "Cuisines", data: cuisines },
 
-  { key: "dishTypes", title: "Dish Types", data: dishTypes },
-  {
-    key: "intolerances",
-    title: "Intolerances",
-    data: intolerances,
-  },
+  { key: "mealTime", title: "Dish Types", data: dishTypes },
 ];
 
 export { searchFilterItems };
@@ -111,15 +87,24 @@ const RenderItem = ({ item, filters, onHandleSelectItem }) => {
       <Text style={styles.categoryTitle}>{item.title}</Text>
       <View style={styles.itemsContainer}>
         {item.data.map((subItem: string, index: number) => {
-          const isSelected = filters?.[item.key]?.items?.includes(subItem);
+          let isSelected;
+          if (filters?.[item.key] && Array.isArray(filters[item.key])) {
+            // If the value is an array, check if it includes the subItem
+            isSelected = filters?.[item.key]?.includes(subItem);
+          } else {
+            // If the value is not an array, directly compare it with the subItem
+            isSelected =
+              filters?.[item.key]?.toLocaleLowerCase() ===
+              subItem?.toLocaleLowerCase();
+          }
+          const formattedSubItem =
+            item.key === "mealTime" ? subItem.toUpperCase() : subItem;
           return (
             <Box padding={1} key={index}>
               <FilterBadge
                 isSelected={isSelected}
                 item={subItem}
-                onPress={() =>
-                  onHandleSelectItem(item.key, item.title, subItem)
-                }
+                onPress={() => onHandleSelectItem(item.key, formattedSubItem)}
               />
             </Box>
           );

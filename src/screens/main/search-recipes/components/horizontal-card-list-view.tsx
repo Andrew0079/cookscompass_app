@@ -1,81 +1,90 @@
-import React from "react";
-import { HStack, Box, Image, Text, Badge } from "native-base";
-import { StyleSheet, FlatList } from "react-native";
+import React, { useState } from "react";
+import { HStack, Box, Text, Badge, View, Spinner, VStack } from "native-base";
+import { Image } from "expo-image";
+import { StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ROUTES } from "../../../../utils/common";
+import { FlashList } from "@shopify/flash-list";
 
-function HorizontalCardListView({ navigation, data }) {
+function Footer({ isLoading }: { isLoading: boolean }) {
+  return isLoading ? <Spinner size="sm" color="#CACCCE" /> : null;
+}
+
+function HorizontalCardListView({ navigation, data, onEndReached }) {
+  const [isLoading, setIsLoading] = useState(false);
   return (
-    <FlatList
-      style={styles.flatList}
-      data={data}
-      renderItem={({ item: { node } }) => {
-        const title =
-          node.name.length > 25
-            ? node.name.substring(0, 25) + "\n" + node.name.substring(25)
-            : node.name;
-        const totalTime = node.totalTime;
-        return (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate(ROUTES.RECIPE, { id: node.id });
-            }}
-          >
-            <Box
-              style={[styles.shadowProp]}
-              borderRadius={5}
-              alignSelf="center"
-              flexDirection="row"
-              width="93%"
-              backgroundColor="white"
-              marginBottom={data[data.length - 1].node.id === node.id ? 70 : 3}
-              padding={1}
+    <View style={styles.flashListContainer}>
+      <FlashList
+        contentContainerStyle={styles.contentContainerStyle}
+        estimatedItemSize={200}
+        data={data}
+        ListFooterComponent={<Footer isLoading={isLoading} />}
+        onEndReachedThreshold={0.5}
+        onEndReached={() => {
+          setIsLoading(true);
+          onEndReached();
+          setIsLoading(false);
+        }}
+        renderItem={({ item: { node } }: any) => {
+          const title =
+            node.name.length > 25
+              ? node.name.substring(0, 25) + "\n" + node.name.substring(25)
+              : node.name;
+          const totalTime = node.totalTime;
+
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate(ROUTES.RECIPE, { id: node.id });
+              }}
             >
-              <Image
-                style={styles.image}
-                source={{
-                  uri: node.mainImage,
-                }}
-                alt="image"
-              />
-              <HStack flex={1} padding={1} justifyContent="space-between">
-                <Box justifyContent="space-between">
-                  <Text fontWeight="bold" fontSize="xs">
-                    {title}
-                  </Text>
-                  <HStack space={1}>
-                    {node.mealTags.map((tag: string, index: number) => (
+              <Box
+                style={[styles.shadowProp]}
+                borderRadius={5}
+                alignSelf="center"
+                flexDirection="row"
+                width="93%"
+                backgroundColor="white"
+                marginBottom={
+                  data[data.length - 1].node.id === node.id ? 70 : 3
+                }
+                padding={1}
+              >
+                <Image
+                  style={styles.image}
+                  source={{ uri: node.mainImage }}
+                  alt="image"
+                  transition={1000}
+                  placeholder={require("../../../../../assets/backgrounds/fallback.jpeg")}
+                  placeholderContentFit="cover"
+                />
+                <VStack justifyContent="space-between" paddingLeft={1}>
+                  <HStack>
+                    <Text fontWeight="bold" fontSize="xs">
+                      {title}
+                    </Text>
+                  </HStack>
+                  <HStack>
+                    {totalTime && (
                       <Badge
-                        key={`key-${index}`}
                         borderRadius={5}
-                        style={{ borderColor: "#e68600" }}
+                        style={{ borderColor: "#8d8486" }}
                         variant="outline"
                       >
-                        <Text fontSize="xs" color="#e68600">
-                          {tag}
+                        <Text fontSize="xs" color="#8d8486">
+                          {totalTime}
                         </Text>
                       </Badge>
-                    ))}
+                    )}
                   </HStack>
-                </Box>
-                <Box>
-                  <Badge
-                    borderRadius={5}
-                    style={{ borderColor: "#8d8486" }}
-                    variant="outline"
-                  >
-                    <Text fontSize="xs" color="#8d8486">
-                      {totalTime}
-                    </Text>
-                  </Badge>
-                </Box>
-              </HStack>
-            </Box>
-          </TouchableOpacity>
-        );
-      }}
-      keyExtractor={(item) => item.node.id}
-    />
+                </VStack>
+              </Box>
+            </TouchableOpacity>
+          );
+        }}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    </View>
   );
 }
 
@@ -86,10 +95,13 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 5,
   },
-  flatList: {
+  flashListContainer: {
     zIndex: 9999999,
-    paddingTop: 10,
-    paddingBottom: 25,
+    flex: 1,
+  },
+  contentContainerStyle: {
+    paddingTop: 15,
+    paddingBottom: 5,
   },
   shadowProp: {
     shadowColor: "#000",

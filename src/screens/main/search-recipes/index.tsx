@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 // @ts-ignore
 import { api } from "@api/api";
@@ -12,60 +12,95 @@ import { useDispatch } from "react-redux";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { setError } from "../../../redux/slices/error-slice";
 
+const difficulty = {
+  "Under 1 hour": 60,
+  "Under 45 minutes": 45,
+  "Under 30 minutes": 30,
+  "Under 15 minutes": 15,
+};
+
+const filterSections = {
+  mealTime: true,
+  macroNutrientsRange: true,
+  maxPrepTime: true,
+  tags: false,
+  cuisines: false,
+};
+
 function SearchRecipes({ navigation }) {
   const [recipes, setRecipes] = useState([]);
   const [filters, setFilters] = useState<object | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [search, setSearch] = useState<boolean>(false);
   const [query, setQuery] = useState<string | null>(null);
+  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+  const [after, setAfter] = useState<string | null>(null);
 
   const dispatch = useDispatch();
 
   const isRecipesListAvailable = recipes.length > 0;
 
-  const resetSearch = () => {
-    setQuery(null);
-    setIsFilterOpen(false);
-  };
-
-  const handleSelectItem = (section: string, title: string, item: string) => {
+  const handleSelectItem = (section: string, item: string) => {
     setFilters((prevFilters) => {
       const updatedFilters = { ...prevFilters };
 
-      // Check if the section exists and has items array
-      if (
-        updatedFilters[section] &&
-        Array.isArray(updatedFilters[section].items)
-      ) {
-        const sectionIndex = updatedFilters[section].items.indexOf(item);
-
-        if (sectionIndex !== -1) {
-          // Remove the item if it is already selected
-          updatedFilters[section].items.splice(sectionIndex, 1);
+      if (filterSections[section]) {
+        // Toggle the item
+        if (updatedFilters[section] === item) {
+          delete updatedFilters[section]; // Remove key if item is the same (toggle off)
         } else {
-          // Add the item if it is not selected
-          updatedFilters[section].items.push(item);
+          updatedFilters[section] = item; // Set new item
         }
       } else {
-        // Create a new section with the title and item
-        updatedFilters[section] = { title: title, items: [item] };
+        if (Array.isArray(updatedFilters[section])) {
+          const sectionIndex = updatedFilters[section].indexOf(item);
+
+          if (sectionIndex !== -1) {
+            updatedFilters[section].splice(sectionIndex, 1);
+            if (updatedFilters[section].length === 0) {
+              delete updatedFilters[section]; // Remove key if array is empty after removal
+            }
+          } else {
+            updatedFilters[section].push(item);
+          }
+        } else {
+          if (updatedFilters[section] === item) {
+            delete updatedFilters[section]; // Remove key if item is the same (toggle off)
+          } else {
+            updatedFilters[section] = [item]; // Create new array with the item
+          }
+        }
       }
 
       return updatedFilters;
     });
   };
 
-  useEffect(() => {
-    const getRecipesByFilter = async () => {
+  const getRecipesByFilter = async () => {
+    if (query || (filters && Object.keys(filters).length > 0)) {
+      setIsFilterOpen(false);
       dispatch(setLoading(true));
       try {
-        const response = await api.getRecipesByFilter();
+        const prepTime = difficulty?.[(filters as any)?.maxPrepTime];
+        const maxPrepTime = prepTime ? { maxPrepTime: prepTime } : {};
+
+        const customFilters = query
+          ? { ...filters, ...maxPrepTime, query }
+          : { ...filters, ...maxPrepTime };
+
+        const response = await api.getRecipesByFilter(customFilters);
+        const nextPage =
+          response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
+
         const data = response?.data?.recipeSearch?.edges || [];
+        const cursor =
+          response?.data?.recipeSearch?.pageInfo?.endCursor || null;
+
+        setAfter(cursor);
         setRecipes(data);
-        setSearch(false);
+        setHasNextPage(nextPage);
+
         dispatch(setLoading(false));
       } catch (error) {
-        setSearch(false);
         dispatch(
           setError({
             error: "Unable to load recipes. Please try again.",
@@ -74,12 +109,40 @@ function SearchRecipes({ navigation }) {
         );
         dispatch(setLoading(false));
       }
-    };
-
-    if (search && (query || filters)) {
-      getRecipesByFilter();
     }
-  }, [search]);
+  };
+
+  const getRecipesByFilterOnScroll = async () => {
+    if (hasNextPage && after) {
+      try {
+        const prepTime = difficulty?.[(filters as any)?.maxPrepTime];
+        const maxPrepTime = prepTime ? { maxPrepTime: prepTime } : {};
+
+        const customFilters = query
+          ? { ...filters, ...maxPrepTime, query, after }
+          : { ...filters, ...maxPrepTime, after };
+
+        const response = await api.getRecipesByFilter(customFilters);
+        const nextPage =
+          response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
+
+        const data = response?.data?.recipeSearch?.edges || [];
+        const cursor =
+          response?.data?.recipeSearch?.pageInfo?.endCursor || null;
+
+        setAfter(cursor);
+        setRecipes([...recipes, ...data]);
+        setHasNextPage(nextPage);
+      } catch (error) {
+        dispatch(
+          setError({
+            error: "Unable to load recipes. Please try again.",
+            visible: true,
+          })
+        );
+      }
+    }
+  };
 
   return (
     <View style={styles.searchRecipesContainer}>
@@ -88,17 +151,25 @@ function SearchRecipes({ navigation }) {
         <SearchScreenHeader
           hasFilter={!!(filters && Object.keys(filters).length > 0)}
           onSetIsFilterOpen={setIsFilterOpen}
-          onSearch={setSearch}
+          onSearch={getRecipesByFilter}
           onSetQuery={setQuery}
           onSetFilters={setFilters}
         />
         <SafeAreaView style={styles.safeAreaView}>
           {!isFilterOpen && isRecipesListAvailable && (
-            <HorizontalCardListView navigation={navigation} data={recipes} />
+            <HorizontalCardListView
+              navigation={navigation}
+              data={recipes}
+              onEndReached={getRecipesByFilterOnScroll}
+            />
           )}
           <SearchRecipesAnimation />
           {isFilterOpen && (
-            <Filter filters={filters} onHandleSelectItem={handleSelectItem} />
+            <Filter
+              filters={filters}
+              onHandleSelectItem={handleSelectItem}
+              onEndReached={getRecipesByFilter}
+            />
           )}
         </SafeAreaView>
       </View>
