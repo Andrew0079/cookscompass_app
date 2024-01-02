@@ -145,6 +145,10 @@ export default class Api {
   getRecipesByFilter(params = {}) {
     return this.get(this.SEARCH_RECIPES, params);
   }
+
+  getRecipeById(id: string) {
+    return this.get(`${this.SEARCH_RECIPES}/${id}`);
+  }
 }
 
 const URL =

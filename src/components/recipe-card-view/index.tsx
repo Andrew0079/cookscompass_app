@@ -1,8 +1,10 @@
 import React from "react";
-import { Box, Text, View, Image } from "native-base";
+import { Box, Text, View } from "native-base";
 import { StyleSheet, StatusBar, Platform } from "react-native";
+import { Image } from "expo-image";
 
-function RecipeCardView({ route }) {
+function RecipeCardView({ recipeDetail }) {
+  console.log(recipeDetail);
   return (
     <View style={styles.container}>
       <StatusBar
@@ -13,10 +15,10 @@ function RecipeCardView({ route }) {
       <View style={styles.topContainer}>
         <Image
           style={styles.image}
-          source={{
-            uri: "https://storage.googleapis.com/sg-uploads/6ed4194ce2f9409ca0eba346198c1b0f.jpg",
-          }}
+          source={{ uri: recipeDetail.mainImage }}
           alt="image"
+          placeholder={require("../../../assets/backgrounds/fallback.jpeg")}
+          placeholderContentFit="cover"
         />
       </View>
       <View style={styles.bottomSection}></View>
