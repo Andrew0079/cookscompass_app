@@ -3,7 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const errorSlice = createSlice({
   name: "loading",
   initialState: {
-    value: false,
+    value: {
+      error: null,
+      visible: false,
+    },
   },
   reducers: {
     setError: (state, action) => {

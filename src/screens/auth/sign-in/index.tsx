@@ -101,7 +101,11 @@ function SignIn({ navigation, route }) {
   return (
     <View alignContent="center" flex={1} backgroundColor="white">
       {!loading && (
-        <StatusBar barStyle="dark-content" backgroundColor="white" />
+        <StatusBar
+          translucent
+          backgroundColor="transparent"
+          barStyle="dark-content"
+        />
       )}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.touchableWithoutFeedbackContent}>
@@ -163,7 +167,7 @@ function SignIn({ navigation, route }) {
 
                   <Button
                     variant="outline"
-                    borderRadius="20"
+                    borderRadius={25}
                     onPress={() => validateForm()}
                     color="white"
                     width="80%"

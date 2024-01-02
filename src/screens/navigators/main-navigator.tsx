@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Center, Text } from "native-base";
 import {
@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Platform,
   Dimensions,
+  Keyboard,
 } from "react-native";
 import { Discover, SearchRecipes, Menu, Profile, Community } from "../main";
 
@@ -87,19 +88,42 @@ function BottomItem({ state, descriptors, navigation }) {
 }
 
 function MainNavigator() {
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  const { height, width } = Dimensions.get("window");
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => setKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => setKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-      tabBar={(props) => <BottomItem {...props} />}
-    >
-      <Tab.Screen name="Discover" component={Discover} />
-      <Tab.Screen name="Community" component={Community} />
-      <Tab.Screen name="Menu" component={Menu} />
-      <Tab.Screen name="Search" component={SearchRecipes} />
-      <Tab.Screen name="Profile" component={Profile} />
-    </Tab.Navigator>
+    <View style={{ height, width }}>
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: { display: keyboardVisible ? "none" : "flex" },
+        }}
+        tabBar={(props) => <BottomItem {...props} />}
+      >
+        <Tab.Screen name="Discover" component={Discover} />
+        <Tab.Screen name="Community" component={Community} />
+        <Tab.Screen name="Menu" component={Menu} />
+        <Tab.Screen name="Search" component={SearchRecipes} />
+        <Tab.Screen name="Profile" component={Profile} />
+      </Tab.Navigator>
+    </View>
   );
 }
 

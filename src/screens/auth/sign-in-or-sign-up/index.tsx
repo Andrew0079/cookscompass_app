@@ -31,14 +31,14 @@ function SignInOrSignUp({ navigation }) {
               onPress={() => {
                 navigation.navigate(ROUTES.SIGN_UP);
               }}
-              width="80%"
+              width="70%"
             >
               <Text color="black" fontWeight="800">
                 Let's Get Started
               </Text>
             </Button>
             <HStack space={1}>
-              <Text color="white" fontSize="lg">
+              <Text color="white" fontSize="md">
                 Already have an account?
               </Text>
               <TouchableOpacity
@@ -46,7 +46,7 @@ function SignInOrSignUp({ navigation }) {
                   navigation.navigate(ROUTES.SIGN_IN);
                 }}
               >
-                <Text color="white" fontSize="lg" underline>
+                <Text color="white" fontSize="md" underline>
                   Sign In
                 </Text>
               </TouchableOpacity>

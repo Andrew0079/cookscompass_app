@@ -1,10 +1,5 @@
 import React, { ReactNode } from "react";
-import {
-  View,
-  Modal as RNModal,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 
 function Modal({
   visible,
@@ -16,33 +11,44 @@ function Modal({
   children: ReactNode;
 }) {
   return (
-    <RNModal
-      transparent={true}
-      animationType="fade"
-      visible={visible}
-      onRequestClose={onClose ? () => onClose(false) : undefined} // Close the modal when the user presses the hardware back button on Android
-    >
-      <TouchableOpacity
-        activeOpacity={1}
-        onPress={onClose ? () => onClose(false) : undefined} // Close the modal when the user clicks outside
-        style={styles.overlayContainer}
-      >
-        <View style={styles.overlayContent}>{children}</View>
-      </TouchableOpacity>
-    </RNModal>
+    <>
+      {visible && (
+        <TouchableOpacity
+          style={styles.overlay}
+          onPress={onClose ? () => onClose(false) : undefined}
+          activeOpacity={1}
+        >
+          {/* Stop propagation on the inner View */}
+          <View
+            style={styles.overlayContent}
+            onStartShouldSetResponder={() => true}
+          >
+            {children}
+          </View>
+        </TouchableOpacity>
+      )}
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  overlayContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
-  },
   overlayContent: {
     elevation: 5, // Shadow on Android
     width: "80%",
+    backgroundColor: "white", // Add a background color to the content area
+    borderRadius: 10, // Optionally round the corners
+  },
+  overlay: {
+    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999, // Ensure it overlays other components
   },
 });
 

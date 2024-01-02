@@ -8,13 +8,17 @@ import {
 } from "@components";
 
 function SearchScreenHeader({
+  hasFilter,
   onSearch,
   onSetQuery,
   onSetIsFilterOpen,
+  onSetFilters,
 }: {
+  hasFilter: boolean;
   onSearch: (value: boolean) => void;
   onSetQuery: (value: string | null) => void;
   onSetIsFilterOpen: (callback: (value: boolean) => boolean) => void;
+  onSetFilters: (value: object | null) => void;
 }) {
   return (
     <Header paddingBottom={5} borderBottomWidth={1} borderBottomColor="#CACCCE">
@@ -30,7 +34,7 @@ function SearchScreenHeader({
       >
         <Input
           placeholder="Search recipes..."
-          width="78%"
+          width={hasFilter ? "72%" : "83%"}
           height={9}
           variant="rounded"
           fontSize="14"
@@ -39,15 +43,6 @@ function SearchScreenHeader({
             onSetQuery(searchQuery);
           }}
         />
-
-        <TouchableOpacity
-          style={styles.touchableOpacity}
-          onPress={() => {
-            onSetIsFilterOpen((prevIsFilterOpen) => !prevIsFilterOpen);
-          }}
-        >
-          <Icon size="6" color="gray.500" as={<MaterialIcons name="tune" />} />
-        </TouchableOpacity>
         <TouchableOpacity
           style={styles.touchableOpacity}
           onPress={() => onSearch(true)}
@@ -58,6 +53,28 @@ function SearchScreenHeader({
             as={<MaterialIcons name="search" />}
           />
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.touchableOpacity}
+          onPress={() => {
+            onSetIsFilterOpen((prevIsFilterOpen) => !prevIsFilterOpen);
+          }}
+        >
+          <Icon size="6" color="gray.500" as={<MaterialIcons name="tune" />} />
+        </TouchableOpacity>
+        {hasFilter && (
+          <TouchableOpacity
+            style={styles.touchableOpacity}
+            onPress={() => {
+              onSetFilters(null);
+            }}
+          >
+            <Icon
+              size="6"
+              color="gray.500"
+              as={<MaterialIcons name="clear" />}
+            />
+          </TouchableOpacity>
+        )}
       </HStack>
     </Header>
   );

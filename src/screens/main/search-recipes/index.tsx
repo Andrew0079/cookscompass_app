@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, HStack, View } from "native-base";
-import { SafeAreaView, StatusBar, StyleSheet, FlatList } from "react-native";
+import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 // @ts-ignore
 import { api } from "@api/api";
 import {
@@ -9,17 +8,14 @@ import {
   Filter,
   SearchRecipesAnimation,
 } from "./components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { setError } from "../../../redux/slices/error-slice";
-
-const DEFAULT_SECTION = "diet";
 
 function SearchRecipes({ navigation }) {
   const [recipes, setRecipes] = useState([]);
   const [filters, setFilters] = useState<object | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [section, setSection] = useState<string | null>(DEFAULT_SECTION);
   const [search, setSearch] = useState<boolean>(false);
   const [query, setQuery] = useState<string | null>(null);
 
@@ -29,8 +25,34 @@ function SearchRecipes({ navigation }) {
 
   const resetSearch = () => {
     setQuery(null);
-    setFilters(null);
     setIsFilterOpen(false);
+  };
+
+  const handleSelectItem = (section: string, title: string, item: string) => {
+    setFilters((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+
+      // Check if the section exists and has items array
+      if (
+        updatedFilters[section] &&
+        Array.isArray(updatedFilters[section].items)
+      ) {
+        const sectionIndex = updatedFilters[section].items.indexOf(item);
+
+        if (sectionIndex !== -1) {
+          // Remove the item if it is already selected
+          updatedFilters[section].items.splice(sectionIndex, 1);
+        } else {
+          // Add the item if it is not selected
+          updatedFilters[section].items.push(item);
+        }
+      } else {
+        // Create a new section with the title and item
+        updatedFilters[section] = { title: title, items: [item] };
+      }
+
+      return updatedFilters;
+    });
   };
 
   useEffect(() => {
@@ -42,9 +64,7 @@ function SearchRecipes({ navigation }) {
         setRecipes(data);
         setSearch(false);
         dispatch(setLoading(false));
-        resetSearch();
       } catch (error) {
-        resetSearch();
         setSearch(false);
         dispatch(
           setError({
@@ -61,20 +81,16 @@ function SearchRecipes({ navigation }) {
     }
   }, [search]);
 
-  useEffect(() => {
-    if (!isFilterOpen) {
-      setFilters(null);
-    }
-  }, [isFilterOpen]);
-
   return (
-    <View flex={1} style={styles.searchRecipesContainer}>
+    <View style={styles.searchRecipesContainer}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <View style={styles.topSection}>
         <SearchScreenHeader
+          hasFilter={!!(filters && Object.keys(filters).length > 0)}
           onSetIsFilterOpen={setIsFilterOpen}
           onSearch={setSearch}
           onSetQuery={setQuery}
+          onSetFilters={setFilters}
         />
         <SafeAreaView style={styles.safeAreaView}>
           {!isFilterOpen && isRecipesListAvailable && (
@@ -82,52 +98,24 @@ function SearchRecipes({ navigation }) {
           )}
           <SearchRecipesAnimation />
           {isFilterOpen && (
-            <Filter
-              filters={filters}
-              section={section}
-              onSetSection={setSection}
-              onSetFilters={setFilters}
-            />
+            <Filter filters={filters} onHandleSelectItem={handleSelectItem} />
           )}
         </SafeAreaView>
       </View>
-
-      {isFilterOpen && (
-        <View style={styles.bottomSection}>
-          <HStack space={2} justifyContent="center" alignContent="center">
-            <Button
-              variant="outline"
-              borderRadius="20"
-              width="30%"
-              onPress={() => setFilters(null)}
-            >
-              Clear Filter
-            </Button>
-            <Button
-              variant="outline"
-              borderRadius="20"
-              width="30%"
-              onPress={() => setSearch(true)}
-            >
-              Search
-            </Button>
-          </HStack>
-        </View>
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  searchRecipesContainer: {
+    flex: 1,
+    backgroundColor: "white",
+  },
   topSection: {
     flex: 4,
   },
   bottomSection: {
     flex: 1,
-  },
-  searchRecipesContainer: {
-    flex: 1,
-    backgroundColor: "white",
   },
   safeAreaView: {
     flex: 1,

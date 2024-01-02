@@ -41,7 +41,11 @@ function Verification({ navigation, route }) {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       {!loading && (
-        <StatusBar barStyle="dark-content" backgroundColor="white" />
+        <StatusBar
+          translucent
+          backgroundColor="transparent"
+          barStyle="dark-content"
+        />
       )}
       <VStack flex={1} justifyContent="flex-start" paddingTop={isIOS ? 5 : 75}>
         <Center>

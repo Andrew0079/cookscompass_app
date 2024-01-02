@@ -131,7 +131,11 @@ function SignUp({ navigation, route }) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.touchableWithoutFeedbackContent}>
         {!loading && (
-          <StatusBar barStyle="dark-content" backgroundColor="white" />
+          <StatusBar
+            translucent
+            backgroundColor="transparent"
+            barStyle="dark-content"
+          />
         )}
 
         <Header>
