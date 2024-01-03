@@ -15,6 +15,7 @@ function HorizontalCardListView({ navigation, data, onEndReached }) {
   return (
     <View style={styles.flashListContainer}>
       <FlashList
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.contentContainerStyle}
         estimatedItemSize={200}
         data={data}
@@ -26,11 +27,9 @@ function HorizontalCardListView({ navigation, data, onEndReached }) {
           setIsLoading(false);
         }}
         renderItem={({ item: { node } }: any) => {
-          const title =
-            node.name.length > 25
-              ? node.name.substring(0, 25) + "\n" + node.name.substring(25)
-              : node.name;
-          const totalTime = node.totalTime;
+          const title = node?.name;
+          const totalTime = node?.totalTime;
+          const calories = node?.nutrientsPerServing?.calories;
 
           return (
             <TouchableOpacity
@@ -43,7 +42,7 @@ function HorizontalCardListView({ navigation, data, onEndReached }) {
                 borderRadius={5}
                 alignSelf="center"
                 flexDirection="row"
-                width="93%"
+                width="95%"
                 backgroundColor="white"
                 marginBottom={
                   data[data.length - 1].node.id === node.id ? 70 : 3
@@ -58,13 +57,23 @@ function HorizontalCardListView({ navigation, data, onEndReached }) {
                   placeholder={require("../../../../../assets/backgrounds/fallback.jpeg")}
                   placeholderContentFit="cover"
                 />
-                <VStack justifyContent="space-between" paddingLeft={1}>
-                  <HStack>
-                    <Text fontWeight="bold" fontSize="xs">
-                      {title}
-                    </Text>
-                  </HStack>
-                  <HStack>
+                <VStack
+                  justifyContent="space-between"
+                  paddingLeft={1}
+                  width="79%"
+                >
+                  <HStack justifyContent="space-between" space={1}>
+                    {title && (
+                      <Text
+                        fontWeight="bold"
+                        fontSize="xs"
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={{ flexShrink: 1 }}
+                      >
+                        {title}
+                      </Text>
+                    )}
                     {totalTime && (
                       <Badge
                         borderRadius={5}
@@ -75,6 +84,13 @@ function HorizontalCardListView({ navigation, data, onEndReached }) {
                           {totalTime}
                         </Text>
                       </Badge>
+                    )}
+                  </HStack>
+                  <HStack justifyContent="space-between">
+                    {calories && (
+                      <Text fontSize="xs" color="#8d8486">
+                        {Math.round(calories)} kcal
+                      </Text>
                     )}
                   </HStack>
                 </VStack>

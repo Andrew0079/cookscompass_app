@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView, StyleSheet, View, StatusBar } from "react-native";
 // @ts-ignore
 import { api } from "@api/api";
 import {
@@ -8,9 +8,10 @@ import {
   Filter,
   SearchRecipesAnimation,
 } from "./components";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { setError } from "../../../redux/slices/error-slice";
+import { RootState } from "../../../redux/store";
 
 const difficulty = {
   "Under 1 hour": 60,
@@ -36,6 +37,7 @@ function SearchRecipes({ navigation }) {
   const [after, setAfter] = useState<string | null>(null);
 
   const dispatch = useDispatch();
+  const loading = useSelector((state: RootState) => state.loading.value);
 
   const isRecipesListAvailable = recipes.length > 0;
 
@@ -86,7 +88,6 @@ function SearchRecipes({ navigation }) {
         const customFilters = query
           ? { ...filters, ...maxPrepTime, query }
           : { ...filters, ...maxPrepTime };
-
         const response = await api.getRecipesByFilter(customFilters);
         const nextPage =
           response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
@@ -146,7 +147,11 @@ function SearchRecipes({ navigation }) {
 
   return (
     <View style={styles.searchRecipesContainer}>
-      <StatusBar barStyle="dark-content" backgroundColor="white" />
+      <StatusBar
+        backgroundColor="transparent"
+        barStyle="dark-content"
+        translucent={loading}
+      />
       <View style={styles.topSection}>
         <SearchScreenHeader
           hasFilter={!!(filters && Object.keys(filters).length > 0)}

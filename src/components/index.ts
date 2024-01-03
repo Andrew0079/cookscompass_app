@@ -5,7 +5,7 @@ import ActivityIndicator from "./activity-indicator";
 import Alert from "./alert";
 import GorhomBottomSheet from "./gorhom-bottom-sheet";
 import FilterBadge from "./filter-badge";
-import RecipeCardView from "./recipe-card-view";
+import PieChartView from "./pie-chart-view";
 
 export {
   Header,
@@ -15,5 +15,5 @@ export {
   Alert,
   GorhomBottomSheet,
   FilterBadge,
-  RecipeCardView,
+  PieChartView,
 };

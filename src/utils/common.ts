@@ -14,5 +14,6 @@ const ROUTES = {
   VERIFICATION: "Verification",
   DISCOVER: "Discover",
   RECIPE: "Recipe",
+  SEARCH: "Search",
 };
 export { getPlatFormStyle, ROUTES };

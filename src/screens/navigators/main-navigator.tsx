@@ -113,7 +113,9 @@ function MainNavigator() {
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
-          tabBarStyle: { display: keyboardVisible ? "none" : "flex" },
+          tabBarStyle: {
+            display: keyboardVisible ? "none" : "flex",
+          },
         }}
         tabBar={(props) => <BottomItem {...props} />}
       >

@@ -21,7 +21,7 @@ function Header({
     <Box
       borderBottomWidth={borderBottomWidth}
       borderBottomColor={borderBottomColor}
-      backgroundColor="white"
+      backgroundColor="transparent"
       paddingBottom={paddingBottom}
       paddingTop={isAndroid ? safeAreaInsets.top : 50}
       zIndex={1}
