@@ -137,7 +137,6 @@ function SignUp({ navigation, route }) {
             barStyle="dark-content"
           />
         )}
-
         <Header>
           <IconButton
             paddingLeft={5}
@@ -278,6 +277,7 @@ const styles = StyleSheet.create({
   },
   touchableWithoutFeedbackContent: {
     flex: 1,
+    backgroundColor: "white",
   },
   keyboardAvoidingView: { flex: 1 },
   errorAlert: {

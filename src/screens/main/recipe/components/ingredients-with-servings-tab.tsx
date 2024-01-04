@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text, Divider, HStack, VStack } from "native-base";
 
-function IngredientsWithServingTab({ recipeDetail }: any) {
+function IngredientsWithServingsTab({ recipeDetail }: any) {
   const ingredients: string[] = recipeDetail?.ingredientLines;
   return (
     <VStack space={2} paddingLeft={2} paddingRight={2}>
@@ -26,4 +26,4 @@ function IngredientsWithServingTab({ recipeDetail }: any) {
   );
 }
 
-export default IngredientsWithServingTab;
+export default IngredientsWithServingsTab;

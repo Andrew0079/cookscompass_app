@@ -1,5 +1,5 @@
 import React from "react";
-import { VStack, Box } from "native-base";
+import { VStack, Box, Center } from "native-base";
 import LottieView from "lottie-react-native";
 
 function SearchRecipesAnimation() {
@@ -13,14 +13,14 @@ function SearchRecipesAnimation() {
       justifyContent="center"
       alignItems="center"
     >
-      <VStack space={2} alignItems="center">
+      <Center alignItems="center" paddingBottom={60}>
         <LottieView
-          source={require("../../../../../assets/animation/lottie/cooking-bowl.json")}
+          source={require("../../../../../assets/animation/lottie/cook-search.json")}
           autoPlay
           loop
-          style={{ width: 400, height: 400 }}
+          style={{ width: 200, height: 200 }}
         />
-      </VStack>
+      </Center>
     </Box>
   );
 }

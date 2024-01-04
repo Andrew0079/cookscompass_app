@@ -12,51 +12,35 @@ import {
   NutritionTab,
   DirectionTab,
   IngredientsTab,
-  IngredientsWithServingTab,
+  IngredientsWithServingsTab,
 } from "./components";
 import { FontAwesome } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ROUTES } from "../../../utils/common";
 
-const tabs = ["Direction", "Serving", "Ingredients", "Nutrition", "Reviews"];
+const tabs = ["Direction", "Servings", "Ingredients", "Nutrition", "Reviews"];
 
 function Recipe({ route, navigation }) {
-  const [recipeDetail, setRecipeDetail] = useState(null);
+  // const [recipeDetail, setRecipeDetail] = useState(null);
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    const getRecipeDetails = async () => {
-      dispatch(setLoading(true));
-      const id = route.params.id;
-      if (id) {
-        try {
-          const response = await api.getRecipeById(id);
-          const data = response?.data?.recipe || null;
-          setRecipeDetail(data);
-          dispatch(setLoading(false));
-        } catch (error) {
-          dispatch(setLoading(false));
-        }
-      }
-    };
-    getRecipeDetails();
-  }, [route.params.id]);
+  const node = route?.params?.node;
 
   return (
     <>
-      {recipeDetail && (
+      {node && (
         <View style={styles.container}>
           <StatusBar
             translucent
             backgroundColor="transparent"
-            barStyle="dark-content"
+            barStyle="default"
           />
           <View style={styles.topContainer}>
             <Image
               style={styles.image}
-              source={{ uri: recipeDetail.mainImage }}
+              source={{ uri: node.mainImage }}
               alt="image"
               placeholder={require("../../../../assets/backgrounds/fallback.jpeg")}
               placeholderContentFit="cover"
@@ -84,7 +68,7 @@ function Recipe({ route, navigation }) {
                   numberOfLines={2}
                   ellipsizeMode="tail"
                 >
-                  {recipeDetail.name}
+                  {node.name}
                 </Text>
               </VStack>
               <HStack paddingRight={5}>
@@ -122,15 +106,17 @@ function Recipe({ route, navigation }) {
             </Box>
             <ScrollView style={styles.scrollView}>
               {selectedTab === "Ingredients" && (
-                <IngredientsTab recipeDetail={recipeDetail} />
+                <IngredientsTab recipeDetail={node} />
               )}
-              {selectedTab === "Serving" && (
-                <IngredientsWithServingTab recipeDetail={recipeDetail} />
+              {selectedTab === "Servings" && (
+                <IngredientsWithServingsTab recipeDetail={node} />
               )}
               {selectedTab === "Direction" && (
-                <DirectionTab recipeDetail={recipeDetail} />
+                <DirectionTab recipeDetail={node} />
               )}
-              {selectedTab === "Nutrition" && <NutritionTab />}
+              {selectedTab === "Nutrition" && node?.ingredientLines && (
+                <NutritionTab recipeDetail={node} />
+              )}
             </ScrollView>
           </View>
         </View>

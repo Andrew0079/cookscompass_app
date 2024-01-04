@@ -26,6 +26,8 @@ export default class Api {
   // Api Endpoints
   private RANDOM_RECIPES = "/random-recipes";
   private SEARCH_RECIPES = "/search-recipes";
+  private SEARCH_RECIPES_BY_ID = "/search-recipes/id";
+  private SEARCH_RECIPES_BY_TAG = "/search-recipes/tag";
 
   constructor(baseURL) {
     this.api = axios.create({
@@ -147,7 +149,10 @@ export default class Api {
   }
 
   getRecipeById(id: string) {
-    return this.get(`${this.SEARCH_RECIPES}/${id}`);
+    return this.get(`${this.SEARCH_RECIPES_BY_ID}/${id}`);
+  }
+  getRecipeByTag(tag: string) {
+    return this.get(`${this.SEARCH_RECIPES_BY_TAG}/${tag}`);
   }
 }
 
