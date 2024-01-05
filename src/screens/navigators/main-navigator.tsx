@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: isIOS ? 12 : 10,
     borderTopWidth: 1,
-    borderColor: "#CACCCE", // Customize the border color here
+    borderColor: "#CACCCE",
   },
 });
 

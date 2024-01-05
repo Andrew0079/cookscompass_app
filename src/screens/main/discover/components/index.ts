@@ -1,3 +1,3 @@
-import Card from "./card";
+import CategoryRecipeCard from "./category-recipe-card";
 
-export { Card };
+export { CategoryRecipeCard };

@@ -1,36 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
-import { HStack, Text, VStack, View } from "native-base";
+import { StyleSheet, Animated } from "react-native";
+import { Text, View } from "native-base";
 import { FlashList } from "@shopify/flash-list";
 // @ts-ignore
 import { api } from "@api/api";
-import { Card } from "./components";
+import { CategoryRecipeCard } from "./components";
 
-// Placeholder data for the sections
-const healthyDrinksData = [
-  {
-    /* ...data... */
-  },
-];
-const whatToCookData = [
-  {
-    /* ...data... */
-  },
-];
-const communityRecipesData = [
-  {
-    /* ...data... */
-  },
-];
-const quickLinksData = [
-  {
-    /* ...data... */
-  },
-];
+const AnimatedScrollView = Animated.ScrollView;
+const AnimatedImage = Animated.Image;
 
-function SectionHeader({ title }) {
+const getRecipesByCategoryTags = async (tag: string, setData: any) => {
+  try {
+    const response = await api.getRecipeByTag(tag);
+    const nextPage =
+      response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
+
+    const data = response?.data?.recipeSearch?.edges || [];
+    const cursor = response?.data?.recipeSearch?.pageInfo?.endCursor || null;
+    setData({ data, nextPage, cursor });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+function SectionHeader({ title, color }: { title: string; color?: string }) {
   return (
-    <Text style={{ fontWeight: "bold", fontSize: 18, marginLeft: 10 }}>
+    <Text
+      fontWeight="bold"
+      fontSize="xl"
+      marginLeft={4}
+      color={color ?? "black"}
+    >
       {title}
     </Text>
   );
@@ -40,7 +40,7 @@ function HorizontalCardListView({ data }) {
   return (
     <FlashList
       data={data}
-      renderItem={({ item }) => <Card item={item} />}
+      renderItem={({ item }) => <CategoryRecipeCard item={item} />}
       horizontal
       showsHorizontalScrollIndicator={false}
       keyExtractor={(item, index) => index.toString()}
@@ -56,56 +56,156 @@ function Discover() {
     nextPage: null,
     cursor: null,
   });
+  const [categoryTwo, setCategoryTwo] = useState({
+    data: [],
+    nextPage: null,
+    cursor: null,
+  });
+  const [categoryThree, setCategoryThree] = useState({
+    data: [],
+    nextPage: null,
+    cursor: null,
+  });
+  const [categoryFour, setCategoryFour] = useState({
+    data: [],
+    nextPage: null,
+    cursor: null,
+  });
+  const [categoryFive, setCategoryFve] = useState({
+    data: [],
+    nextPage: null,
+    cursor: null,
+  });
+
+  const [isImageVisible, setIsImageVisible] = useState(true);
+
+  const [scrollY] = useState(new Animated.Value(0));
+  const backgroundTranslateY = scrollY.interpolate({
+    inputRange: [0, 370],
+    outputRange: [0, -50],
+    extrapolate: "clamp",
+  });
+
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 370],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
+
+  scrollY.addListener(({ value }) => {
+    setIsImageVisible(value < 100);
+  });
 
   useEffect(() => {
     const getCategoryOne = async () => {
-      try {
-        const response = await api.getRecipeByTag(["drinks"]);
-        const nextPage =
-          response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
-
-        const data = response?.data?.recipeSearch?.edges || [];
-        const cursor =
-          response?.data?.recipeSearch?.pageInfo?.endCursor || null;
-        setCategoryOne({ data, nextPage, cursor });
-      } catch (error) {
-        console.log(error);
-      }
+      await getRecipesByCategoryTags("drinks", setCategoryOne);
+      await getRecipesByCategoryTags("Low-Carb", setCategoryTwo);
+      await getRecipesByCategoryTags("chicken", setCategoryThree);
+      await getRecipesByCategoryTags("Paleo", setCategoryFour);
+      await getRecipesByCategoryTags("desserts", setCategoryFve);
     };
     getCategoryOne();
   }, []);
 
   return (
-    <SafeAreaView style={styles.safeAreaView}>
-      <ScrollView style={{ flex: 1 }}>
-        <View style={{ height: 300 }}>
-          <SectionHeader title="Healthy Drinks" />
-          <HorizontalCardListView data={categoryOne.data} />
-        </View>
-
-        <View style={{ height: 300 }}>
-          <SectionHeader title="What to Cook Tonight" />
-          <HorizontalCardListView data={categoryOne.data} />
-        </View>
-        {/* 
-        <View>
-          <SectionHeader title="Community Recipes" />
-          <HorizontalCardListView data={communityRecipesData} />
-        </View>
-
-        <View>
-          <SectionHeader title="Quick Links" />
-          <HorizontalCardListView data={quickLinksData} />
-        </View> */}
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.container}>
+      {!isImageVisible && (
+        <Animated.View
+          style={[styles.animatedHeader, { opacity: headerOpacity }]}
+        />
+      )}
+      <AnimatedScrollView
+        contentContainerStyle={styles.scrollView}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={8}
+      >
+        <AnimatedImage
+          source={require("../../../../assets/backgrounds/soup.jpg")}
+          style={[
+            styles.backgroundImage,
+            { transform: [{ translateY: backgroundTranslateY }] },
+          ]}
+          alt="Background Image"
+        />
+        {categoryOne?.data.length > 0 && (
+          <View
+            style={{
+              ...styles.listContainer,
+              ...{ backgroundColor: "transparent" },
+            }}
+          >
+            <SectionHeader title="Drinks" color="white" />
+            <HorizontalCardListView data={categoryOne.data} />
+          </View>
+        )}
+        {categoryTwo?.data.length > 0 && (
+          <View style={styles.listContainer}>
+            <SectionHeader title="Low Carbs Recipes" color="white" />
+            <HorizontalCardListView data={categoryTwo.data} />
+          </View>
+        )}
+        {categoryThree?.data.length > 0 && (
+          <View style={styles.listContainer}>
+            <SectionHeader title="Chicken" />
+            <HorizontalCardListView data={categoryThree.data} />
+          </View>
+        )}
+        {categoryFour?.data.length > 0 && (
+          <View style={styles.listContainer}>
+            <SectionHeader title="Paleo" />
+            <HorizontalCardListView data={categoryFour.data} />
+          </View>
+        )}
+        {categoryFive?.data.length > 0 && (
+          <View style={styles.listContainer}>
+            <SectionHeader title="Desserts" />
+            <HorizontalCardListView data={categoryFive.data} />
+          </View>
+        )}
+      </AnimatedScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeAreaView: {
+  container: {
     flex: 1,
     backgroundColor: "white",
+  },
+  scrollView: {
+    flexGrow: 1,
+    paddingTop: 50,
+  },
+  listContainer: {
+    height: 250,
+    justifyContent: "center",
+    shadowColor: "#000000",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 5.62,
+    elevation: 8,
+  },
+  backgroundImage: {
+    position: "absolute",
+    width: "100%",
+    height: "35%", // Adjust as needed
+    marginBottom: 20, // Space between the image and the next content
+  },
+  animatedHeader: {
+    position: "absolute",
+    backgroundColor: "white",
+    height: 55,
+    width: "100%",
+    top: 0,
+    zIndex: 100,
+    borderBottomWidth: 1,
+    borderBottomColor: "#CACCCE",
   },
 });
 
