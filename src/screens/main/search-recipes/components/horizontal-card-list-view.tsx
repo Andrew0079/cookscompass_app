@@ -34,7 +34,10 @@ function HorizontalCardListView({ navigation, data, onEndReached }) {
           return (
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate(ROUTES.RECIPE, { node: node });
+                navigation.navigate(ROUTES.RECIPE, {
+                  node: node,
+                  path: ROUTES.SEARCH,
+                });
               }}
             >
               <Box

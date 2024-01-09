@@ -7,26 +7,29 @@ import { setLoading } from "../../../redux/slices/loading-slice";
 import { setError } from "../../../redux/slices/error-slice";
 import { StyleSheet, StatusBar, Platform, ScrollView } from "react-native";
 import { Image } from "expo-image";
-import {
-  TabView,
-  NutritionTab,
-  DirectionTab,
-  IngredientsTab,
-  IngredientsWithServingsTab,
-} from "./components";
+import { TabView, NutritionTab, ListItemTemplate } from "./components";
 import { FontAwesome } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { ROUTES } from "../../../utils/common";
 
 const tabs = ["Direction", "Servings", "Ingredients", "Nutrition", "Reviews"];
 
 function Recipe({ route, navigation }) {
-  // const [recipeDetail, setRecipeDetail] = useState(null);
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
 
-  // const dispatch = useDispatch();
-
   const node = route?.params?.node;
+  const path = route?.params?.path;
+
+  const tabComponents = {
+    Direction: { component: ListItemTemplate, data: node?.instructions },
+    Ingredients: {
+      component: ListItemTemplate,
+      data: node?.ingredients?.map(({ name }: { name: string }) => name),
+    },
+    Servings: { component: ListItemTemplate, data: node?.ingredientLines },
+    Nutrition: { component: NutritionTab, data: node?.nutrientsPerServing },
+  };
+
+  const { component: CurrentTabComponent, data } = tabComponents[selectedTab];
 
   return (
     <>
@@ -49,7 +52,7 @@ function Recipe({ route, navigation }) {
               <TouchableOpacity
                 style={styles.circleButton}
                 onPress={() => {
-                  navigation.navigate(ROUTES.SEARCH);
+                  navigation.navigate(path);
                 }}
               >
                 <FontAwesome name="chevron-left" size={20} color="white" />
@@ -105,18 +108,7 @@ function Recipe({ route, navigation }) {
               />
             </Box>
             <ScrollView style={styles.scrollView}>
-              {selectedTab === "Ingredients" && (
-                <IngredientsTab recipeDetail={node} />
-              )}
-              {selectedTab === "Servings" && (
-                <IngredientsWithServingsTab recipeDetail={node} />
-              )}
-              {selectedTab === "Direction" && (
-                <DirectionTab recipeDetail={node} />
-              )}
-              {selectedTab === "Nutrition" && node?.ingredientLines && (
-                <NutritionTab recipeDetail={node} />
-              )}
+              <CurrentTabComponent data={data} />
             </ScrollView>
           </View>
         </View>

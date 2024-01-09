@@ -95,14 +95,14 @@ function SecondaryMacro({
   );
 }
 
-function NutritionTab({ recipeDetail }: any) {
-  const nutrientsPerServing = recipeDetail?.nutrientsPerServing;
+function NutritionTab({ data }: any) {
+  const nutrientsPerServing = data;
   const { carbs, fat, protein } = nutrientsPerServing;
   const { carbsPercentage, proteinPercentage, fatPercentage } =
     calculateMacronutrientPercentages(nutrientsPerServing);
 
-  const servingWeight = recipeDetail?.servingWeight
-    ? Math.round(recipeDetail?.servingWeight)
+  const servingWeight = data?.servingWeight
+    ? Math.round(data?.servingWeight)
     : null;
 
   const {

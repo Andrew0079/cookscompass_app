@@ -6,6 +6,7 @@ import Alert from "./alert";
 import GorhomBottomSheet from "./gorhom-bottom-sheet";
 import FilterBadge from "./filter-badge";
 import PieChartView from "./pie-chart-view";
+import UnavailableView from "./unavailable-view";
 
 export {
   Header,
@@ -16,4 +17,5 @@ export {
   GorhomBottomSheet,
   FilterBadge,
   PieChartView,
+  UnavailableView,
 };

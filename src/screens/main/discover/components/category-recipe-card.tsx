@@ -4,15 +4,24 @@ import { Text, Box, VStack, HStack, IconButton, Badge } from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
+import { ROUTES } from "../../../../utils/common";
 
-function CategoryRecipeCard({ item }) {
+function CategoryRecipeCard({ item, navigation }) {
   const node = item?.node;
 
   const { mainImage, name } = node;
 
   if (!node) return;
   return (
-    <TouchableOpacity style={styles.cardContainer}>
+    <TouchableOpacity
+      style={styles.cardContainer}
+      onPress={() => {
+        navigation.navigate(ROUTES.RECIPE, {
+          node: node,
+          path: ROUTES.DISCOVER,
+        });
+      }}
+    >
       <Image
         source={{ uri: mainImage }}
         alt="Recipe Image"
