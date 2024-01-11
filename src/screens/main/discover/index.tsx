@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Animated } from "react-native";
-import { Text, View } from "native-base";
+import { StyleSheet } from "react-native";
+import { Text, View, Box, Badge, VStack, HStack } from "native-base";
 import { FlashList } from "@shopify/flash-list";
 // @ts-ignore
 import { api } from "@api/api";
-import { CategoryRecipeCard } from "./components";
+import { CategoryRecipeCard, HeaderImageScrollView } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { RootState } from "../../../redux/store";
-
-const AnimatedScrollView = Animated.ScrollView;
-const AnimatedImage = Animated.Image;
 
 const getRecipesByCategoryTags = async (tag: string) => {
   try {
@@ -26,79 +23,65 @@ const getRecipesByCategoryTags = async (tag: string) => {
   }
 };
 
-function SectionHeader({ title, color }: { title: string; color?: string }) {
+function HorizontalCardListView({ categoryData, navigation, index }) {
+  const data = categoryData.data.data;
+  const title = categoryData.title;
   return (
-    <Text
-      fontWeight="bold"
-      fontSize="xl"
-      marginLeft={4}
-      color={color ?? "black"}
-    >
-      {title}
-    </Text>
-  );
-}
-
-function HorizontalCardListView({ data, navigation }) {
-  return (
-    <FlashList
-      data={data}
-      renderItem={({ item }) => (
-        <CategoryRecipeCard item={item} navigation={navigation} />
-      )}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      keyExtractor={(item, index) => index.toString()}
-      estimatedItemSize={12}
-      // Add additional FlashList props as needed
-    />
+    <View style={styles.listContainer}>
+      <Text fontWeight="bold" fontSize="xl" marginLeft={4} color="black">
+        {title.toUpperCase()}
+      </Text>
+      <FlashList
+        data={data}
+        renderItem={({ item }) => (
+          <CategoryRecipeCard item={item} navigation={navigation} />
+        )}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item, index) => index.toString()}
+        estimatedItemSize={350} // Set an appropriate estimated size
+      />
+    </View>
   );
 }
 
 function Discover({ navigation }) {
   const [categories, setCategories] = useState([]);
+  const [foodTrivia, setFoodTrivia] = useState<string | null>(null);
   const dispatch = useDispatch();
   const loading = useSelector((state: RootState) => state.loading.value);
 
-  const [isImageVisible, setIsImageVisible] = useState(true);
-
-  const [scrollY] = useState(new Animated.Value(0));
-  const backgroundTranslateY = scrollY.interpolate({
-    inputRange: [0, 370],
-    outputRange: [0, -50],
-    extrapolate: "clamp",
-  });
-
-  const headerOpacity = scrollY.interpolate({
-    inputRange: [0, 370],
-    outputRange: [0, 1],
-    extrapolate: "clamp",
-  });
-
-  scrollY.addListener(({ value }) => {
-    setIsImageVisible(value < 100);
-  });
-
   useEffect(() => {
-    const fetchInitialCategories = async () => {
+    const getData = async () => {
       dispatch(setLoading(true));
-      try {
-        const initialCategories = ["drinks", "Low-Carb", "chicken"];
-        const fetchedCategories = await Promise.all(
-          initialCategories.map(async (tag) => ({
-            title: tag,
-            data: await getRecipesByCategoryTags(tag),
-          }))
-        );
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        dispatch(setLoading(false));
+      const getFoodTrivia = async () => {
+        try {
+          const response = await api.getRandomFoodTrivia();
+          if (response?.text) setFoodTrivia(response.text);
+        } catch (err) {}
+      };
+      const fetchInitialCategories = async () => {
+        try {
+          const initialCategories = ["drinks", "Low-Carb", "chicken"];
+          const fetchedCategories = await Promise.all(
+            initialCategories.map(async (tag) => ({
+              title: tag,
+              data: await getRecipesByCategoryTags(tag),
+            }))
+          );
+          setCategories(fetchedCategories);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      if (!foodTrivia) {
+        await getFoodTrivia();
       }
+      await fetchInitialCategories();
+      dispatch(setLoading(false));
     };
 
-    fetchInitialCategories();
+    getData();
   }, []);
 
   useEffect(() => {
@@ -120,50 +103,50 @@ function Discover({ navigation }) {
       }
     };
 
-    if (!loading) {
+    if (!loading && categories.length > 0) {
       fetchMoreCategories();
     }
   }, [loading]);
 
   return (
     <View style={styles.container}>
-      {!isImageVisible && (
-        <Animated.View
-          style={[styles.animatedHeader, { opacity: headerOpacity }]}
-        />
-      )}
-      <AnimatedScrollView
-        contentContainerStyle={styles.scrollView}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        scrollEventThrottle={8}
+      <HeaderImageScrollView
+        headerContent={
+          <VStack justifyContent="flex-end" width="95%">
+            <Text
+              color="white"
+              fontWeight="bold"
+              fontStyle="italic"
+              fontSize={22}
+              paddingLeft={3}
+              paddingBottom={3}
+            >
+              Did you know ?
+            </Text>
+            <Text
+              color="white"
+              fontWeight="bold"
+              fontStyle="italic"
+              paddingLeft={5}
+              numberOfLines={7}
+              fontSize={14}
+              lineHeight={22}
+            >
+              {foodTrivia}
+            </Text>
+          </VStack>
+        }
       >
-        {!loading && (
-          <AnimatedImage
-            source={require("../../../../assets/backgrounds/soup.jpg")}
-            style={[
-              styles.backgroundImage,
-              { transform: [{ translateY: backgroundTranslateY }] },
-            ]}
-            alt="Background Image"
-          />
-        )}
         {categories.length > 0 &&
           categories.map((category, index) => (
-            <View key={index} style={styles.listContainer}>
-              <SectionHeader
-                title={category.title}
-                color={index < 2 ? "white" : "black"}
-              />
-              <HorizontalCardListView
-                data={category.data.data}
-                navigation={navigation}
-              />
-            </View>
+            <HorizontalCardListView
+              key={index}
+              categoryData={category}
+              navigation={navigation}
+              index={index}
+            />
           ))}
-      </AnimatedScrollView>
+      </HeaderImageScrollView>
     </View>
   );
 }

@@ -1,15 +1,20 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { Text, Box, VStack, HStack, IconButton, Badge } from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { ROUTES } from "../../../../utils/common";
+import { handleRecipeActions } from "../../../../utils/functions";
 
 function CategoryRecipeCard({ item, navigation }) {
   const node = item?.node;
 
-  const { mainImage, name } = node;
+  const { mainImage, name, likes } = node;
 
   if (!node) return;
   return (
@@ -29,33 +34,13 @@ function CategoryRecipeCard({ item, navigation }) {
         placeholder={require("../../../../../assets/backgrounds/fallback.jpeg")}
       />
       <LinearGradient
-        colors={["rgba(0, 0, 0, 0.2)", "transparent"]}
+        colors={["rgba(0, 0, 0, 0.3)", "transparent"]}
         style={styles.fullCardGradient}
         start={{ x: 0.3, y: 0.5 }}
         end={{ x: 1, y: 0 }}
       />
       <VStack justifyContent="space-between" flex={1}>
         <HStack justifyContent="space-between">
-          <HStack>
-            <TouchableOpacity>
-              <IconButton
-                icon={<FontAwesome name="heart" size={18} color="white" />}
-                variant="unstyled"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <IconButton
-                icon={<FontAwesome name="bookmark" size={18} color="white" />}
-                variant="unstyled"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <IconButton
-                icon={<FontAwesome name="share-alt" size={18} color="white" />}
-                variant="unstyled"
-              />
-            </TouchableOpacity>
-          </HStack>
           <Badge
             height={6}
             margin={2}
@@ -67,6 +52,22 @@ function CategoryRecipeCard({ item, navigation }) {
               50 min
             </Text>
           </Badge>
+          <HStack space={3} paddingRight={3} paddingTop={2}>
+            <HStack alignContent="center" space={1}>
+              <TouchableOpacity onPress={() => handleRecipeActions(node.id)}>
+                <FontAwesome name="heart" size={22} color="white" />
+              </TouchableOpacity>
+              <Text color="white" fontWeight="bold">
+                {likes > 0 ? likes : null}
+              </Text>
+            </HStack>
+            <TouchableOpacity>
+              <FontAwesome name="bookmark" size={22} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <FontAwesome name="share-alt" size={22} color="white" />
+            </TouchableOpacity>
+          </HStack>
         </HStack>
         <HStack
           justifyContent="space-between"

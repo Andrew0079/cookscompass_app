@@ -23,11 +23,11 @@ export default class Api {
   private ABORT_ERROR_MESSAGE = "Request canceled by the user";
   private AUTHENTICATION_ERROR = "Authentication error";
 
-  // Api Endpoints
-  private RANDOM_RECIPES = "/random-recipes";
-  private SEARCH_RECIPES = "/search-recipes";
-  private SEARCH_RECIPES_BY_ID = "/search-recipes/id";
-  private SEARCH_RECIPES_BY_TAG = "/search-recipes/tag";
+  private RECIPES_FILTERED = "/recipes/filtered";
+  private RECIPES_BY_ID = "/recipes/id";
+  private RECIPES_BY_TAG = "/recipes/tag";
+  private FOOD_TRIVIA = "/recipes/random-food-trivia";
+  private LIKE_RECIPE_ACTION = "/recipes/actions/likes";
 
   constructor(baseURL) {
     this.api = axios.create({
@@ -140,19 +140,23 @@ export default class Api {
     }
   }
 
-  getRandomRecipes(params = {}) {
-    return this.get(this.RANDOM_RECIPES, params);
-  }
-
   getRecipesByFilter(params = {}) {
-    return this.get(this.SEARCH_RECIPES, params);
+    return this.get(this.RECIPES_FILTERED, params);
   }
 
   getRecipeById(id: string) {
-    return this.get(`${this.SEARCH_RECIPES_BY_ID}/${id}`);
+    return this.get(`${this.RECIPES_BY_ID}/${id}`);
   }
   getRecipeByTag(tag: string) {
-    return this.get(`${this.SEARCH_RECIPES_BY_TAG}/${tag}`);
+    return this.get(`${this.RECIPES_BY_TAG}/${tag}`);
+  }
+
+  getRandomFoodTrivia() {
+    return this.get(`${this.FOOD_TRIVIA}`);
+  }
+
+  postLikeRecipeAction(recipeId: string) {
+    return this.post(`${this.LIKE_RECIPE_ACTION}/${recipeId}`);
   }
 }
 
