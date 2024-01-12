@@ -23,6 +23,8 @@ export default class Api {
   private ABORT_ERROR_MESSAGE = "Request canceled by the user";
   private AUTHENTICATION_ERROR = "Authentication error";
 
+  private CREATE_USER = "/users/create";
+
   private RECIPES_FILTERED = "/recipes/filtered";
   private RECIPES_BY_ID = "/recipes/id";
   private RECIPES_BY_TAG = "/recipes/tag";
@@ -87,6 +89,20 @@ export default class Api {
   async signUp(email: string, password: string, username: string) {
     try {
       const user = await signUp(email, password, username);
+
+      const displayName = user?.displayName;
+      const userEmail = user?.email;
+      const emailVerified = user?.emailVerified;
+      const phoneNumber = user?.phoneNumber;
+      const uid = user?.uid;
+
+      await this.createUser({
+        displayName,
+        email: userEmail,
+        emailVerified,
+        phoneNumber,
+        uid,
+      });
       return user;
     } catch (error) {
       this.handleAuthError(error);
@@ -138,6 +154,10 @@ export default class Api {
     } else {
       throw new ApiError(`${this.API_ERROR_MESSAGE}. ${error}`);
     }
+  }
+
+  createUser(data) {
+    return this.post(this.CREATE_USER, data);
   }
 
   getRecipesByFilter(params = {}) {

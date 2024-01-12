@@ -79,7 +79,7 @@ function SignInOrSignUp({ navigation }) {
                     navigation.navigate(ROUTES.SIGN_IN);
                   }}
                 >
-                  <Text color="gray.400" fontSize="md" underline>
+                  <Text color="#006ee6" fontSize="md" underline>
                     Sign In
                   </Text>
                 </TouchableOpacity>
