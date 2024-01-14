@@ -80,7 +80,9 @@ function Verification({ navigation, route }) {
               <HStack marginBottom={5}>
                 <Text>Didn't receive the email? </Text>
                 <TouchableOpacity onPress={() => handleEmailVerification()}>
-                  <Text fontWeight="bold">Click to resend</Text>
+                  <Text fontWeight="bold" color="#006ee6">
+                    Click to resend
+                  </Text>
                 </TouchableOpacity>
               </HStack>
             </Center>

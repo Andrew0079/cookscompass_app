@@ -16,6 +16,7 @@ import { RootState } from "../../redux/store";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../services/config";
 import { setError } from "../../redux/slices/error-slice";
+import { setLoading } from "../../redux/slices/loading-slice";
 
 const { Navigator: StackNavigator, Screen } = createStackNavigator();
 
@@ -28,6 +29,7 @@ function Navigator() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const currentUser = useSelector((state: RootState) => state.user.value);
+
   const loading = useSelector((state: RootState) => state.loading.value);
   const error = useSelector(
     (state: RootState) => state.error.value
@@ -77,6 +79,7 @@ function Navigator() {
         <Modal
           visible={error?.visible}
           onClose={() => {
+            dispatch(setLoading(false));
             dispatch(setError({ error: null, visible: false }));
           }}
         >
@@ -84,6 +87,7 @@ function Navigator() {
             backgroundColor="white"
             errorMessage={error?.error}
             onPress={() => {
+              dispatch(setLoading(false));
               dispatch(setError({ error: null, visible: false }));
             }}
           />

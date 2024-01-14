@@ -1,8 +1,8 @@
 import { api } from "../api/api";
 
-const handleRecipeActions = async (recipeId: string) => {
+const handleRecipeActions = async (userId: number, recipeId: string) => {
   try {
-    const response = await api.postLikeRecipeAction(recipeId);
+    const response = await api.postLikeRecipeAction(userId, recipeId);
     console.log(response);
   } catch (error) {
     return false;

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
-import { Text, View, Box, Badge, VStack, HStack } from "native-base";
+import { SafeAreaView, StyleSheet, ScrollView, Image } from "react-native";
+import { Text, View, VStack } from "native-base";
 import { FlashList } from "@shopify/flash-list";
 // @ts-ignore
 import { api } from "@api/api";
-import { CategoryRecipeCard, HeaderImageScrollView } from "./components";
+import { CategoryRecipeCard } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { RootState } from "../../../redux/store";
@@ -109,34 +109,41 @@ function Discover({ navigation }) {
   }, [loading]);
 
   return (
-    <View style={styles.container}>
-      <HeaderImageScrollView
-        headerContent={
-          <VStack justifyContent="flex-end" width="95%">
-            <Text
-              color="white"
-              fontWeight="bold"
-              fontStyle="italic"
-              fontSize={22}
-              paddingLeft={3}
-              paddingBottom={3}
-            >
-              Did you know ?
-            </Text>
-            <Text
-              color="white"
-              fontWeight="bold"
-              fontStyle="italic"
-              paddingLeft={5}
-              numberOfLines={7}
-              fontSize={14}
-              lineHeight={22}
-            >
-              {foodTrivia}
-            </Text>
-          </VStack>
-        }
-      >
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.header}>
+          <Image
+            source={require("../../../../assets/backgrounds/soup.jpg")}
+            style={styles.headerImage}
+          />
+          <View style={styles.imageOverlay} />
+          <View style={styles.overlayContent}>
+            <VStack justifyContent="flex-end" width="95%">
+              <Text
+                color="white"
+                fontWeight="bold"
+                fontStyle="italic"
+                fontSize={22}
+                paddingLeft={3}
+                paddingBottom={3}
+              >
+                Did you know ?
+              </Text>
+              <Text
+                color="white"
+                fontWeight="bold"
+                fontStyle="italic"
+                paddingLeft={5}
+                numberOfLines={7}
+                fontSize={14}
+                lineHeight={22}
+              >
+                {foodTrivia}
+              </Text>
+            </VStack>
+          </View>
+        </View>
+
         {categories.length > 0 &&
           categories.map((category, index) => (
             <HorizontalCardListView
@@ -146,8 +153,8 @@ function Discover({ navigation }) {
               index={index}
             />
           ))}
-      </HeaderImageScrollView>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -157,8 +164,37 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   scrollView: {
-    flexGrow: 1,
-    paddingTop: 50,
+    flex: 1,
+  },
+  header: {
+    width: "90%",
+    alignSelf: "center",
+    borderRadius: 25,
+    overflow: "hidden",
+    marginTop: 10, // Adjust as needed
+    marginBottom: 10, // Adjust as needed
+  },
+  headerImage: {
+    width: "100%",
+    height: 230, // Set a fixed height
+    borderRadius: 25,
+  },
+  overlayContent: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imageOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.4)", // Adjust opacity for desired darkness
   },
   listContainer: {
     height: 250,
@@ -171,22 +207,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5.62,
     elevation: 8,
-  },
-  backgroundImage: {
-    position: "absolute",
-    width: "100%",
-    height: "30%", // Adjust as needed
-    marginBottom: 20, // Space between the image and the next content
-  },
-  animatedHeader: {
-    position: "absolute",
-    backgroundColor: "white",
-    height: 55,
-    width: "100%",
-    top: 0,
-    zIndex: 100,
-    borderBottomWidth: 1,
-    borderBottomColor: "#CACCCE",
   },
 });
 

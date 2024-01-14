@@ -78,19 +78,53 @@ function SignIn({ navigation, route }) {
     }
   };
 
+  const getUser = async (uid: string) => {
+    try {
+      const response = await api.getUser(uid);
+      const userId = response?.id;
+      const userEmailVerified = response?.emailVerified;
+
+      return { userId, userEmailVerified };
+    } catch (error) {
+      return;
+    }
+  };
+
+  const updateUser = async (uid: string) => {
+    try {
+      await api.updateUser({ uid, emailVerified: true });
+    } catch (error) {
+      return;
+    }
+  };
+
   const handleSignIn = async () => {
     try {
       const response = await api.signIn(email, password);
-      dispatch(
-        setUser({
-          email: response.email,
-          token: response.stsTokenManager.accessToken,
-          id: response.uid,
-          username: response.displayName,
-        })
-      );
-      dispatch(setLoading(false));
-      navigation.navigate(ROUTES.MAIN, { screen: ROUTES.DISCOVER });
+      const uid = response.uid;
+
+      const { userId, userEmailVerified } = await getUser(uid);
+
+      if (!response.emailVerified) {
+        dispatch(
+          setError({ error: "# Please verify your account", visible: true })
+        );
+      } else {
+        if (!userEmailVerified) {
+          await updateUser(uid);
+        }
+        dispatch(
+          setUser({
+            email: response.email,
+            token: response.stsTokenManager.accessToken,
+            uid: response.uid,
+            username: response.displayName,
+            userId,
+          })
+        );
+        dispatch(setLoading(false));
+        navigation.navigate(ROUTES.MAIN, { screen: ROUTES.DISCOVER });
+      }
     } catch (error) {
       dispatch(setLoading(false));
       const errorMessage = `* ${error.message}`;

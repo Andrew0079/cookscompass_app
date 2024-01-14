@@ -10,13 +10,18 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { ROUTES } from "../../../../utils/common";
 import { handleRecipeActions } from "../../../../utils/functions";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
 
 function CategoryRecipeCard({ item, navigation }) {
   const node = item?.node;
 
+  const userId = useSelector((state: RootState) => state.user.value.userId);
+
   const { mainImage, name, likes } = node;
 
   if (!node) return;
+
   return (
     <TouchableOpacity
       style={styles.cardContainer}
@@ -54,7 +59,9 @@ function CategoryRecipeCard({ item, navigation }) {
           </Badge>
           <HStack space={3} paddingRight={3} paddingTop={2}>
             <HStack alignContent="center" space={1}>
-              <TouchableOpacity onPress={() => handleRecipeActions(node.id)}>
+              <TouchableOpacity
+                onPress={() => handleRecipeActions(userId, node.id)}
+              >
                 <FontAwesome name="heart" size={22} color="white" />
               </TouchableOpacity>
               <Text color="white" fontWeight="bold">

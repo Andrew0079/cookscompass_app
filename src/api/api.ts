@@ -24,6 +24,8 @@ export default class Api {
   private AUTHENTICATION_ERROR = "Authentication error";
 
   private CREATE_USER = "/users/create";
+  private UPDATE_USER = "/users/update";
+  private GET_USER = "/users/user/id";
 
   private RECIPES_FILTERED = "/recipes/filtered";
   private RECIPES_BY_ID = "/recipes/id";
@@ -160,6 +162,13 @@ export default class Api {
     return this.post(this.CREATE_USER, data);
   }
 
+  updateUser(data) {
+    return this.post(this.UPDATE_USER, data);
+  }
+  getUser(uid: string) {
+    return this.get(`${this.GET_USER}/${uid}`);
+  }
+
   getRecipesByFilter(params = {}) {
     return this.get(this.RECIPES_FILTERED, params);
   }
@@ -175,8 +184,8 @@ export default class Api {
     return this.get(`${this.FOOD_TRIVIA}`);
   }
 
-  postLikeRecipeAction(recipeId: string) {
-    return this.post(`${this.LIKE_RECIPE_ACTION}/${recipeId}`);
+  postLikeRecipeAction(userId: number, recipeId: string) {
+    return this.post(`${this.LIKE_RECIPE_ACTION}/${userId}/${recipeId}`);
   }
 }
 
