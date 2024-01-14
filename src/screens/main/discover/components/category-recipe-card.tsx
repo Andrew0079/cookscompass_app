@@ -13,14 +13,23 @@ import { handleRecipeActions } from "../../../../utils/functions";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
 
-function CategoryRecipeCard({ item, navigation }) {
+function CategoryRecipeCard({ item, navigation, onSetLiked }) {
   const node = item?.node;
 
-  const userId = useSelector((state: RootState) => state.user.value.userId);
+  const userId = useSelector(
+    (state: RootState) => state.user.value.customUserId
+  );
 
-  const { mainImage, name, likes } = node;
+  const { mainImage, name, likes, isRecipeLiked: isRecipeLikedByUser } = node;
 
   if (!node) return;
+
+  const handleRecipeActionClick = async () => {
+    const response = await handleRecipeActions(userId, node.id);
+    onSetLiked(response);
+  };
+
+  console.log(likes, isRecipeLikedByUser, node.id);
 
   return (
     <TouchableOpacity
@@ -59,10 +68,12 @@ function CategoryRecipeCard({ item, navigation }) {
           </Badge>
           <HStack space={3} paddingRight={3} paddingTop={2}>
             <HStack alignContent="center" space={1}>
-              <TouchableOpacity
-                onPress={() => handleRecipeActions(userId, node.id)}
-              >
-                <FontAwesome name="heart" size={22} color="white" />
+              <TouchableOpacity onPress={() => handleRecipeActionClick()}>
+                <FontAwesome
+                  name="heart"
+                  size={22}
+                  color={isRecipeLikedByUser ? "red" : "white"}
+                />
               </TouchableOpacity>
               <Text color="white" fontWeight="bold">
                 {likes > 0 ? likes : null}

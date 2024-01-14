@@ -10,6 +10,7 @@ import { Platform } from "react-native";
 import { EXPO_PUBLIC_BASE_URL_IOS_DEV, EXPO_PUBLIC_ANDROID_DEV } from "@env";
 import axios, { AxiosInstance } from "axios";
 import { signUp, signIn, signOut } from "../services/auth";
+import store from "../redux/store";
 
 export default class Api {
   private api: AxiosInstance;
@@ -36,8 +37,37 @@ export default class Api {
   constructor(baseURL) {
     this.api = axios.create({
       baseURL,
-      timeout: 10000, // Adjust the timeout as needed
+      timeout: 10000,
     });
+
+    this.api.interceptors.request.use(
+      async (config) => {
+        const token = this.getFirebaseToken();
+        const userId = this.getUserId(); // Retrieve the userId
+
+        if (token) {
+          config.headers["Authorization"] = `Bearer ${token}`;
+        }
+        if (userId) {
+          config.headers["X-User-Id"] = userId; // Custom header for userId
+        }
+
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+  }
+
+  getUserId() {
+    const state = store.getState();
+    return state.user.value.customUserId;
+  }
+
+  getFirebaseToken() {
+    const state = store.getState();
+    return state.user.value.token;
   }
 
   // Set a new baseURL for the API instance

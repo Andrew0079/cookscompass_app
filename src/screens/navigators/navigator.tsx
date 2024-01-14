@@ -6,6 +6,8 @@ import MainNavigator from "./main-navigator";
 import AuthNavigator from "./auth-navigator";
 // @ts-ignore
 import { ActivityIndicator, Modal, Alert } from "@components";
+// @ts-ignore
+import { api } from "@api/api";
 import { Recipe } from "../main";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/slices/user-slice";
@@ -49,7 +51,7 @@ function Navigator() {
             setUser({
               email: customUser.email,
               token: customUser.stsTokenManager.accessToken,
-              id: customUser.uid,
+              uid: customUser.uid,
               username: customUser.displayName,
             })
           );
@@ -65,7 +67,22 @@ function Navigator() {
   }, [dispatch]);
 
   useEffect(() => {
+    const getUser = async () => {
+      try {
+        const uid = currentUser?.uid;
+        const customUserId = currentUser?.customUserId;
+        if (uid && !customUserId) {
+          const response = await api.getUser(uid);
+          const customUserId = response?.id;
+          dispatch(setUser({ ...currentUser, customUserId }));
+        }
+      } catch (error) {
+        return;
+      }
+    };
+
     if (currentUser) {
+      getUser();
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);

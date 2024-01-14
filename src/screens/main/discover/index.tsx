@@ -23,9 +23,15 @@ const getRecipesByCategoryTags = async (tag: string) => {
   }
 };
 
-function HorizontalCardListView({ categoryData, navigation, index }) {
+function HorizontalCardListView({
+  categoryData,
+  navigation,
+  onSetLiked,
+  liked,
+}) {
   const data = categoryData.data.data;
   const title = categoryData.title;
+
   return (
     <View style={styles.listContainer}>
       <Text fontWeight="bold" fontSize="xl" marginLeft={4} color="black">
@@ -34,9 +40,14 @@ function HorizontalCardListView({ categoryData, navigation, index }) {
       <FlashList
         data={data}
         renderItem={({ item }) => (
-          <CategoryRecipeCard item={item} navigation={navigation} />
+          <CategoryRecipeCard
+            item={item}
+            navigation={navigation}
+            onSetLiked={onSetLiked}
+          />
         )}
         horizontal
+        extraData={liked}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
         estimatedItemSize={350} // Set an appropriate estimated size
@@ -48,6 +59,7 @@ function HorizontalCardListView({ categoryData, navigation, index }) {
 function Discover({ navigation }) {
   const [categories, setCategories] = useState([]);
   const [foodTrivia, setFoodTrivia] = useState<string | null>(null);
+  const [liked, setLiked] = useState(null);
   const dispatch = useDispatch();
   const loading = useSelector((state: RootState) => state.loading.value);
 
@@ -108,6 +120,38 @@ function Discover({ navigation }) {
     }
   }, [loading]);
 
+  useEffect(() => {
+    const handleLikeUpdates = async () => {
+      setCategories((prevCategories) => {
+        // Create a shallow copy of the categories array
+        const updatedCategories = [...prevCategories];
+
+        updatedCategories.forEach((category) => {
+          if (category.data && category.data.data) {
+            category.data.data.forEach((node) => {
+              const currentRecipeId = node.node.id;
+              const likedRecipeId = liked?.recipeId;
+              const isLiked = liked?.id;
+
+              if (currentRecipeId === likedRecipeId && isLiked) {
+                node.node.likedCount = (node.node.likedCount || 0) + 1;
+                node.node.isLikedRecipe = true;
+              }
+              if (currentRecipeId === likedRecipeId && !isLiked) {
+                node.node.likedCount = node.node.likedCount - 1;
+                node.node.isLikedRecipe = false;
+              }
+            });
+          }
+        });
+
+        return updatedCategories; // Return the updated shallow copy
+      });
+    };
+
+    handleLikeUpdates();
+  }, [liked]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -150,7 +194,8 @@ function Discover({ navigation }) {
               key={index}
               categoryData={category}
               navigation={navigation}
-              index={index}
+              liked={liked}
+              onSetLiked={setLiked}
             />
           ))}
       </ScrollView>

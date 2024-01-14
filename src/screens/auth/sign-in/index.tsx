@@ -119,7 +119,7 @@ function SignIn({ navigation, route }) {
             token: response.stsTokenManager.accessToken,
             uid: response.uid,
             username: response.displayName,
-            userId,
+            customUserId: userId,
           })
         );
         dispatch(setLoading(false));
