@@ -121,31 +121,51 @@ function Discover({ navigation }) {
   }, [loading]);
 
   useEffect(() => {
-    const handleLikeUpdates = async () => {
+    const handleLikeUpdates = () => {
       setCategories((prevCategories) => {
-        // Create a shallow copy of the categories array
-        const updatedCategories = [...prevCategories];
-
-        updatedCategories.forEach((category) => {
-          if (category.data && category.data.data) {
-            category.data.data.forEach((node) => {
+        return prevCategories.map((category) => {
+          if (category?.data && category?.data?.data) {
+            const newData = category.data.data.map((node) => {
               const currentRecipeId = node.node.id;
               const likedRecipeId = liked?.recipeId;
               const isLiked = liked?.id;
 
+              // Update node properties based on the conditions
               if (currentRecipeId === likedRecipeId && isLiked) {
-                node.node.likedCount = (node.node.likedCount || 0) + 1;
-                node.node.isLikedRecipe = true;
+                return {
+                  ...node,
+                  node: {
+                    ...node.node,
+                    likes: (node.node.likedCount || 0) + 1,
+                    isRecipeLiked: true,
+                  },
+                };
               }
               if (currentRecipeId === likedRecipeId && !isLiked) {
-                node.node.likedCount = node.node.likedCount - 1;
-                node.node.isLikedRecipe = false;
+                return {
+                  ...node,
+                  node: {
+                    ...node.node,
+                    likes: Math.max(0, node.node.likedCount - 1),
+                    isRecipeLiked: false,
+                  },
+                };
+              } else {
+                return node;
               }
             });
+            // Return the updated category with the new data
+            return {
+              ...category,
+              data: {
+                ...category.data,
+                data: newData,
+              },
+            };
+          } else {
+            return category;
           }
         });
-
-        return updatedCategories; // Return the updated shallow copy
       });
     };
 

@@ -20,7 +20,7 @@ function CategoryRecipeCard({ item, navigation, onSetLiked }) {
     (state: RootState) => state.user.value.customUserId
   );
 
-  const { mainImage, name, likes, isRecipeLiked: isRecipeLikedByUser } = node;
+  const { mainImage, name, likes, isRecipeLiked } = node;
 
   if (!node) return;
 
@@ -28,8 +28,6 @@ function CategoryRecipeCard({ item, navigation, onSetLiked }) {
     const response = await handleRecipeActions(userId, node.id);
     onSetLiked(response);
   };
-
-  console.log(likes, isRecipeLikedByUser, node.id);
 
   return (
     <TouchableOpacity
@@ -72,7 +70,7 @@ function CategoryRecipeCard({ item, navigation, onSetLiked }) {
                 <FontAwesome
                   name="heart"
                   size={22}
-                  color={isRecipeLikedByUser ? "red" : "white"}
+                  color={isRecipeLiked ? "red" : "white"}
                 />
               </TouchableOpacity>
               <Text color="white" fontWeight="bold">
