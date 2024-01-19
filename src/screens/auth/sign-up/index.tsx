@@ -31,6 +31,7 @@ import { setLoading } from "../../../redux/slices/loading-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { setError } from "../../../redux/slices/error-slice";
+import { setUser } from "../../../redux/slices/user-slice";
 
 const SOCIAL_LOGINS: {
   title: "google" | "facebook" | "apple";
@@ -116,7 +117,34 @@ function SignUp({ navigation, route }) {
   const handleSignUp = async () => {
     try {
       dispatch(setLoading(true));
-      await api.signUp(email, password, username);
+      const response = await api.signUp(email, password, username);
+
+      const displayName = response?.displayName;
+      const userEmail = response?.email;
+      const emailVerified = response?.emailVerified;
+      const phoneNumber = response?.phoneNumber;
+      const uid = response?.uid;
+      const token = (
+        response as unknown as { stsTokenManager: { accessToken: string } }
+      )?.stsTokenManager?.accessToken;
+
+      dispatch(
+        setUser({
+          email: userEmail,
+          emailVerified,
+          token,
+          uid,
+          username: displayName,
+        })
+      );
+
+      await api.createUser({
+        displayName,
+        email: userEmail,
+        emailVerified,
+        phoneNumber,
+        uid,
+      });
 
       dispatch(setLoading(false));
       navigation.navigate(ROUTES.AUTH, { screen: ROUTES.VERIFICATION });

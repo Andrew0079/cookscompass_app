@@ -120,6 +120,7 @@ function SignIn({ navigation, route }) {
             uid: response.uid,
             username: response.displayName,
             customUserId: userId,
+            emailVerified: response.emailVerified,
           })
         );
         dispatch(setLoading(false));

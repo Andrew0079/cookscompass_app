@@ -62,12 +62,12 @@ export default class Api {
 
   getUserId() {
     const state = store.getState();
-    return state.user.value.customUserId;
+    return state?.user?.value?.customUserId ?? null;
   }
 
   getFirebaseToken() {
     const state = store.getState();
-    return state.user.value.token;
+    return state?.user?.value?.token ?? null;
   }
 
   // Set a new baseURL for the API instance
@@ -120,22 +120,8 @@ export default class Api {
   // sign-up
   async signUp(email: string, password: string, username: string) {
     try {
-      const user = await signUp(email, password, username);
-
-      const displayName = user?.displayName;
-      const userEmail = user?.email;
-      const emailVerified = user?.emailVerified;
-      const phoneNumber = user?.phoneNumber;
-      const uid = user?.uid;
-
-      await this.createUser({
-        displayName,
-        email: userEmail,
-        emailVerified,
-        phoneNumber,
-        uid,
-      });
-      return user;
+      const response = await signUp(email, password, username);
+      return response;
     } catch (error) {
       this.handleAuthError(error);
     }

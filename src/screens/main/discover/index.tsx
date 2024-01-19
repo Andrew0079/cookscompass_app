@@ -8,6 +8,7 @@ import { CategoryRecipeCard } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { RootState } from "../../../redux/store";
+import socket from "../../../services/socket-service";
 
 const getRecipesByCategoryTags = async (tag: string) => {
   try {
@@ -28,6 +29,7 @@ function HorizontalCardListView({
   navigation,
   onSetLiked,
   liked,
+  isLikeLoading,
 }) {
   const data = categoryData.data.data;
   const title = categoryData.title;
@@ -43,11 +45,11 @@ function HorizontalCardListView({
           <CategoryRecipeCard
             item={item}
             navigation={navigation}
+            isLikeLoading={isLikeLoading}
             onSetLiked={onSetLiked}
           />
         )}
         horizontal
-        extraData={liked}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
         estimatedItemSize={350} // Set an appropriate estimated size
@@ -60,8 +62,55 @@ function Discover({ navigation }) {
   const [categories, setCategories] = useState([]);
   const [foodTrivia, setFoodTrivia] = useState<string | null>(null);
   const [liked, setLiked] = useState(null);
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const [isSocketLoading, setIsSocketLoading] = useState(false);
   const dispatch = useDispatch();
   const loading = useSelector((state: RootState) => state.loading.value);
+
+  useEffect(() => {
+    socket.on("likeUpdate", (data) => {
+      setIsSocketLoading(true);
+      setCategories((prevCategories) => {
+        return prevCategories.map((category) => {
+          if (category?.data && category?.data?.data) {
+            const newData = category.data.data.map((node) => {
+              const currentRecipeId = node.node.id;
+
+              const likedRecipeId = data?.recipeId;
+              const newLikeCount = data?.newLikeCount;
+
+              if (currentRecipeId === likedRecipeId) {
+                return {
+                  ...node,
+                  node: {
+                    ...node.node,
+                    likes: newLikeCount,
+                  },
+                };
+              } else {
+                return node;
+              }
+            });
+            // Return the updated category with the new data
+            return {
+              ...category,
+              data: {
+                ...category.data,
+                data: newData,
+              },
+            };
+          } else {
+            return category;
+          }
+        });
+      });
+      setIsSocketLoading(false);
+    });
+
+    return () => {
+      socket.off("likeUpdate"); // Clean up the event listener when the component unmounts
+    };
+  }, []);
 
   useEffect(() => {
     const getData = async () => {
@@ -122,32 +171,22 @@ function Discover({ navigation }) {
 
   useEffect(() => {
     const handleLikeUpdates = () => {
+      setIsLikeLoading(true);
       setCategories((prevCategories) => {
         return prevCategories.map((category) => {
           if (category?.data && category?.data?.data) {
             const newData = category.data.data.map((node) => {
               const currentRecipeId = node.node.id;
               const likedRecipeId = liked?.recipeId;
-              const isLiked = liked?.id;
+              const isLiked = liked?.type === "LIKE";
 
               // Update node properties based on the conditions
-              if (currentRecipeId === likedRecipeId && isLiked) {
+              if (currentRecipeId === likedRecipeId) {
                 return {
                   ...node,
                   node: {
                     ...node.node,
-                    likes: (node.node.likedCount || 0) + 1,
-                    isRecipeLiked: true,
-                  },
-                };
-              }
-              if (currentRecipeId === likedRecipeId && !isLiked) {
-                return {
-                  ...node,
-                  node: {
-                    ...node.node,
-                    likes: Math.max(0, node.node.likedCount - 1),
-                    isRecipeLiked: false,
+                    isRecipeLiked: isLiked,
                   },
                 };
               } else {
@@ -167,6 +206,7 @@ function Discover({ navigation }) {
           }
         });
       });
+      setIsLikeLoading(false);
     };
 
     handleLikeUpdates();
@@ -215,6 +255,7 @@ function Discover({ navigation }) {
               categoryData={category}
               navigation={navigation}
               liked={liked}
+              isLikeLoading={isLikeLoading || isSocketLoading}
               onSetLiked={setLiked}
             />
           ))}

@@ -53,6 +53,7 @@ function Navigator() {
               token: customUser.stsTokenManager.accessToken,
               uid: customUser.uid,
               username: customUser.displayName,
+              emailVerified: firebaseUser.emailVerified,
             })
           );
         } else {
@@ -81,7 +82,8 @@ function Navigator() {
       }
     };
 
-    if (currentUser) {
+    if (currentUser?.emailVerified) {
+      console.log("hey");
       getUser();
       setIsAuthenticated(true);
     } else {

@@ -4,7 +4,16 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from "react-native";
-import { Text, Box, VStack, HStack, IconButton, Badge } from "native-base";
+import {
+  Text,
+  Box,
+  VStack,
+  HStack,
+  IconButton,
+  Badge,
+  Button,
+  Spinner,
+} from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -13,11 +22,11 @@ import { handleRecipeActions } from "../../../../utils/functions";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
 
-function CategoryRecipeCard({ item, navigation, onSetLiked }) {
+function CategoryRecipeCard({ item, navigation, onSetLiked, isLikeLoading }) {
   const node = item?.node;
 
   const userId = useSelector(
-    (state: RootState) => state.user.value.customUserId
+    (state: RootState) => state.user.value?.customUserId
   );
 
   const { mainImage, name, likes, isRecipeLiked } = node;
@@ -25,8 +34,10 @@ function CategoryRecipeCard({ item, navigation, onSetLiked }) {
   if (!node) return;
 
   const handleRecipeActionClick = async () => {
-    const response = await handleRecipeActions(userId, node.id);
-    onSetLiked(response);
+    if (userId) {
+      const response = await handleRecipeActions(userId, node.id);
+      onSetLiked(response);
+    }
   };
 
   return (
@@ -65,18 +76,28 @@ function CategoryRecipeCard({ item, navigation, onSetLiked }) {
             </Text>
           </Badge>
           <HStack space={3} paddingRight={3} paddingTop={2}>
-            <HStack alignContent="center" space={1}>
-              <TouchableOpacity onPress={() => handleRecipeActionClick()}>
-                <FontAwesome
-                  name="heart"
-                  size={22}
-                  color={isRecipeLiked ? "red" : "white"}
-                />
-              </TouchableOpacity>
-              <Text color="white" fontWeight="bold">
-                {likes > 0 ? likes : null}
-              </Text>
-            </HStack>
+            {!isLikeLoading ? (
+              <Button
+                marginTop={-2}
+                padding={0}
+                isLoading
+                variant="ghost"
+                spinner={<Spinner color="white" />}
+              />
+            ) : (
+              <HStack alignContent="center" space={1}>
+                <TouchableOpacity onPress={() => handleRecipeActionClick()}>
+                  <FontAwesome
+                    name="heart"
+                    size={22}
+                    color={isRecipeLiked ? "red" : "white"}
+                  />
+                </TouchableOpacity>
+                <Text color="white" fontWeight="bold">
+                  {likes > 0 ? likes : null}
+                </Text>
+              </HStack>
+            )}
             <TouchableOpacity>
               <FontAwesome name="bookmark" size={22} color="white" />
             </TouchableOpacity>
