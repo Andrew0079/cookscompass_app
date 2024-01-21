@@ -7,6 +7,7 @@ import GorhomBottomSheet from "./gorhom-bottom-sheet";
 import FilterBadge from "./filter-badge";
 import PieChartView from "./pie-chart-view";
 import UnavailableView from "./unavailable-view";
+import VerticalRecipeCardView from "./vertical-recipe-card-view";
 
 export {
   Header,
@@ -18,4 +19,5 @@ export {
   FilterBadge,
   PieChartView,
   UnavailableView,
+  VerticalRecipeCardView,
 };

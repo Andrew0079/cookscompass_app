@@ -1,19 +1,6 @@
 import React from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native";
-import {
-  Text,
-  Box,
-  VStack,
-  HStack,
-  IconButton,
-  Badge,
-  Button,
-  Spinner,
-} from "native-base";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import { Text, Box, VStack, HStack, Badge, useToast } from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -22,21 +9,34 @@ import { handleRecipeActions } from "../../../../utils/functions";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
 
-function CategoryRecipeCard({ item, navigation, onSetLiked, isLikeLoading }) {
+function CategoryRecipeCard({ item, navigation, onSetLiked, onSetRevertLike }) {
+  const toast = useToast();
   const node = item?.node;
 
   const userId = useSelector(
     (state: RootState) => state.user.value?.customUserId
   );
 
-  const { mainImage, name, likes, isRecipeLiked } = node;
-
   if (!node) return;
 
+  const { mainImage, name, likes, isRecipeLiked } = node;
+
   const handleRecipeActionClick = async () => {
-    if (userId) {
-      const response = await handleRecipeActions(userId, node.id);
-      onSetLiked(response);
+    try {
+      if (userId) {
+        onSetLiked({ recipeId: node.id, isRecipeLiked });
+        await handleRecipeActions(userId, node.id);
+      }
+    } catch (error) {
+      onSetRevertLike(true);
+      toast.show({
+        placement: "top",
+        render: () => (
+          <Box style={styles.toast}>
+            <Text color="white">Unable to perform like action</Text>
+          </Box>
+        ),
+      });
     }
   };
 
@@ -76,28 +76,19 @@ function CategoryRecipeCard({ item, navigation, onSetLiked, isLikeLoading }) {
             </Text>
           </Badge>
           <HStack space={3} paddingRight={3} paddingTop={2}>
-            {!isLikeLoading ? (
-              <Button
-                marginTop={-2}
-                padding={0}
-                isLoading
-                variant="ghost"
-                spinner={<Spinner color="white" />}
-              />
-            ) : (
-              <HStack alignContent="center" space={1}>
-                <TouchableOpacity onPress={() => handleRecipeActionClick()}>
-                  <FontAwesome
-                    name="heart"
-                    size={22}
-                    color={isRecipeLiked ? "red" : "white"}
-                  />
-                </TouchableOpacity>
-                <Text color="white" fontWeight="bold">
-                  {likes > 0 ? likes : null}
-                </Text>
-              </HStack>
-            )}
+            <HStack alignContent="center" space={1}>
+              <TouchableOpacity onPress={() => handleRecipeActionClick()}>
+                <FontAwesome
+                  name="heart"
+                  size={22}
+                  color={isRecipeLiked ? "#e6352b" : "white"}
+                />
+              </TouchableOpacity>
+              <Text color="white" fontWeight="bold">
+                {likes > 0 ? likes : null}
+              </Text>
+            </HStack>
+
             <TouchableOpacity>
               <FontAwesome name="bookmark" size={22} color="white" />
             </TouchableOpacity>
@@ -132,7 +123,7 @@ function CategoryRecipeCard({ item, navigation, onSetLiked, isLikeLoading }) {
 const styles = StyleSheet.create({
   cardContainer: {
     width: 320,
-    height: 180,
+    height: 200,
     marginTop: 5,
     marginLeft: 20,
     borderRadius: 20,
@@ -157,6 +148,19 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     borderRadius: 20,
+  },
+  toast: {
+    backgroundColor: "#e6352b",
+    padding: 10,
+    borderRadius: 10,
+    shadowColor: "#000000",
+    shadowOffset: {
+      width: 0,
+      height: 7,
+    },
+    shadowOpacity: 0.21,
+    shadowRadius: 7.68,
+    elevation: 10,
   },
 });
 

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, ScrollView, Image } from "react-native";
 import { Text, View, VStack } from "native-base";
-import { FlashList } from "@shopify/flash-list";
 // @ts-ignore
 import { api } from "@api/api";
-import { CategoryRecipeCard } from "./components";
+import { HorizontalCardListView } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { RootState } from "../../../redux/store";
@@ -24,62 +23,31 @@ const getRecipesByCategoryTags = async (tag: string) => {
   }
 };
 
-function HorizontalCardListView({
-  categoryData,
-  navigation,
-  onSetLiked,
-  liked,
-  isLikeLoading,
-}) {
-  const data = categoryData.data.data;
-  const title = categoryData.title;
-
-  return (
-    <View style={styles.listContainer}>
-      <Text fontWeight="bold" fontSize="xl" marginLeft={4} color="black">
-        {title.toUpperCase()}
-      </Text>
-      <FlashList
-        data={data}
-        renderItem={({ item }) => (
-          <CategoryRecipeCard
-            item={item}
-            navigation={navigation}
-            isLikeLoading={isLikeLoading}
-            onSetLiked={onSetLiked}
-          />
-        )}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => index.toString()}
-        estimatedItemSize={350} // Set an appropriate estimated size
-      />
-    </View>
-  );
-}
-
 function Discover({ navigation }) {
   const [categories, setCategories] = useState([]);
   const [foodTrivia, setFoodTrivia] = useState<string | null>(null);
   const [liked, setLiked] = useState(null);
-  const [isLikeLoading, setIsLikeLoading] = useState(false);
-  const [isSocketLoading, setIsSocketLoading] = useState(false);
+  const [likedToRevert, setLikedToRevert] = useState(null);
+  const [revertLike, setRevertLike] = useState(false);
   const dispatch = useDispatch();
   const loading = useSelector((state: RootState) => state.loading.value);
+  const userId = useSelector(
+    (state: RootState) => state?.user?.value?.customUserId
+  );
 
   useEffect(() => {
     socket.on("likeUpdate", (data) => {
-      setIsSocketLoading(true);
       setCategories((prevCategories) => {
         return prevCategories.map((category) => {
           if (category?.data && category?.data?.data) {
             const newData = category.data.data.map((node) => {
               const currentRecipeId = node.node.id;
+              const userActionId = parseInt(data?.userId) === parseInt(userId);
 
               const likedRecipeId = data?.recipeId;
               const newLikeCount = data?.newLikeCount;
 
-              if (currentRecipeId === likedRecipeId) {
+              if (currentRecipeId === likedRecipeId && !userActionId) {
                 return {
                   ...node,
                   node: {
@@ -104,7 +72,6 @@ function Discover({ navigation }) {
           }
         });
       });
-      setIsSocketLoading(false);
     });
 
     return () => {
@@ -170,22 +137,23 @@ function Discover({ navigation }) {
   }, [loading]);
 
   useEffect(() => {
-    const handleLikeUpdates = () => {
-      setIsLikeLoading(true);
+    if (revertLike) {
       setCategories((prevCategories) => {
         return prevCategories.map((category) => {
           if (category?.data && category?.data?.data) {
             const newData = category.data.data.map((node) => {
               const currentRecipeId = node.node.id;
-              const likedRecipeId = liked?.recipeId;
-              const isLiked = liked?.type === "LIKE";
+              const currentCount = likedToRevert?.count;
+              const likedRecipeId = likedToRevert?.recipeId;
+              const isLiked = likedToRevert?.isLiked;
 
-              // Update node properties based on the conditions
+              // user likes recipe
               if (currentRecipeId === likedRecipeId) {
                 return {
                   ...node,
                   node: {
                     ...node.node,
+                    likes: currentCount,
                     isRecipeLiked: isLiked,
                   },
                 };
@@ -206,7 +174,68 @@ function Discover({ navigation }) {
           }
         });
       });
-      setIsLikeLoading(false);
+      setRevertLike(false);
+    }
+  }, [likedToRevert, revertLike]);
+
+  useEffect(() => {
+    const handleLikeUpdates = () => {
+      setCategories((prevCategories) => {
+        return prevCategories.map((category) => {
+          if (category?.data && category?.data?.data) {
+            const newData = category.data.data.map((node) => {
+              const currentRecipeId = node.node.id;
+              const currentCount = node.node.likes;
+              const likedRecipeId = liked?.recipeId;
+              const isLiked = liked?.isRecipeLiked;
+
+              // to revert
+              if (currentRecipeId === likedRecipeId) {
+                setLikedToRevert({
+                  recipeId: likedRecipeId,
+                  count: currentCount,
+                  isLiked,
+                });
+              }
+
+              // user likes recipe
+              if (currentRecipeId === likedRecipeId && !isLiked) {
+                return {
+                  ...node,
+                  node: {
+                    ...node.node,
+                    likes: currentCount + 1,
+                    isRecipeLiked: true,
+                  },
+                };
+              }
+              // user dislike recipe
+              if (currentRecipeId === likedRecipeId && isLiked) {
+                return {
+                  ...node,
+                  node: {
+                    ...node.node,
+                    likes: currentCount - 1,
+                    isRecipeLiked: false,
+                  },
+                };
+              } else {
+                return node;
+              }
+            });
+            // Return the updated category with the new data
+            return {
+              ...category,
+              data: {
+                ...category.data,
+                data: newData,
+              },
+            };
+          } else {
+            return category;
+          }
+        });
+      });
     };
 
     handleLikeUpdates();
@@ -254,9 +283,8 @@ function Discover({ navigation }) {
               key={index}
               categoryData={category}
               navigation={navigation}
-              liked={liked}
-              isLikeLoading={isLikeLoading || isSocketLoading}
               onSetLiked={setLiked}
+              onSetRevertLike={setRevertLike}
             />
           ))}
       </ScrollView>
@@ -271,6 +299,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    backgroundColor: "#f2f2f2",
   },
   header: {
     width: "90%",
@@ -301,18 +330,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.4)", // Adjust opacity for desired darkness
-  },
-  listContainer: {
-    height: 250,
-    justifyContent: "center",
-    shadowColor: "#000000",
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 5.62,
-    elevation: 8,
   },
 });
 

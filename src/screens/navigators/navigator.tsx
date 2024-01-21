@@ -83,7 +83,6 @@ function Navigator() {
     };
 
     if (currentUser?.emailVerified) {
-      console.log("hey");
       getUser();
       setIsAuthenticated(true);
     } else {
