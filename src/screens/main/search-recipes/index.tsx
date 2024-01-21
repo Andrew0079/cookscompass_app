@@ -1,13 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, View, StatusBar } from "react-native";
 // @ts-ignore
 import { api } from "@api/api";
-import {
-  HorizontalCardListView,
-  SearchScreenHeader,
-  Filter,
-  SearchRecipesAnimation,
-} from "./components";
+import { VerticalCardListView, SearchScreenHeader, Filter } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { setError } from "../../../redux/slices/error-slice";
@@ -77,73 +72,68 @@ function SearchRecipes({ navigation }) {
     });
   };
 
+  const fetchRecipes = async (additionalFilters = {}) => {
+    try {
+      const response = await api.getRecipesByFilter(additionalFilters);
+      const nextPage =
+        response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
+
+      const data = response?.data?.recipeSearch?.edges || [];
+      const cursor = response?.data?.recipeSearch?.pageInfo?.endCursor || null;
+
+      if ((additionalFilters as { after: boolean })?.after) {
+        // Pagination request, append new data
+        setRecipes((prevRecipes) => [...prevRecipes, ...data]);
+      } else {
+        // Initial or filter change request, replace data
+        setRecipes(data);
+      }
+
+      setAfter(cursor);
+      setHasNextPage(nextPage);
+      dispatch(setLoading(false));
+    } catch (error) {
+      dispatch(
+        setError({
+          error: "Unable to load recipes. Please try again.",
+          visible: true,
+        })
+      );
+      dispatch(setLoading(false));
+    }
+  };
+
   const getRecipesByFilter = async () => {
     if (query || (filters && Object.keys(filters).length > 0)) {
+      const prepTime = difficulty?.[(filters as any)?.maxPrepTime];
+      const maxPrepTime = prepTime ? { maxPrepTime: prepTime } : {};
+
+      const customFilters = {
+        ...filters,
+        ...maxPrepTime,
+        ...{ query },
+      };
+
       setIsFilterOpen(false);
       dispatch(setLoading(true));
-      try {
-        const prepTime = difficulty?.[(filters as any)?.maxPrepTime];
-        const maxPrepTime = prepTime ? { maxPrepTime: prepTime } : {};
 
-        const customFilters = query
-          ? { ...filters, ...maxPrepTime, query }
-          : { ...filters, ...maxPrepTime };
-        const response = await api.getRecipesByFilter(customFilters);
-        const nextPage =
-          response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
-
-        const data = response?.data?.recipeSearch?.edges || [];
-        const cursor =
-          response?.data?.recipeSearch?.pageInfo?.endCursor || null;
-
-        setAfter(cursor);
-        setRecipes(data);
-        setHasNextPage(nextPage);
-
-        dispatch(setLoading(false));
-      } catch (error) {
-        dispatch(
-          setError({
-            error: "Unable to load recipes. Please try again.",
-            visible: true,
-          })
-        );
-        dispatch(setLoading(false));
-      }
+      await fetchRecipes(customFilters ? customFilters : {});
     }
   };
 
   const getRecipesByFilterOnScroll = async () => {
     if (hasNextPage && after) {
-      try {
-        const prepTime = difficulty?.[(filters as any)?.maxPrepTime];
-        const maxPrepTime = prepTime ? { maxPrepTime: prepTime } : {};
-
-        const customFilters = query
-          ? { ...filters, ...maxPrepTime, query, after }
-          : { ...filters, ...maxPrepTime, after };
-
-        const response = await api.getRecipesByFilter(customFilters);
-        const nextPage =
-          response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
-
-        const data = response?.data?.recipeSearch?.edges || [];
-        const cursor =
-          response?.data?.recipeSearch?.pageInfo?.endCursor || null;
-
-        setAfter(cursor);
-        setRecipes([...recipes, ...data]);
-        setHasNextPage(nextPage);
-      } catch (error) {
-        dispatch(
-          setError({
-            error: "Unable to load recipes. Please try again.",
-            visible: true,
-          })
-        );
-      }
+      await fetchRecipes({ after });
     }
   };
+
+  useEffect(() => {
+    const fetchRandomRecipes = async () => {
+      dispatch(setLoading(true));
+      await fetchRecipes();
+    };
+    fetchRandomRecipes();
+  }, []);
 
   return (
     <View style={styles.searchRecipesContainer}>
@@ -162,13 +152,12 @@ function SearchRecipes({ navigation }) {
         />
         <SafeAreaView style={styles.safeAreaView}>
           {!isFilterOpen && isRecipesListAvailable && (
-            <HorizontalCardListView
+            <VerticalCardListView
               navigation={navigation}
               data={recipes}
               onEndReached={getRecipesByFilterOnScroll}
             />
           )}
-          <SearchRecipesAnimation />
           {isFilterOpen && (
             <Filter
               filters={filters}
@@ -196,6 +185,7 @@ const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
     alignContent: "center",
+    backgroundColor: "#f2f2f2",
   },
 });
 

@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text, Box, VStack, useToast } from "native-base";
 import { FlashList } from "@shopify/flash-list";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 // @ts-ignore
 import { VerticalRecipeCardView } from "@components";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
 import { handleRecipeActions } from "../../../../utils/functions";
-import { Node } from "../interfaces";
+import { Node } from "../../../../common/interfaces/interfaces";
 import { ROUTES } from "../../../../utils/common";
 
 function HorizontalCardListView({
@@ -57,7 +57,7 @@ function HorizontalCardListView({
   return (
     <VStack>
       <View>
-        <Text fontWeight="bold" fontSize="xl" marginLeft={4} color="black">
+        <Text fontWeight="bold" fontSize="lg" marginLeft={4} color="gray.500">
           {title.toUpperCase()}
         </Text>
       </View>

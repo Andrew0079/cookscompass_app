@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, ScrollView, Image } from "react-native";
-import { Text, View, VStack } from "native-base";
+import { SafeAreaView, StyleSheet, ScrollView } from "react-native";
+import { Text, View, Box } from "native-base";
 // @ts-ignore
 import { api } from "@api/api";
-import { HorizontalCardListView } from "./components";
+import { HorizontalCardListView, CategoryRecipeCard } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../../redux/slices/loading-slice";
 import { RootState } from "../../../redux/store";
 import socket from "../../../services/socket-service";
+import { FlashList } from "@shopify/flash-list";
 
 const getRecipesByCategoryTags = async (tag: string) => {
   try {
@@ -86,7 +87,9 @@ function Discover({ navigation }) {
         try {
           const response = await api.getRandomFoodTrivia();
           if (response?.text) setFoodTrivia(response.text);
-        } catch (err) {}
+        } catch (err) {
+          console.log("spoonacolar", err);
+        }
       };
       const fetchInitialCategories = async () => {
         try {
@@ -241,40 +244,49 @@ function Discover({ navigation }) {
     handleLikeUpdates();
   }, [liked]);
 
+  const data = [
+    { title: "Yummy Soups", itemKey: "soup" },
+    {
+      title: "Healthy Treats",
+      itemKey: "treat",
+    },
+    { title: "Lovely Salad", itemKey: "salad" },
+    { title: "Healthy Smoothies", itemKey: "smoothie" },
+  ];
+
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.headerArea}>
+        <Text fontSize="xl" fontWeight="bold">
+          Discover Recipes
+        </Text>
+      </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
-          <Image
-            source={require("../../../../assets/backgrounds/soup.jpg")}
-            style={styles.headerImage}
+          <Text fontWeight="bold" fontSize="lg" marginLeft={4} color="gray.500">
+            WHAT'S HOT
+          </Text>
+          <FlashList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={data}
+            renderItem={({ item }) => {
+              const lastItemKey = data?.[data.length - 1]?.itemKey;
+
+              return (
+                <Box
+                  marginLeft={4}
+                  marginRight={lastItemKey === item.itemKey ? 4 : 0}
+                >
+                  <CategoryRecipeCard
+                    title={item.title}
+                    itemKey={item.itemKey}
+                  />
+                </Box>
+              );
+            }}
+            estimatedItemSize={350}
           />
-          <View style={styles.imageOverlay} />
-          <View style={styles.overlayContent}>
-            <VStack justifyContent="flex-end" width="95%">
-              <Text
-                color="white"
-                fontWeight="bold"
-                fontStyle="italic"
-                fontSize={22}
-                paddingLeft={3}
-                paddingBottom={3}
-              >
-                Did you know ?
-              </Text>
-              <Text
-                color="white"
-                fontWeight="bold"
-                fontStyle="italic"
-                paddingLeft={5}
-                numberOfLines={7}
-                fontSize={14}
-                lineHeight={22}
-              >
-                {foodTrivia}
-              </Text>
-            </VStack>
-          </View>
         </View>
 
         {categories.length > 0 &&
@@ -302,15 +314,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f2f2",
   },
   header: {
-    width: "90%",
-    alignSelf: "center",
-    borderRadius: 25,
-    overflow: "hidden",
+    width: "100%",
     marginTop: 10, // Adjust as needed
     marginBottom: 10, // Adjust as needed
   },
   headerImage: {
-    width: "100%",
+    flexGrow: 1,
     height: 230, // Set a fixed height
     borderRadius: 25,
   },
@@ -330,6 +339,12 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.4)", // Adjust opacity for desired darkness
+  },
+  headerArea: {
+    paddingBottom: 10, // Adjust as per your requirement
+    backgroundColor: "white", // Adjust as per your requirement
+    alignItems: "center", // Center the header text horizontally
+    justifyContent: "center", // Center the header text vertically
   },
 });
 
