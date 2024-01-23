@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, ScrollView } from "react-native";
-import { Text, View, Box } from "native-base";
+import { Text, View, Box, VStack } from "native-base";
 // @ts-ignore
 import { api } from "@api/api";
-import { HorizontalCardListView, CategoryRecipeCard } from "./components";
+import axios from "axios";
+import {
+  HorizontalCardListView,
+  CategoryRecipeCard,
+  LoadingSkeletonListView,
+} from "./components";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "../../../redux/slices/loading-slice";
 import { RootState } from "../../../redux/store";
 import socket from "../../../services/socket-service";
 import { FlashList } from "@shopify/flash-list";
@@ -20,24 +24,30 @@ const getRecipesByCategoryTags = async (tag: string) => {
     const cursor = response?.data?.recipeSearch?.pageInfo?.endCursor || null;
     return { data, nextPage, cursor };
   } catch (error) {
+    if (!axios.isCancel(error)) {
+      console.error("Error fetching recipes by category:", error);
+    }
     return { data: [], nextPage: null, cursor: null };
   }
 };
 
 function Discover({ navigation }) {
+  const initialCategories = ["drinks", "Low-Carb", "chicken"];
+  const moreCategories = ["Paleo", "desserts"];
   const [categories, setCategories] = useState([]);
-  const [foodTrivia, setFoodTrivia] = useState<string | null>(null);
   const [liked, setLiked] = useState(null);
   const [likedToRevert, setLikedToRevert] = useState(null);
   const [revertLike, setRevertLike] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [secondaryLoading, setSecondaryLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const loading = useSelector((state: RootState) => state.loading.value);
+
   const userId = useSelector(
     (state: RootState) => state?.user?.value?.customUserId
   );
 
   useEffect(() => {
-    socket.on("likeUpdate", (data) => {
+    const likeUpdateHandler = (data) => {
       setCategories((prevCategories) => {
         return prevCategories.map((category) => {
           if (category?.data && category?.data?.data) {
@@ -73,52 +83,44 @@ function Discover({ navigation }) {
           }
         });
       });
-    });
+    };
+
+    socket.on("likeUpdate", likeUpdateHandler);
 
     return () => {
-      socket.off("likeUpdate"); // Clean up the event listener when the component unmounts
+      socket.off("likeUpdate", likeUpdateHandler); // Clean up the event listener when the component unmounts
     };
   }, []);
 
   useEffect(() => {
-    const getData = async () => {
-      dispatch(setLoading(true));
-      const getFoodTrivia = async () => {
-        try {
-          const response = await api.getRandomFoodTrivia();
-          if (response?.text) setFoodTrivia(response.text);
-        } catch (err) {
-          console.log("spoonacolar", err);
-        }
-      };
-      const fetchInitialCategories = async () => {
-        try {
-          const initialCategories = ["drinks", "Low-Carb", "chicken"];
-          const fetchedCategories = await Promise.all(
-            initialCategories.map(async (tag) => ({
-              title: tag,
-              data: await getRecipesByCategoryTags(tag),
-            }))
-          );
-          setCategories(fetchedCategories);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      if (!foodTrivia) {
-        await getFoodTrivia();
+    const cancelTokenSource = axios.CancelToken.source();
+    const fetchInitialCategories = async () => {
+      try {
+        const fetchedCategories = await Promise.all(
+          initialCategories.map(async (tag) => ({
+            title: tag,
+            data: await getRecipesByCategoryTags(tag),
+          }))
+        );
+        setCategories(fetchedCategories);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
       }
-      await fetchInitialCategories();
-      dispatch(setLoading(false));
     };
 
-    getData();
+    fetchInitialCategories();
+
+    return () => {
+      cancelTokenSource.cancel("Component got unmounted");
+    };
   }, []);
 
   useEffect(() => {
     const fetchMoreCategories = async () => {
       try {
-        const moreCategories = ["Paleo", "desserts"];
+        setSecondaryLoading(true);
         const fetchedCategories = await Promise.all(
           moreCategories.map(async (tag) => ({
             title: tag,
@@ -129,8 +131,10 @@ function Discover({ navigation }) {
           ...prevCategories,
           ...fetchedCategories,
         ]);
+        setSecondaryLoading(false);
       } catch (error) {
         console.error(error);
+        setSecondaryLoading(false);
       }
     };
 
@@ -262,7 +266,12 @@ function Discover({ navigation }) {
         </Text>
       </View>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
+        <View
+          shadow={9}
+          width="100%"
+          marginTop={3} // Adjust as needed
+          marginBottom={5}
+        >
           <Text fontWeight="bold" fontSize="lg" marginLeft={4} color="gray.500">
             WHAT'S HOT
           </Text>
@@ -289,16 +298,23 @@ function Discover({ navigation }) {
           />
         </View>
 
+        {loading && <LoadingSkeletonListView categories={initialCategories} />}
+
         {categories.length > 0 &&
           categories.map((category, index) => (
-            <HorizontalCardListView
-              key={index}
-              categoryData={category}
-              navigation={navigation}
-              onSetLiked={setLiked}
-              onSetRevertLike={setRevertLike}
-            />
+            <Box key={index}>
+              <HorizontalCardListView
+                categoryData={category}
+                navigation={navigation}
+                onSetLiked={setLiked}
+                onSetRevertLike={setRevertLike}
+              />
+            </Box>
           ))}
+
+        {secondaryLoading && (
+          <LoadingSkeletonListView categories={moreCategories} />
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -313,11 +329,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f2f2f2",
   },
-  header: {
-    width: "100%",
-    marginTop: 10, // Adjust as needed
-    marginBottom: 10, // Adjust as needed
-  },
+
   headerImage: {
     flexGrow: 1,
     height: 230, // Set a fixed height

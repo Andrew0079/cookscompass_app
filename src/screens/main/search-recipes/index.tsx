@@ -4,7 +4,6 @@ import { SafeAreaView, StyleSheet, View, StatusBar } from "react-native";
 import { api } from "@api/api";
 import { VerticalCardListView, SearchScreenHeader, Filter } from "./components";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "../../../redux/slices/loading-slice";
 import { setError } from "../../../redux/slices/error-slice";
 import { RootState } from "../../../redux/store";
 
@@ -30,11 +29,9 @@ function SearchRecipes({ navigation }) {
   const [query, setQuery] = useState<string | null>(null);
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
   const [after, setAfter] = useState<string | null>(null);
+  const [loadingData, setLoadingData] = useState<boolean>(true);
 
   const dispatch = useDispatch();
-  const loading = useSelector((state: RootState) => state.loading.value);
-
-  const isRecipesListAvailable = recipes.length > 0;
 
   const handleSelectItem = (section: string, item: string) => {
     setFilters((prevFilters) => {
@@ -72,8 +69,11 @@ function SearchRecipes({ navigation }) {
     });
   };
 
-  const fetchRecipes = async (additionalFilters = {}) => {
+  const fetchRecipes = async (additionalFilters = {}, isScrolling = false) => {
     try {
+      if (!isScrolling) {
+        setLoadingData(true);
+      }
       const response = await api.getRecipesByFilter(additionalFilters);
       const nextPage =
         response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
@@ -91,7 +91,7 @@ function SearchRecipes({ navigation }) {
 
       setAfter(cursor);
       setHasNextPage(nextPage);
-      dispatch(setLoading(false));
+      setLoadingData(false);
     } catch (error) {
       dispatch(
         setError({
@@ -99,7 +99,7 @@ function SearchRecipes({ navigation }) {
           visible: true,
         })
       );
-      dispatch(setLoading(false));
+      setLoadingData(false);
     }
   };
 
@@ -115,7 +115,6 @@ function SearchRecipes({ navigation }) {
       };
 
       setIsFilterOpen(false);
-      dispatch(setLoading(true));
 
       await fetchRecipes(customFilters ? customFilters : {});
     }
@@ -123,13 +122,12 @@ function SearchRecipes({ navigation }) {
 
   const getRecipesByFilterOnScroll = async () => {
     if (hasNextPage && after) {
-      await fetchRecipes({ after });
+      await fetchRecipes({ after }, true);
     }
   };
 
   useEffect(() => {
     const fetchRandomRecipes = async () => {
-      dispatch(setLoading(true));
       await fetchRecipes();
     };
     fetchRandomRecipes();
@@ -137,11 +135,7 @@ function SearchRecipes({ navigation }) {
 
   return (
     <View style={styles.searchRecipesContainer}>
-      <StatusBar
-        backgroundColor="transparent"
-        barStyle="dark-content"
-        translucent={loading}
-      />
+      <StatusBar backgroundColor="transparent" barStyle="dark-content" />
       <View style={styles.topSection}>
         <SearchScreenHeader
           hasFilter={!!(filters && Object.keys(filters).length > 0)}
@@ -151,8 +145,9 @@ function SearchRecipes({ navigation }) {
           onSetFilters={setFilters}
         />
         <SafeAreaView style={styles.safeAreaView}>
-          {!isFilterOpen && isRecipesListAvailable && (
+          {!isFilterOpen && (
             <VerticalCardListView
+              loadingData={loadingData}
               navigation={navigation}
               data={recipes}
               onEndReached={getRecipesByFilterOnScroll}

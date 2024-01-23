@@ -82,9 +82,12 @@ function Navigator() {
       }
     };
 
+    getUser();
+
     if (currentUser?.emailVerified) {
-      getUser();
-      setIsAuthenticated(true);
+      if (currentUser?.customUserId) {
+        setIsAuthenticated(true);
+      }
     } else {
       setIsAuthenticated(false);
     }

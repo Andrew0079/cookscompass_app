@@ -8,6 +8,8 @@ import FilterBadge from "./filter-badge";
 import PieChartView from "./pie-chart-view";
 import UnavailableView from "./unavailable-view";
 import VerticalRecipeCardView from "./vertical-recipe-card-view";
+import VerticalRecipeCardSkeletonView from "./skeletons/vertical-recipe-card-skeleton-view";
+import RecipeCardSkeletonListView from "./skeletons/recipe-card-skeleton-list-view";
 
 export {
   Header,
@@ -20,4 +22,6 @@ export {
   PieChartView,
   UnavailableView,
   VerticalRecipeCardView,
+  VerticalRecipeCardSkeletonView,
+  RecipeCardSkeletonListView,
 };

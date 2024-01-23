@@ -2,8 +2,10 @@ import React from "react";
 import { View, Text, Box, VStack, useToast } from "native-base";
 import { FlashList } from "@shopify/flash-list";
 import { StyleSheet } from "react-native";
-// @ts-ignore
-import { VerticalRecipeCardView } from "@components";
+import {
+  VerticalRecipeCardView,
+  // @ts-ignore
+} from "@components";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
 import { handleRecipeActions } from "../../../../utils/functions";
@@ -61,7 +63,13 @@ function HorizontalCardListView({
           {title.toUpperCase()}
         </Text>
       </View>
-      <View style={styles.listContainer}>
+      <Box
+        height={280}
+        marginBottom={18}
+        justifyContent="center"
+        shadow="9"
+        backgroundColor="transparent"
+      >
         <FlashList
           data={data}
           renderItem={({ item: { node } }: { item: { node: Node } }) => {
@@ -81,7 +89,7 @@ function HorizontalCardListView({
 
             return (
               <Box
-                marginLeft={firstItemId === itemId ? 4 : 2}
+                marginLeft={firstItemId === itemId ? 4 : 3}
                 marginRight={lastItemId === itemId ? 4 : 0}
               >
                 <VerticalRecipeCardView
@@ -103,37 +111,24 @@ function HorizontalCardListView({
           keyExtractor={(item, index) => index.toString()}
           estimatedItemSize={350} // Set an appropriate estimated size
         />
-      </View>
+      </Box>
     </VStack>
   );
 }
 
 const styles = StyleSheet.create({
-  listContainer: {
-    height: 280,
-    marginBottom: 18,
-    justifyContent: "center",
-    shadowColor: "#000000",
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 5.62,
-    elevation: 8,
-  },
   toast: {
     backgroundColor: "#e6352b",
     padding: 10,
     borderRadius: 10,
-    shadowColor: "#000000",
-    shadowOffset: {
-      width: 0,
-      height: 7,
-    },
-    shadowOpacity: 0.21,
-    shadowRadius: 7.68,
-    elevation: 10,
+    // shadowColor: "#000000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 7,
+    // },
+    // shadowOpacity: 0.21,
+    // shadowRadius: 7.68,
+    // elevation: 10,
   },
 });
 

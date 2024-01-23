@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { HStack, Box, Text, Badge, View, Spinner, VStack } from "native-base";
-import { Image } from "expo-image";
+import { HStack, Box, View, Spinner, VStack } from "native-base";
 import { StyleSheet } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { ROUTES } from "../../../../utils/common";
 import { FlashList } from "@shopify/flash-list";
-// @ts-ignore
-import { VerticalRecipeCardView } from "@components";
+import {
+  VerticalRecipeCardView,
+  RecipeCardSkeletonListView,
+  // @ts-ignore
+} from "@components";
 import { Node } from "../../../../common/interfaces/interfaces";
 
 function Footer({ isLoading }: { isLoading: boolean }) {
@@ -45,7 +46,7 @@ const renderRecipeCard = (node: Node, navigation) => {
   );
 };
 
-function VerticalCardListView({ navigation, data, onEndReached }) {
+function VerticalCardListView({ navigation, data, loadingData, onEndReached }) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Function to process data into pairs
@@ -60,58 +61,65 @@ function VerticalCardListView({ navigation, data, onEndReached }) {
   const dataPairs = processDataIntoPairs(data);
 
   return (
-    <View style={styles.flashListContainer}>
-      <FlashList
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.contentContainerStyle}
-        estimatedItemSize={200}
-        data={dataPairs}
-        ListFooterComponent={<Footer isLoading={isLoading} />}
-        onEndReachedThreshold={0.5}
-        onEndReached={() => {
-          setIsLoading(true);
-          onEndReached();
-          setIsLoading(false);
-        }}
-        renderItem={({ item: [firstNode, secondNode] }) => {
-          return (
-            <Box
-              style={[styles.shadowProp]}
-              width="95%"
-              alignSelf="center"
-              padding={2}
-            >
-              <HStack space={2} alignItems="center" justifyContent="center">
-                {/* First Column */}
-                {firstNode && (
-                  <VStack
-                    flex={1}
-                    borderRadius={10}
-                    alignItems={secondNode ? "center" : "fex-start"}
-                    justifyContent="center"
-                  >
-                    {renderRecipeCard(firstNode.node, navigation)}
-                  </VStack>
-                )}
+    <Box style={styles.flashListContainer}>
+      {loadingData ? (
+        <RecipeCardSkeletonListView />
+      ) : (
+        <FlashList
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.contentContainerStyle}
+          estimatedItemSize={200}
+          data={dataPairs}
+          ListFooterComponent={<Footer isLoading={isLoading} />}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => {
+            setIsLoading(true);
+            onEndReached();
+            setIsLoading(false);
+          }}
+          renderItem={({ item: [firstNode, secondNode] }) => {
+            return (
+              <Box
+                shadow={5}
+                width="95%"
+                alignSelf="center"
+                paddingTop={2}
+                paddingBottom={2}
+                paddingRight={1}
+                paddingLeft={1}
+              >
+                <HStack space={2} alignItems="center" justifyContent="center">
+                  {/* First Column */}
+                  {firstNode && (
+                    <VStack
+                      flex={1}
+                      borderRadius={10}
+                      alignItems={secondNode ? "center" : "fex-start"}
+                      justifyContent="center"
+                    >
+                      {renderRecipeCard(firstNode.node, navigation)}
+                    </VStack>
+                  )}
 
-                {/* Second Column */}
-                {secondNode && (
-                  <VStack
-                    flex={1}
-                    borderRadius={10}
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    {renderRecipeCard(secondNode.node, navigation)}
-                  </VStack>
-                )}
-              </HStack>
-            </Box>
-          );
-        }}
-        keyExtractor={(item, index) => index.toString()}
-      />
-    </View>
+                  {/* Second Column */}
+                  {secondNode && (
+                    <VStack
+                      flex={1}
+                      borderRadius={10}
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      {renderRecipeCard(secondNode.node, navigation)}
+                    </VStack>
+                  )}
+                </HStack>
+              </Box>
+            );
+          }}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      )}
+    </Box>
   );
 }
 
@@ -123,22 +131,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   flashListContainer: {
-    zIndex: 9999999,
     flex: 1,
   },
   contentContainerStyle: {
-    paddingTop: 15,
+    paddingTop: 5,
     paddingBottom: 5,
-  },
-  shadowProp: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
   },
 });
 
