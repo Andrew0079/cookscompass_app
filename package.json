@@ -50,7 +50,8 @@
     "react-native-svg": "13.9.0",
     "react-redux": "^9.0.2",
     "socket.io-client": "^4.7.4",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "expo-splash-screen": "~0.20.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

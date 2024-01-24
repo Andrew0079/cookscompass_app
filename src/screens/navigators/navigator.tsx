@@ -19,6 +19,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../services/config";
 import { setError } from "../../redux/slices/error-slice";
 import { setLoading } from "../../redux/slices/loading-slice";
+import * as SplashScreen from "expo-splash-screen";
+import { setDiscoveryData } from "../../redux/slices/discovery-slice";
 
 const { Navigator: StackNavigator, Screen } = createStackNavigator();
 
@@ -26,13 +28,31 @@ const commonScreenOptions = {
   headerShown: false,
 };
 
+const getRecipesByCategoryTags = async (tag: string) => {
+  try {
+    const response = await api.getRecipeByTag(tag);
+    const nextPage =
+      response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
+
+    const data = response?.data?.recipeSearch?.edges || [];
+    const cursor = response?.data?.recipeSearch?.pageInfo?.endCursor || null;
+    return { data, nextPage, cursor };
+  } catch (error) {
+    console.error("Error fetching recipes by category:", error);
+
+    return { data: [], nextPage: null, cursor: null };
+  }
+};
+
 function Navigator() {
   const dispatch = useDispatch();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [appIsReady, setAppIsReady] = useState(false);
 
   const currentUser = useSelector((state: RootState) => state.user.value);
 
   const loading = useSelector((state: RootState) => state.loading.value);
+
   const error = useSelector(
     (state: RootState) => state.error.value
   ) as unknown as { error: string; visible: boolean } | undefined;
@@ -47,6 +67,7 @@ function Navigator() {
             stsTokenManager: { accessToken: string };
             displayName: string;
           };
+
           dispatch(
             setUser({
               email: customUser.email,
@@ -81,17 +102,59 @@ function Navigator() {
         return;
       }
     };
-
     getUser();
-
-    if (currentUser?.emailVerified) {
-      if (currentUser?.customUserId) {
-        setIsAuthenticated(true);
-      }
-    } else {
-      setIsAuthenticated(false);
-    }
   }, [currentUser]);
+
+  useEffect(() => {
+    const fetchInitialCategories = async () => {
+      try {
+        const initialCategories = [
+          "drinks",
+          "Low-Carb",
+          "chicken",
+          "Paleo",
+          "desserts",
+        ];
+        const fetchedCategories = await Promise.all(
+          initialCategories.map(async (tag) => ({
+            title: tag,
+            data: await getRecipesByCategoryTags(tag),
+          }))
+        );
+        dispatch(setDiscoveryData(fetchedCategories));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const prepare = async () => {
+      try {
+        await fetchInitialCategories();
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setAppIsReady(true);
+      }
+    };
+
+    if (currentUser?.emailVerified && currentUser?.customUserId) {
+      prepare();
+    } else {
+      setAppIsReady(true);
+    }
+  }, [currentUser?.customUserId]);
+
+  useEffect(() => {
+    SplashScreen.preventAutoHideAsync();
+    if (appIsReady) {
+      if (currentUser?.emailVerified && currentUser?.customUserId) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+      SplashScreen.hideAsync();
+    }
+  }, [appIsReady, currentUser]);
 
   return (
     <NativeBaseProvider theme={theme}>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, ScrollView } from "react-native";
-import { Text, View, Box, VStack } from "native-base";
+import { Text, View, Box } from "native-base";
 // @ts-ignore
 import { api } from "@api/api";
 import axios from "axios";
@@ -14,36 +14,27 @@ import { RootState } from "../../../redux/store";
 import socket from "../../../services/socket-service";
 import { FlashList } from "@shopify/flash-list";
 
-const getRecipesByCategoryTags = async (tag: string) => {
-  try {
-    const response = await api.getRecipeByTag(tag);
-    const nextPage =
-      response?.data?.recipeSearch?.pageInfo?.hasNextPage || false;
-
-    const data = response?.data?.recipeSearch?.edges || [];
-    const cursor = response?.data?.recipeSearch?.pageInfo?.endCursor || null;
-    return { data, nextPage, cursor };
-  } catch (error) {
-    if (!axios.isCancel(error)) {
-      console.error("Error fetching recipes by category:", error);
-    }
-    return { data: [], nextPage: null, cursor: null };
-  }
-};
-
 function Discover({ navigation }) {
-  const initialCategories = ["drinks", "Low-Carb", "chicken"];
-  const moreCategories = ["Paleo", "desserts"];
   const [categories, setCategories] = useState([]);
   const [liked, setLiked] = useState(null);
   const [likedToRevert, setLikedToRevert] = useState(null);
   const [revertLike, setRevertLike] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [secondaryLoading, setSecondaryLoading] = useState<boolean>(false);
-  const dispatch = useDispatch();
+
+  // const initialCategories = [
+  //   "drinks",
+  //   "Low-Carb",
+  //   "chicken",
+  //   "Paleo",
+  //   "desserts",
+  // ];
 
   const userId = useSelector(
     (state: RootState) => state?.user?.value?.customUserId
+  );
+
+  const discoveryData = useSelector(
+    (state: RootState) => state?.discovery?.value
   );
 
   useEffect(() => {
@@ -91,57 +82,6 @@ function Discover({ navigation }) {
       socket.off("likeUpdate", likeUpdateHandler); // Clean up the event listener when the component unmounts
     };
   }, []);
-
-  useEffect(() => {
-    const cancelTokenSource = axios.CancelToken.source();
-    const fetchInitialCategories = async () => {
-      try {
-        const fetchedCategories = await Promise.all(
-          initialCategories.map(async (tag) => ({
-            title: tag,
-            data: await getRecipesByCategoryTags(tag),
-          }))
-        );
-        setCategories(fetchedCategories);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        setLoading(false);
-      }
-    };
-
-    fetchInitialCategories();
-
-    return () => {
-      cancelTokenSource.cancel("Component got unmounted");
-    };
-  }, []);
-
-  useEffect(() => {
-    const fetchMoreCategories = async () => {
-      try {
-        setSecondaryLoading(true);
-        const fetchedCategories = await Promise.all(
-          moreCategories.map(async (tag) => ({
-            title: tag,
-            data: await getRecipesByCategoryTags(tag),
-          }))
-        );
-        setCategories((prevCategories) => [
-          ...prevCategories,
-          ...fetchedCategories,
-        ]);
-        setSecondaryLoading(false);
-      } catch (error) {
-        console.error(error);
-        setSecondaryLoading(false);
-      }
-    };
-
-    if (!loading && categories.length > 0) {
-      fetchMoreCategories();
-    }
-  }, [loading]);
 
   useEffect(() => {
     if (revertLike) {
@@ -298,10 +238,10 @@ function Discover({ navigation }) {
           />
         </View>
 
-        {loading && <LoadingSkeletonListView categories={initialCategories} />}
+        {loading && <LoadingSkeletonListView categories={[]} />}
 
-        {categories.length > 0 &&
-          categories.map((category, index) => (
+        {discoveryData?.length > 0 &&
+          discoveryData.map((category, index) => (
             <Box key={index}>
               <HorizontalCardListView
                 categoryData={category}
@@ -311,10 +251,6 @@ function Discover({ navigation }) {
               />
             </Box>
           ))}
-
-        {secondaryLoading && (
-          <LoadingSkeletonListView categories={moreCategories} />
-        )}
       </ScrollView>
     </SafeAreaView>
   );
