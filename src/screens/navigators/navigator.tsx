@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { NativeBaseProvider } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -48,10 +48,13 @@ function Navigator() {
   const dispatch = useDispatch();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [appIsReady, setAppIsReady] = useState(false);
-
   const currentUser = useSelector((state: RootState) => state.user.value);
 
   const loading = useSelector((state: RootState) => state.loading.value);
+
+  const discoveryData = useSelector(
+    (state: RootState) => state.discovery.value
+  );
 
   const error = useSelector(
     (state: RootState) => state.error.value
@@ -89,72 +92,64 @@ function Navigator() {
   }, [dispatch]);
 
   useEffect(() => {
-    const getUser = async () => {
+    const getUserAndFetchCategories = async () => {
       try {
+        // Step 1: Fetch the user if the user ID is available but customUserId is not
         const uid = currentUser?.uid;
         const customUserId = currentUser?.customUserId;
         if (uid && !customUserId) {
           const response = await api.getUser(uid);
-          const customUserId = response?.id;
-          dispatch(setUser({ ...currentUser, customUserId }));
+          const fetchedCustomUserId = response?.id;
+          dispatch(
+            setUser({ ...currentUser, customUserId: fetchedCustomUserId })
+          );
+          return; // Return here to wait for the next effect cycle after the state is updated
+        }
+
+        // Step 2: Fetch initial categories only if customUserId is set
+        if (customUserId) {
+          const initialCategories = [
+            "drinks",
+            "Low-Carb",
+            "chicken",
+            "Paleo",
+            "desserts",
+          ];
+          const fetchedCategories = await Promise.all(
+            initialCategories.map(async (tag) => ({
+              title: tag,
+              data: await getRecipesByCategoryTags(tag),
+            }))
+          );
+
+          dispatch(setDiscoveryData(fetchedCategories));
         }
       } catch (error) {
-        return;
-      }
-    };
-    getUser();
-  }, [currentUser]);
-
-  useEffect(() => {
-    const fetchInitialCategories = async () => {
-      try {
-        const initialCategories = [
-          "drinks",
-          "Low-Carb",
-          "chicken",
-          "Paleo",
-          "desserts",
-        ];
-        const fetchedCategories = await Promise.all(
-          initialCategories.map(async (tag) => ({
-            title: tag,
-            data: await getRecipesByCategoryTags(tag),
-          }))
-        );
-        dispatch(setDiscoveryData(fetchedCategories));
-      } catch (error) {
         console.error(error);
-      }
-    };
-
-    const prepare = async () => {
-      try {
-        await fetchInitialCategories();
-      } catch (error) {
-        console.log(error);
       } finally {
         setAppIsReady(true);
       }
     };
 
-    if (currentUser?.emailVerified && currentUser?.customUserId) {
-      prepare();
-    } else {
-      setAppIsReady(true);
-    }
-  }, [currentUser?.customUserId]);
+    getUserAndFetchCategories();
+  }, [currentUser]);
 
   useEffect(() => {
     SplashScreen.preventAutoHideAsync();
     if (appIsReady) {
-      if (currentUser?.emailVerified && currentUser?.customUserId) {
-        setIsAuthenticated(true);
+      if (currentUser?.emailVerified) {
+        if (discoveryData?.length === 5) {
+          setIsAuthenticated(true);
+        }
       } else {
         setIsAuthenticated(false);
       }
-      SplashScreen.hideAsync();
     }
-  }, [appIsReady, currentUser]);
+  }, [discoveryData]);
+
+  useEffect(() => {
+    SplashScreen.hideAsync();
+  }, [isAuthenticated]);
 
   return (
     <NativeBaseProvider theme={theme}>

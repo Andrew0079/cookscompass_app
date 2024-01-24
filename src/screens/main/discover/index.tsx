@@ -21,14 +21,6 @@ function Discover({ navigation }) {
   const [revertLike, setRevertLike] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // const initialCategories = [
-  //   "drinks",
-  //   "Low-Carb",
-  //   "chicken",
-  //   "Paleo",
-  //   "desserts",
-  // ];
-
   const userId = useSelector(
     (state: RootState) => state?.user?.value?.customUserId
   );
@@ -237,8 +229,6 @@ function Discover({ navigation }) {
             estimatedItemSize={350}
           />
         </View>
-
-        {loading && <LoadingSkeletonListView categories={[]} />}
 
         {discoveryData?.length > 0 &&
           discoveryData.map((category, index) => (
