@@ -83,7 +83,8 @@ function Navigator() {
         } else {
           dispatch(setUser(null));
         }
-      } else {
+      }
+      if (firebaseUser === null) {
         dispatch(setUser(null));
       }
     });
@@ -144,12 +145,9 @@ function Navigator() {
       } else {
         setIsAuthenticated(false);
       }
+      SplashScreen.hideAsync();
     }
-  }, [discoveryData]);
-
-  useEffect(() => {
-    SplashScreen.hideAsync();
-  }, [isAuthenticated]);
+  }, [discoveryData, currentUser]);
 
   return (
     <NativeBaseProvider theme={theme}>

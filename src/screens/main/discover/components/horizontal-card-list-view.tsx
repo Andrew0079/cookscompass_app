@@ -65,7 +65,7 @@ function HorizontalCardListView({
       </View>
       <Box
         height={280}
-        marginBottom={18}
+        marginBottom={4}
         justifyContent="center"
         shadow="9"
         backgroundColor="transparent"

@@ -1,5 +1,14 @@
 import React from "react";
-import { VStack, Button, Text, Center, HStack, View, Box } from "native-base";
+import {
+  VStack,
+  Button,
+  Text,
+  Center,
+  HStack,
+  View,
+  Box,
+  Image,
+} from "native-base";
 import {
   SafeAreaView,
   StyleSheet,
@@ -7,35 +16,19 @@ import {
   StatusBar,
 } from "react-native";
 import { ROUTES } from "../../../utils/common";
-import LottieView from "lottie-react-native";
-
-function Animation() {
-  return (
-    <Box
-      position="absolute"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      justifyContent="flex-end"
-      alignItems="center"
-    >
-      <LottieView
-        source={require("../../../../assets/animation/lottie/cooking-bowl.json")}
-        autoPlay
-        loop
-        style={{ width: 500, height: 500 }}
-      />
-    </Box>
-  );
-}
 
 function SignInOrSignUp({ navigation }) {
   return (
     <View backgroundColor="white" flex={1}>
-      <View flex={8}>
-        <Animation />
+      <View flex={7} justifyContent="flex-end" alignSelf="center">
+        <Image
+          alt="logo"
+          height={350}
+          width={350}
+          source={require("../../../../assets/favicon.png")}
+        />
       </View>
+
       <View flex={4}>
         <StatusBar
           translucent

@@ -28,7 +28,7 @@ function VerticalRecipeCardView({
   onHandleNavigation: () => void;
 }) {
   const cardHeight = 260;
-  const imageHeight = 160;
+  const imageHeight = 165;
   const textHeight = cardHeight - imageHeight;
   return (
     <TouchableOpacity onPress={onHandleNavigation}>
