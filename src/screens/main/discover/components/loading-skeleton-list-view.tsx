@@ -9,12 +9,7 @@ function LoadingSkeletonListView({ categories }: { categories: string[] }) {
       {categories.map((category: string, index: number) => (
         <VStack key={`key-${index}`}>
           <View>
-            <Text
-              fontWeight="bold"
-              fontSize="lg"
-              marginLeft={4}
-              color="gray.500"
-            >
+            <Text fontSize="lg" marginLeft={4} color="gray.500">
               {category.toUpperCase()}
             </Text>
           </View>

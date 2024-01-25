@@ -193,9 +193,7 @@ function Discover({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerArea}>
-        <Text fontSize="xl" fontWeight="bold">
-          Discover Recipes
-        </Text>
+        <Text fontSize="xl">Discover Recipes</Text>
       </View>
       <ScrollView style={styles.scrollView}>
         <View
@@ -204,7 +202,7 @@ function Discover({ navigation }) {
           marginTop={3} // Adjust as needed
           marginBottom={5}
         >
-          <Text fontWeight="bold" fontSize="lg" marginLeft={4} color="gray.500">
+          <Text fontSize="lg" marginLeft={4} color="gray.500">
             WHAT'S HOT
           </Text>
           <FlashList

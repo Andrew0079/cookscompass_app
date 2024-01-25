@@ -23,7 +23,7 @@ function BottomItem({ state, descriptors, navigation }) {
     Discover: "fast-food-outline",
     Community: "people-outline",
     Profile: "person-outline",
-    Menu: "ios-grid-outline",
+    Menu: "cube-outline",
     Search: "search-sharp",
   };
 

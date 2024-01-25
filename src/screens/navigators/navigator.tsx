@@ -21,6 +21,7 @@ import { setError } from "../../redux/slices/error-slice";
 import { setLoading } from "../../redux/slices/loading-slice";
 import * as SplashScreen from "expo-splash-screen";
 import { setDiscoveryData } from "../../redux/slices/discovery-slice";
+import * as Font from "expo-font";
 
 const { Navigator: StackNavigator, Screen } = createStackNavigator();
 
@@ -45,6 +46,7 @@ const getRecipesByCategoryTags = async (tag: string) => {
 };
 
 function Navigator() {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   const dispatch = useDispatch();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [appIsReady, setAppIsReady] = useState(false);
@@ -59,6 +61,22 @@ function Navigator() {
   const error = useSelector(
     (state: RootState) => state.error.value
   ) as unknown as { error: string; visible: boolean } | undefined;
+
+  // Load your fonts asynchronously
+  useEffect(() => {
+    async function loadFonts() {
+      try {
+        await Font.loadAsync({
+          "BioRhyme-Regular": require("../../../assets/fonts/BioRhyme/static/BioRhyme-Regular.ttf"),
+          FiraSansExtraCondensedRegular: require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-Regular.ttf"),
+        });
+        setFontsLoaded(true); // Set state to true when fonts are loaded
+      } catch (error) {
+        console.error("Error loading fonts", error);
+      }
+    }
+    loadFonts();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -101,9 +119,12 @@ function Navigator() {
         if (uid && !customUserId) {
           const response = await api.getUser(uid);
           const fetchedCustomUserId = response?.id;
-          dispatch(
-            setUser({ ...currentUser, customUserId: fetchedCustomUserId })
-          );
+          // Update the state only if the fetchedCustomUserId is different from the current customUserId
+          if (fetchedCustomUserId && fetchedCustomUserId !== customUserId) {
+            dispatch(
+              setUser({ ...currentUser, customUserId: fetchedCustomUserId })
+            );
+          }
           return; // Return here to wait for the next effect cycle after the state is updated
         }
 
@@ -122,7 +143,6 @@ function Navigator() {
               data: await getRecipesByCategoryTags(tag),
             }))
           );
-
           dispatch(setDiscoveryData(fetchedCategories));
         }
       } catch (error) {
@@ -137,17 +157,21 @@ function Navigator() {
 
   useEffect(() => {
     SplashScreen.preventAutoHideAsync();
-    if (appIsReady) {
+    if (appIsReady && fontsLoaded) {
       if (currentUser?.emailVerified) {
         if (discoveryData?.length === 5) {
+          SplashScreen.hideAsync();
+          dispatch(setLoading(false));
           setIsAuthenticated(true);
         }
       } else {
+        console.log("hey");
+        SplashScreen.hideAsync();
+        dispatch(setLoading(false));
         setIsAuthenticated(false);
       }
-      SplashScreen.hideAsync();
     }
-  }, [discoveryData, currentUser]);
+  }, [discoveryData, currentUser, fontsLoaded]);
 
   return (
     <NativeBaseProvider theme={theme}>
@@ -175,12 +199,14 @@ function Navigator() {
             headerShown: false,
           }}
         >
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <>
               <Screen name={ROUTES.MAIN} component={MainNavigator} />
               <Screen name={ROUTES.RECIPE} component={Recipe} />
             </>
-          ) : (
+          )}
+
+          {!isAuthenticated && (
             <Screen name={ROUTES.AUTH} component={AuthNavigator} />
           )}
         </StackNavigator>

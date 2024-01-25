@@ -59,7 +59,7 @@ function HorizontalCardListView({
   return (
     <VStack>
       <View>
-        <Text fontWeight="bold" fontSize="lg" marginLeft={4} color="gray.500">
+        <Text fontSize="lg" marginLeft={4} color="gray.500">
           {title.toUpperCase()}
         </Text>
       </View>

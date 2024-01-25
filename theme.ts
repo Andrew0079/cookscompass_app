@@ -35,6 +35,20 @@ const theme = extendTheme({
     },
     // Add more color configurations as needed
   },
+  fontConfig: {
+    BioRhyme: {
+      400: {
+        normal: "FiraSansExtraCondensedRegular",
+      },
+
+      // You can add other font weights as needed, but they'll all use BioRhyme-Regular in this case
+    },
+  },
+  fonts: {
+    heading: "FiraSansExtraCondensedRegular",
+    body: "FiraSansExtraCondensedRegular",
+    mono: "FiraSansExtraCondensedRegular",
+  },
 });
 
 export default theme;

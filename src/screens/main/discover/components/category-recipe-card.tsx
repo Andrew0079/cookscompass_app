@@ -39,7 +39,7 @@ function CategoryRecipeCard({ title, itemKey }) {
         end={{ x: 1, y: 0 }}
       />
       <VStack justifyContent="center" alignItems="center" flex={1} padding={2}>
-        <Text color="white" fontWeight="bold" fontSize="3xl">
+        <Text color="white" fontSize="3xl">
           {title}
         </Text>
       </VStack>

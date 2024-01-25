@@ -109,10 +109,10 @@ function SignIn({ navigation, route }) {
         dispatch(
           setError({ error: "# Please verify your account", visible: true })
         );
-      } else {
-        if (!userEmailVerified) {
-          await updateUser(uid);
-        }
+      }
+      if (!userEmailVerified) {
+        await updateUser(uid);
+
         dispatch(
           setUser({
             email: response.email,
@@ -124,7 +124,6 @@ function SignIn({ navigation, route }) {
           })
         );
         dispatch(setLoading(false));
-        navigation.navigate(ROUTES.MAIN, { screen: ROUTES.DISCOVER });
       }
     } catch (error) {
       dispatch(setLoading(false));
@@ -171,9 +170,7 @@ function SignIn({ navigation, route }) {
                   paddingRight={5}
                   paddingTop={30}
                 >
-                  <Text fontWeight="bold" fontSize="4xl">
-                    Sign In
-                  </Text>
+                  <Text fontSize="4xl">Sign In</Text>
                   <Text fontSize="md" marginTop={-3}>
                     Hi! Welcome back. You've been missed.
                   </Text>
@@ -207,9 +204,7 @@ function SignIn({ navigation, route }) {
                     color="white"
                     width="80%"
                   >
-                    <Text textAlign="center" fontWeight="800">
-                      Sign In
-                    </Text>
+                    <Text textAlign="center">Sign In</Text>
                   </Button>
                 </VStack>
               </KeyboardAvoidingView>
