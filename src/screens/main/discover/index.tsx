@@ -1,25 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView, StyleSheet, ScrollView } from "react-native";
-import { Text, View, Box } from "native-base";
-// @ts-ignore
-import { api } from "@api/api";
-import axios from "axios";
-import {
-  HorizontalCardListView,
-  CategoryRecipeCard,
-  LoadingSkeletonListView,
-} from "./components";
+import { View, Box, useToast, Divider, Image } from "native-base";
+import { HorizontalCardListView, CategoryRecipeCard } from "./components";
 import { useDispatch, useSelector } from "react-redux";
+// @ts-ignore
+import { NbTextView, ToastView } from "@components";
 import { RootState } from "../../../redux/store";
 import socket from "../../../services/socket-service";
 import { FlashList } from "@shopify/flash-list";
+import {
+  optimisticUpdateLikeStatus,
+  revertUpdateLikeStatus,
+  realTimeUpdateLikeCount,
+} from "../../../redux/slices/discovery-slice";
+import { handleRecipeActions } from "../../../utils/functions";
+
+const data = [
+  { title: "Lovely Salad", itemKey: "salad" },
+  {
+    title: "Healthy Treats",
+    itemKey: "treat",
+  },
+  { title: "Yummy Soups", itemKey: "soup" },
+  { title: "Healthy Smoothies", itemKey: "smoothie" },
+];
 
 function Discover({ navigation }) {
-  const [categories, setCategories] = useState([]);
-  const [liked, setLiked] = useState(null);
-  const [likedToRevert, setLikedToRevert] = useState(null);
-  const [revertLike, setRevertLike] = useState(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const dispatch = useDispatch();
+  const toast = useToast();
 
   const userId = useSelector(
     (state: RootState) => state?.user?.value?.customUserId
@@ -31,41 +39,15 @@ function Discover({ navigation }) {
 
   useEffect(() => {
     const likeUpdateHandler = (data) => {
-      setCategories((prevCategories) => {
-        return prevCategories.map((category) => {
-          if (category?.data && category?.data?.data) {
-            const newData = category.data.data.map((node) => {
-              const currentRecipeId = node.node.id;
-              const userActionId = parseInt(data?.userId) === parseInt(userId);
+      const currentRecipeId = data?.recipeId;
+      const newLikeCount = data?.newLikeCount;
+      const userActionId = parseInt(data?.userId) === parseInt(userId);
 
-              const likedRecipeId = data?.recipeId;
-              const newLikeCount = data?.newLikeCount;
-
-              if (currentRecipeId === likedRecipeId && !userActionId) {
-                return {
-                  ...node,
-                  node: {
-                    ...node.node,
-                    likes: newLikeCount,
-                  },
-                };
-              } else {
-                return node;
-              }
-            });
-            // Return the updated category with the new data
-            return {
-              ...category,
-              data: {
-                ...category.data,
-                data: newData,
-              },
-            };
-          } else {
-            return category;
-          }
-        });
-      });
+      if (currentRecipeId && newLikeCount !== undefined && !userActionId) {
+        dispatch(
+          realTimeUpdateLikeCount({ recipeId: currentRecipeId, newLikeCount })
+        );
+      }
     };
 
     socket.on("likeUpdate", likeUpdateHandler);
@@ -75,125 +57,32 @@ function Discover({ navigation }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (revertLike) {
-      setCategories((prevCategories) => {
-        return prevCategories.map((category) => {
-          if (category?.data && category?.data?.data) {
-            const newData = category.data.data.map((node) => {
-              const currentRecipeId = node.node.id;
-              const currentCount = likedToRevert?.count;
-              const likedRecipeId = likedToRevert?.recipeId;
-              const isLiked = likedToRevert?.isLiked;
-
-              // user likes recipe
-              if (currentRecipeId === likedRecipeId) {
-                return {
-                  ...node,
-                  node: {
-                    ...node.node,
-                    likes: currentCount,
-                    isRecipeLiked: isLiked,
-                  },
-                };
-              } else {
-                return node;
-              }
-            });
-            // Return the updated category with the new data
-            return {
-              ...category,
-              data: {
-                ...category.data,
-                data: newData,
-              },
-            };
-          } else {
-            return category;
-          }
-        });
+  const handleRecipeActionLikeClick = async (recipeId: string) => {
+    dispatch(optimisticUpdateLikeStatus({ recipeId }));
+    try {
+      await handleRecipeActions(recipeId);
+    } catch (error) {
+      toast.show({
+        placement: "top",
+        render: () => <ToastView text="Unable to perform like action" />,
       });
-      setRevertLike(false);
+      // If the server call fails, revert the optimistic update
+      dispatch(revertUpdateLikeStatus({ recipeId }));
     }
-  }, [likedToRevert, revertLike]);
-
-  useEffect(() => {
-    const handleLikeUpdates = () => {
-      setCategories((prevCategories) => {
-        return prevCategories.map((category) => {
-          if (category?.data && category?.data?.data) {
-            const newData = category.data.data.map((node) => {
-              const currentRecipeId = node.node.id;
-              const currentCount = node.node.likes;
-              const likedRecipeId = liked?.recipeId;
-              const isLiked = liked?.isRecipeLiked;
-
-              // to revert
-              if (currentRecipeId === likedRecipeId) {
-                setLikedToRevert({
-                  recipeId: likedRecipeId,
-                  count: currentCount,
-                  isLiked,
-                });
-              }
-
-              // user likes recipe
-              if (currentRecipeId === likedRecipeId && !isLiked) {
-                return {
-                  ...node,
-                  node: {
-                    ...node.node,
-                    likes: currentCount + 1,
-                    isRecipeLiked: true,
-                  },
-                };
-              }
-              // user dislike recipe
-              if (currentRecipeId === likedRecipeId && isLiked) {
-                return {
-                  ...node,
-                  node: {
-                    ...node.node,
-                    likes: currentCount - 1,
-                    isRecipeLiked: false,
-                  },
-                };
-              } else {
-                return node;
-              }
-            });
-            // Return the updated category with the new data
-            return {
-              ...category,
-              data: {
-                ...category.data,
-                data: newData,
-              },
-            };
-          } else {
-            return category;
-          }
-        });
-      });
-    };
-
-    handleLikeUpdates();
-  }, [liked]);
-
-  const data = [
-    { title: "Yummy Soups", itemKey: "soup" },
-    {
-      title: "Healthy Treats",
-      itemKey: "treat",
-    },
-    { title: "Lovely Salad", itemKey: "salad" },
-    { title: "Healthy Smoothies", itemKey: "smoothie" },
-  ];
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerArea}>
-        <Text fontSize="xl">Discover Recipes</Text>
+      <View style={styles.headerArea} px={5}>
+        <Image
+          alt="logo"
+          source={require("../../../../assets/brand.png")}
+          resizeMode="contain"
+          style={{ width: 120, height: 50 }}
+        />
+        <NbTextView fontSize="xl" fontWeight="600">
+          Discover Recipes
+        </NbTextView>
       </View>
       <ScrollView style={styles.scrollView}>
         <View
@@ -202,9 +91,15 @@ function Discover({ navigation }) {
           marginTop={3} // Adjust as needed
           marginBottom={5}
         >
-          <Text fontSize="lg" marginLeft={4} color="gray.500">
+          <NbTextView
+            fontSize="lg"
+            marginLeft={4}
+            paddingBottom={2}
+            color="gray.500"
+            fontWeight="800"
+          >
             WHAT'S HOT
-          </Text>
+          </NbTextView>
           <FlashList
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -227,16 +122,18 @@ function Discover({ navigation }) {
             estimatedItemSize={350}
           />
         </View>
-
+        <Divider width="92%" alignSelf="center" />
         {discoveryData?.length > 0 &&
           discoveryData.map((category, index) => (
             <Box key={index}>
               <HorizontalCardListView
                 categoryData={category}
                 navigation={navigation}
-                onSetLiked={setLiked}
-                onSetRevertLike={setRevertLike}
+                onHandleRecipeActionLikeClick={handleRecipeActionLikeClick}
               />
+              {discoveryData.length - 1 !== index && (
+                <Divider width="92%" alignSelf="center" />
+              )}
             </Box>
           ))}
       </ScrollView>
@@ -251,7 +148,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "white",
   },
 
   headerImage: {
@@ -277,10 +174,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.4)", // Adjust opacity for desired darkness
   },
   headerArea: {
-    paddingBottom: 10, // Adjust as per your requirement
-    backgroundColor: "white", // Adjust as per your requirement
-    alignItems: "center", // Center the header text horizontally
-    justifyContent: "center", // Center the header text vertically
+    paddingBottom: 10,
+    backgroundColor: "white",
+    flexDirection: "row",
+    alignItems: "center",
+    alignContent: "center",
+    justifyContent: "space-between",
   },
 });
 

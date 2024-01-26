@@ -36,18 +36,48 @@ const theme = extendTheme({
     // Add more color configurations as needed
   },
   fontConfig: {
-    BioRhyme: {
-      400: {
-        normal: "FiraSansExtraCondensedRegular",
+    FiraSansExtraCondensed: {
+      100: {
+        normal: "FiraSansExtraCondensed-Thin",
+        italic: "FiraSansExtraCondensed-ThinItalic",
       },
-
-      // You can add other font weights as needed, but they'll all use BioRhyme-Regular in this case
+      200: {
+        normal: "FiraSansExtraCondensed-ExtraLight",
+        italic: "FiraSansExtraCondensed-ExtraLightItalic",
+      },
+      300: {
+        normal: "FiraSansExtraCondensed-Light",
+        italic: "FiraSansExtraCondensed-LightItalic",
+      },
+      400: {
+        normal: "FiraSansExtraCondensed-Regular",
+      },
+      500: {
+        normal: "FiraSansExtraCondensed-Medium",
+        italic: "FiraSansExtraCondensed-MediumItalic",
+      },
+      600: {
+        normal: "FiraSansExtraCondensed-SemiBold",
+        italic: "FiraSansExtraCondensed-SemiBoldItalic",
+      },
+      700: {
+        normal: "FiraSansExtraCondensed-Bold",
+        italic: "FiraSansExtraCondensed-BoldItalic",
+      },
+      800: {
+        normal: "FiraSansExtraCondensed-ExtraBold",
+        italic: "FiraSansExtraCondensed-ExtraBoldItalic",
+      },
+      900: {
+        normal: "FiraSansExtraCondensed-Black",
+        italic: "FiraSansExtraCondensed-BlackItalic",
+      },
     },
   },
   fonts: {
-    heading: "FiraSansExtraCondensedRegular",
-    body: "FiraSansExtraCondensedRegular",
-    mono: "FiraSansExtraCondensedRegular",
+    heading: "FiraSansExtraCondensed-Medium",
+    body: "FiraSansExtraCondensed-Medium",
+    mono: "FiraSansExtraCondensed-Medium",
   },
 });
 

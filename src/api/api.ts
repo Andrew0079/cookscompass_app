@@ -200,8 +200,8 @@ export default class Api {
     return this.get(`${this.FOOD_TRIVIA}`);
   }
 
-  postLikeRecipeAction(userId: number, recipeId: string) {
-    return this.post(`${this.LIKE_RECIPE_ACTION}/${userId}/${recipeId}`);
+  postLikeRecipeAction(recipeId: string) {
+    return this.post(`${this.LIKE_RECIPE_ACTION}/${recipeId}`);
   }
 }
 

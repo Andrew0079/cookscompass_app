@@ -1,53 +1,22 @@
 import React from "react";
-import { View, Text, Box, VStack, useToast } from "native-base";
+import { View, Box, VStack } from "native-base";
 import { FlashList } from "@shopify/flash-list";
-import { StyleSheet } from "react-native";
 import {
   VerticalRecipeCardView,
+  NbTextView,
   // @ts-ignore
 } from "@components";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../redux/store";
-import { handleRecipeActions } from "../../../../utils/functions";
+
 import { Node } from "../../../../common/interfaces/interfaces";
 import { ROUTES } from "../../../../utils/common";
 
 function HorizontalCardListView({
   categoryData,
   navigation,
-  onSetLiked,
-  onSetRevertLike,
+  onHandleRecipeActionLikeClick,
 }) {
-  const toast = useToast();
-
   const data = categoryData.data.data;
   const title = categoryData.title;
-
-  const userId = useSelector(
-    (state: RootState) => state.user.value?.customUserId
-  );
-
-  const handleRecipeActionLikeClick = async (
-    recipeId: string,
-    isRecipeLiked: boolean
-  ) => {
-    try {
-      if (userId) {
-        onSetLiked({ recipeId, isRecipeLiked });
-        await handleRecipeActions(userId, recipeId);
-      }
-    } catch (error) {
-      onSetRevertLike(true);
-      toast.show({
-        placement: "top",
-        render: () => (
-          <Box style={styles.toast}>
-            <Text color="white">Unable to perform like action</Text>
-          </Box>
-        ),
-      });
-    }
-  };
 
   const handleNavigation = (node: Node) => {
     navigation.navigate(ROUTES.RECIPE, {
@@ -58,10 +27,16 @@ function HorizontalCardListView({
 
   return (
     <VStack>
-      <View>
-        <Text fontSize="lg" marginLeft={4} color="gray.500">
+      <View paddingBottom={1}>
+        <NbTextView
+          fontSize="lg"
+          marginLeft={4}
+          paddingTop={2}
+          color="gray.500"
+          fontWeight="800"
+        >
           {title.toUpperCase()}
-        </Text>
+        </NbTextView>
       </View>
       <Box
         height={280}
@@ -100,7 +75,7 @@ function HorizontalCardListView({
                   recipeName={name}
                   totalTime={totalTime}
                   kcal={nutrientsPerServing?.calories}
-                  onHandleRecipeActionLikeClick={handleRecipeActionLikeClick}
+                  onHandleRecipeActionLikeClick={onHandleRecipeActionLikeClick}
                   onHandleNavigation={() => handleNavigation(node)}
                 />
               </Box>
@@ -115,21 +90,5 @@ function HorizontalCardListView({
     </VStack>
   );
 }
-
-const styles = StyleSheet.create({
-  toast: {
-    backgroundColor: "#e6352b",
-    padding: 10,
-    borderRadius: 10,
-    // shadowColor: "#000000",
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 7,
-    // },
-    // shadowOpacity: 0.21,
-    // shadowRadius: 7.68,
-    // elevation: 10,
-  },
-});
 
 export default HorizontalCardListView;

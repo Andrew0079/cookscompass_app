@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { HStack, Box, View, Spinner, VStack } from "native-base";
+import { HStack, Box, Spinner, VStack } from "native-base";
 import { StyleSheet } from "react-native";
 import { ROUTES } from "../../../../utils/common";
 import { FlashList } from "@shopify/flash-list";
@@ -14,7 +14,11 @@ function Footer({ isLoading }: { isLoading: boolean }) {
   return isLoading ? <Spinner size="sm" color="#CACCCE" /> : null;
 }
 
-const renderRecipeCard = (node: Node, navigation) => {
+const renderRecipeCard = (
+  node: Node,
+  navigation,
+  onHandleRecipeActionLikeClick
+) => {
   const {
     id,
     likes,
@@ -42,11 +46,18 @@ const renderRecipeCard = (node: Node, navigation) => {
       totalTime={totalTime}
       kcal={nutrientsPerServing?.calories}
       onHandleNavigation={() => handleNavigation(node)}
+      onHandleRecipeActionLikeClick={onHandleRecipeActionLikeClick}
     />
   );
 };
 
-function VerticalCardListView({ navigation, data, loadingData, onEndReached }) {
+function VerticalCardListView({
+  navigation,
+  data,
+  loadingData,
+  onEndReached,
+  onHandleRecipeActionLikeClick,
+}) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Function to process data into pairs
@@ -97,7 +108,11 @@ function VerticalCardListView({ navigation, data, loadingData, onEndReached }) {
                       alignItems={secondNode ? "center" : "fex-start"}
                       justifyContent="center"
                     >
-                      {renderRecipeCard(firstNode.node, navigation)}
+                      {renderRecipeCard(
+                        firstNode.node,
+                        navigation,
+                        onHandleRecipeActionLikeClick
+                      )}
                     </VStack>
                   )}
 
@@ -109,7 +124,11 @@ function VerticalCardListView({ navigation, data, loadingData, onEndReached }) {
                       alignItems="center"
                       justifyContent="center"
                     >
-                      {renderRecipeCard(secondNode.node, navigation)}
+                      {renderRecipeCard(
+                        secondNode.node,
+                        navigation,
+                        onHandleRecipeActionLikeClick
+                      )}
                     </VStack>
                   )}
                 </HStack>

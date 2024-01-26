@@ -1,20 +1,13 @@
 import React from "react";
-import {
-  VStack,
-  Button,
-  Text,
-  Center,
-  HStack,
-  View,
-  Box,
-  Image,
-} from "native-base";
+import { VStack, Button, Center, HStack, View, Image } from "native-base";
 import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   StatusBar,
 } from "react-native";
+// @ts-ignore
+import { NbTextView } from "@components";
 import { ROUTES } from "../../../utils/common";
 
 function SignInOrSignUp({ navigation }) {
@@ -39,42 +32,43 @@ function SignInOrSignUp({ navigation }) {
           <VStack justifyContent="flex-end" flex={1} paddingBottom={70}>
             <Center>
               <HStack space={1}>
-                <Text color="black" fontSize="3xl" fontWeight="bold">
+                <NbTextView fontSize="3xl" fontWeight="800">
                   Your
-                </Text>
-                <Text color="gray.400" fontSize="3xl" fontWeight="bold">
+                </NbTextView>
+
+                <NbTextView color="gray.400" fontSize="3xl" fontWeight="800">
                   Recipe Heaven
-                </Text>
+                </NbTextView>
               </HStack>
-              <Text color="black" fontSize="2xl" fontWeight="bold">
+              <NbTextView fontSize="2xl" fontWeight="700">
                 Awaits Exploration!
-              </Text>
+              </NbTextView>
               <Button
                 marginTop={8}
                 marginBottom={8}
                 variant="outline"
-                borderRadius="20"
+                rounded="3xl"
                 onPress={() => {
                   navigation.navigate(ROUTES.SIGN_UP);
                 }}
                 width="70%"
               >
-                <Text color="black" fontWeight="800">
+                <NbTextView color="black" fontWeight="800">
                   Let's Get Started
-                </Text>
+                </NbTextView>
               </Button>
               <HStack space={1}>
-                <Text color="black" fontSize="md">
+                <NbTextView color="black" fontSize="md">
                   Already have an account?
-                </Text>
+                </NbTextView>
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate(ROUTES.SIGN_IN);
                   }}
                 >
-                  <Text color="#006ee6" fontSize="md" underline>
+                  <NbTextView color="#006ee6" fontSize="md" underline>
                     Sign In
-                  </Text>
+                  </NbTextView>
                 </TouchableOpacity>
               </HStack>
             </Center>

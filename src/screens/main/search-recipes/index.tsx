@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, View, StatusBar } from "react-native";
+import { useToast } from "native-base";
+// @ts-ignore
+import { ToastView } from "@components";
 // @ts-ignore
 import { api } from "@api/api";
 import { VerticalCardListView, SearchScreenHeader, Filter } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 import { setError } from "../../../redux/slices/error-slice";
 import { RootState } from "../../../redux/store";
+import { handleRecipeActions } from "../../../utils/functions";
 
 const difficulty = {
   "Under 1 hour": 60,
@@ -30,8 +34,10 @@ function SearchRecipes({ navigation }) {
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
   const [after, setAfter] = useState<string | null>(null);
   const [loadingData, setLoadingData] = useState<boolean>(true);
+  const [liked, setLiked] = useState(null);
 
   const dispatch = useDispatch();
+  const toast = useToast();
 
   const handleSelectItem = (section: string, item: string) => {
     setFilters((prevFilters) => {
@@ -126,6 +132,81 @@ function SearchRecipes({ navigation }) {
     }
   };
 
+  const handleRecipeActionLikeClick = async (recipeId: string) => {
+    setLiked(recipeId);
+
+    const likedRecipe = recipes.forEach((recipe) => {
+      console.log(recipe);
+    });
+
+    // const nodeIndex = discovery.data.data.findIndex(
+    //   (recipe) => recipe.node.id === recipeId
+    // );
+    // try {
+    //   await handleRecipeActions(recipeId);
+    // } catch (error) {
+    //   toast.show({
+    //     placement: "top",
+    //     render: () => <ToastView text="Unable to perform like action" />,
+    //   });
+    //   // If the server call fails, revert the optimistic update
+    // }
+  };
+
+  useEffect(() => {
+    const handleLikeUpdates = () => {
+      setRecipes((prevCategories) => {
+        return prevCategories.map((category) => {
+          if (category?.data && category?.data?.data) {
+            const newData = category.data.data.map((node) => {
+              const currentRecipeId = node.node.id;
+              const currentCount = node.node.likes;
+              const likedRecipeId = liked?.recipeId;
+              const isLiked = liked?.isRecipeLiked;
+
+              // user likes recipe
+              if (currentRecipeId === likedRecipeId && !isLiked) {
+                return {
+                  ...node,
+                  node: {
+                    ...node.node,
+                    likes: currentCount + 1,
+                    isRecipeLiked: true,
+                  },
+                };
+              }
+              // user dislike recipe
+              if (currentRecipeId === likedRecipeId && isLiked) {
+                return {
+                  ...node,
+                  node: {
+                    ...node.node,
+                    likes: currentCount - 1,
+                    isRecipeLiked: false,
+                  },
+                };
+              } else {
+                return node;
+              }
+            });
+            // Return the updated category with the new data
+            return {
+              ...category,
+              data: {
+                ...category.data,
+                data: newData,
+              },
+            };
+          } else {
+            return category;
+          }
+        });
+      });
+    };
+
+    handleLikeUpdates();
+  }, [liked]);
+
   useEffect(() => {
     const fetchRandomRecipes = async () => {
       await fetchRecipes();
@@ -151,6 +232,7 @@ function SearchRecipes({ navigation }) {
               navigation={navigation}
               data={recipes}
               onEndReached={getRecipesByFilterOnScroll}
+              onHandleRecipeActionLikeClick={handleRecipeActionLikeClick}
             />
           )}
           {isFilterOpen && (
@@ -180,7 +262,7 @@ const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
     alignContent: "center",
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "white",
   },
 });
 

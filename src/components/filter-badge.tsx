@@ -1,6 +1,6 @@
 import React from "react";
-import { Text } from "native-base";
 import { TouchableOpacity, StyleSheet } from "react-native";
+import NbTextView from "./nb-text-view";
 
 const styles = StyleSheet.create({
   badge: {
@@ -35,13 +35,13 @@ function FilterBadge({
   };
   return (
     <TouchableOpacity onPress={onPress} style={badgeStyle}>
-      <Text
+      <NbTextView
         padding={2}
         fontWeight={fontWeight}
         color={isSelected || backgroundColor !== "white" ? "white" : "black"}
       >
         {item}
-      </Text>
+      </NbTextView>
     </TouchableOpacity>
   );
 }

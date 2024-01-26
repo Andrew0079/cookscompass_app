@@ -3,7 +3,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import validator from "validator";
 import { ROUTES } from "../../../utils/common";
 // @ts-ignore
-import { Header } from "@components";
+import { Header, NbTextView } from "@components";
 import {
   SafeAreaView,
   StyleSheet,
@@ -19,7 +19,6 @@ import {
   Button,
   HStack,
   IconButton,
-  Text,
   View,
   Center,
   Input,
@@ -193,13 +192,15 @@ function SignUp({ navigation, route }) {
                 space={4}
               >
                 <Center>
-                  <Text fontSize="3xl" fontWeight="bold">
+                  <NbTextView fontSize="3xl" fontWeight="800">
                     Create Account
-                  </Text>
-                  <Text fontSize="xs">
+                  </NbTextView>
+                  <NbTextView fontSize="xs" fontWeight="800">
                     Fill your information below or register
-                  </Text>
-                  <Text fontSize="xs">with your social account.</Text>
+                  </NbTextView>
+                  <NbTextView fontSize="xs" fontWeight="800">
+                    with your social account.
+                  </NbTextView>
                 </Center>
 
                 {inputFieldsContainer.map(
@@ -223,10 +224,10 @@ function SignUp({ navigation, route }) {
             <HStack justifyContent="flex-start" paddingLeft={7} paddingTop={7}>
               <Checkbox value="accepted">
                 <HStack space={1}>
-                  <Text fontWeight="bold">Agree with</Text>
-                  <Text underline fontWeight="bold" color="#006ee6">
+                  <NbTextView fontWeight="bold">Agree with</NbTextView>
+                  <NbTextView underline fontWeight="bold" color="#006ee6">
                     Terms & conditions
-                  </Text>
+                  </NbTextView>
                 </HStack>
               </Checkbox>
             </HStack>
@@ -239,11 +240,11 @@ function SignUp({ navigation, route }) {
               <Button
                 variant="outline"
                 marginBottom={2}
-                borderRadius="25"
+                rounded="3xl"
                 onPress={() => validateForm()}
                 width="70%"
               >
-                <Text fontWeight="800">Sign Up</Text>
+                <NbTextView fontWeight="800">Sign Up</NbTextView>
               </Button>
               <HStack
                 justifyContent="center"
@@ -253,7 +254,7 @@ function SignUp({ navigation, route }) {
                 space={1}
               >
                 <Divider width={20} />
-                <Text> Or sign in with</Text>
+                <NbTextView fontWeight="800"> Or sign in with</NbTextView>
                 <Divider width={20} />
               </HStack>
               <HStack
@@ -279,15 +280,15 @@ function SignUp({ navigation, route }) {
                 )}
               </HStack>
               <HStack paddingTop={8} space={1}>
-                <Text>Already have an account?</Text>
+                <NbTextView>Already have an account?</NbTextView>
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate(ROUTES.SIGN_IN, { isFromSignUp: true });
                   }}
                 >
-                  <Text underline color="#006ee6">
+                  <NbTextView underline color="#006ee6">
                     Sign In
-                  </Text>
+                  </NbTextView>
                 </TouchableOpacity>
               </HStack>
             </Center>

@@ -17,7 +17,6 @@ import {
   Button,
   HStack,
   IconButton,
-  Text,
   View,
   Box,
   Divider,
@@ -27,6 +26,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { ROUTES } from "@utils/common";
 import {
   Header,
+  NbTextView,
   // @ts-ignore
 } from "@components";
 // @ts-ignore
@@ -170,10 +170,12 @@ function SignIn({ navigation, route }) {
                   paddingRight={5}
                   paddingTop={30}
                 >
-                  <Text fontSize="4xl">Sign In</Text>
-                  <Text fontSize="md" marginTop={-3}>
+                  <NbTextView fontSize="4xl" fontWeight="800">
+                    Sign In
+                  </NbTextView>
+                  <NbTextView fontSize="md" marginTop={-3} fontWeight="800">
                     Hi! Welcome back. You've been missed.
-                  </Text>
+                  </NbTextView>
                   <Input
                     variant="rounded"
                     placeholder="Email"
@@ -191,20 +193,22 @@ function SignIn({ navigation, route }) {
                   />
                   <Box alignSelf="flex-end">
                     <TouchableOpacity>
-                      <Text underline color="#006ee6">
+                      <NbTextView underline color="#006ee6">
                         Forgot your password?
-                      </Text>
+                      </NbTextView>
                     </TouchableOpacity>
                   </Box>
 
                   <Button
                     variant="outline"
-                    borderRadius={25}
+                    rounded="3xl"
                     onPress={() => validateForm()}
                     color="white"
                     width="80%"
                   >
-                    <Text textAlign="center">Sign In</Text>
+                    <NbTextView textAlign="center" fontWeight="800">
+                      Sign In
+                    </NbTextView>
                   </Button>
                 </VStack>
               </KeyboardAvoidingView>
@@ -217,7 +221,7 @@ function SignIn({ navigation, route }) {
                   space={1}
                 >
                   <Divider width={20} />
-                  <Text> Or sign in with</Text>
+                  <NbTextView fontWeight="800"> Or sign in with</NbTextView>
                   <Divider width={20} />
                 </HStack>
                 <HStack
@@ -249,7 +253,7 @@ function SignIn({ navigation, route }) {
                   alignItems="flex-start"
                   justifyContent="center"
                 >
-                  <Text>Don't have an account?</Text>
+                  <NbTextView>Don't have an account?</NbTextView>
                   <TouchableOpacity
                     onPress={() => {
                       navigation.navigate(ROUTES.SIGN_UP, {
@@ -257,9 +261,9 @@ function SignIn({ navigation, route }) {
                       });
                     }}
                   >
-                    <Text underline color="#006ee6">
+                    <NbTextView underline color="#006ee6">
                       Sign Up
-                    </Text>
+                    </NbTextView>
                   </TouchableOpacity>
                 </HStack>
               </View>
@@ -277,7 +281,7 @@ function SignIn({ navigation, route }) {
                   });
                 }}
               >
-                <Text color="#006ee6">Verify Account?</Text>
+                <NbTextView color="#006ee6">Verify Account?</NbTextView>
               </TouchableOpacity>
             </HStack>
           </SafeAreaView>

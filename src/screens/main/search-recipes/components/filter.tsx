@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, Box } from "native-base";
+import { View, Box } from "native-base";
 import { StyleSheet } from "react-native";
 // @ts-ignore
-import { FilterBadge } from "@components";
+import { FilterBadge, NbTextView } from "@components";
 import { FlashList } from "@shopify/flash-list";
 
 const diet = [
@@ -84,7 +84,9 @@ export { searchFilterItems };
 const RenderItem = ({ item, filters, onHandleSelectItem }) => {
   return (
     <View style={styles.categoryContainer}>
-      <Text style={styles.categoryTitle}>{item.title}</Text>
+      <NbTextView style={styles.categoryTitle} fontWeight="800">
+        {item.title}
+      </NbTextView>
       <View style={styles.itemsContainer}>
         {item.data.map((subItem: string, index: number) => {
           let isSelected;
@@ -103,6 +105,7 @@ const RenderItem = ({ item, filters, onHandleSelectItem }) => {
             <Box padding={1} key={index}>
               <FilterBadge
                 isSelected={isSelected}
+                fontWeight="500"
                 item={subItem}
                 onPress={() => onHandleSelectItem(item.key, formattedSubItem)}
               />
@@ -131,7 +134,7 @@ function Filter({ filters, onHandleSelectItem }: any) {
           );
         }}
         keyExtractor={(item) => item.key}
-        estimatedItemSize={50}
+        estimatedItemSize={100}
       />
     </View>
   );

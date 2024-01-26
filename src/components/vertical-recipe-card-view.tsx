@@ -1,7 +1,8 @@
 import React from "react";
-import { Box, Image, Text, VStack, HStack } from "native-base";
+import { Box, Image, VStack, HStack } from "native-base";
 import { TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import NbTextView from "./nb-text-view";
 
 function VerticalRecipeCardView({
   recipeId,
@@ -21,15 +22,13 @@ function VerticalRecipeCardView({
   image: string;
   totalTime: string;
   kcal: number;
-  onHandleRecipeActionLikeClick: (
-    recipeId: string,
-    isRecipeLiked: boolean
-  ) => void;
+  onHandleRecipeActionLikeClick: (recipeId: string) => void;
   onHandleNavigation: () => void;
 }) {
   const cardHeight = 260;
   const imageHeight = 165;
   const textHeight = cardHeight - imageHeight;
+
   return (
     <TouchableOpacity onPress={onHandleNavigation}>
       <Box
@@ -61,14 +60,14 @@ function VerticalRecipeCardView({
             py={1}
             rounded="full"
           >
-            <Text color="black" fontSize={10} bold>
+            <NbTextView color="black" fontSize={11} bold>
               {totalTime}
-            </Text>
+            </NbTextView>
           </Box>
 
           {/* Text Section */}
           <VStack height={textHeight} justifyContent="space-between">
-            <Text
+            <NbTextView
               fontSize="sm"
               color="gray.600"
               isTruncated
@@ -78,7 +77,7 @@ function VerticalRecipeCardView({
               paddingRight={2}
             >
               {recipeName}
-            </Text>
+            </NbTextView>
             <HStack
               space={3}
               justifyContent="space-between"
@@ -88,9 +87,7 @@ function VerticalRecipeCardView({
             >
               <HStack alignItems="center" space={1} justifyContent="center">
                 <TouchableOpacity
-                  onPress={() =>
-                    onHandleRecipeActionLikeClick(recipeId, isRecipeLiked)
-                  }
+                  onPress={() => onHandleRecipeActionLikeClick(recipeId)}
                 >
                   <FontAwesome
                     name={isRecipeLiked ? "heart" : "heart-o"}
@@ -98,11 +95,15 @@ function VerticalRecipeCardView({
                     color={isRecipeLiked ? "#e6352b" : "gray"}
                   />
                 </TouchableOpacity>
-                <Text color="gray.600" fontWeight="bold">
+                <NbTextView color="gray.600" fontWeight="bold">
                   {likes > 0 ? likes : ""}
-                </Text>
+                </NbTextView>
               </HStack>
-              {kcal && <Text color="gray.600">{Math.round(kcal)} kcal</Text>}
+              {kcal && (
+                <NbTextView color="gray.600">
+                  {Math.round(kcal)} kcal
+                </NbTextView>
+              )}
             </HStack>
           </VStack>
         </VStack>

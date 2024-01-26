@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import LottieView from "lottie-react-native";
-import { Center, HStack, Text, VStack, Button } from "native-base";
+import { Center, HStack, VStack, Button } from "native-base";
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,6 +8,8 @@ import {
   StatusBar,
   Platform,
 } from "react-native";
+// @ts-ignore
+import { NbTextView } from "@components";
 import { FontAwesome } from "@expo/vector-icons";
 import { ROUTES } from "../../../utils/common";
 import { emailVerification } from "../../../services/auth";
@@ -66,23 +68,23 @@ function Verification({ navigation, route }) {
                 setManualVerificationSent(true);
               }}
             >
-              <Text>Send Verification</Text>
+              <NbTextView fontWeight="800">Send Verification</NbTextView>
             </Button>
           ) : (
             <Center>
-              <Text fontSize="xl" fontWeight="bold">
+              <NbTextView fontSize="xl" fontWeight="800">
                 Check your email
-              </Text>
-              <Text fontWeight="bold" paddingBottom={5}>
+              </NbTextView>
+              <NbTextView fontWeight="800" paddingBottom={5}>
                 We have sent a verification link
-              </Text>
+              </NbTextView>
 
               <HStack marginBottom={5}>
-                <Text>Didn't receive the email? </Text>
+                <NbTextView>Didn't receive the email? </NbTextView>
                 <TouchableOpacity onPress={() => handleEmailVerification()}>
-                  <Text fontWeight="bold" color="#006ee6">
+                  <NbTextView fontWeight="bold" color="#006ee6">
                     Click to resend
-                  </Text>
+                  </NbTextView>
                 </TouchableOpacity>
               </HStack>
             </Center>
@@ -95,9 +97,9 @@ function Verification({ navigation, route }) {
           >
             <HStack justifyContent="center" alignItems="center">
               <FontAwesome name="arrow-left" size={13} color="#006ee6" />
-              <Text style={{ marginLeft: 5 }} color="#006ee6">
+              <NbTextView style={{ marginLeft: 5 }} color="#006ee6">
                 Back to log in
-              </Text>
+              </NbTextView>
             </HStack>
           </TouchableOpacity>
         </Center>

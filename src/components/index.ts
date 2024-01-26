@@ -10,6 +10,8 @@ import UnavailableView from "./unavailable-view";
 import VerticalRecipeCardView from "./vertical-recipe-card-view";
 import VerticalRecipeCardSkeletonView from "./skeletons/vertical-recipe-card-skeleton-view";
 import RecipeCardSkeletonListView from "./skeletons/recipe-card-skeleton-list-view";
+import NbTextView from "./nb-text-view";
+import ToastView from "./toast-view";
 
 export {
   Header,
@@ -24,4 +26,6 @@ export {
   VerticalRecipeCardView,
   VerticalRecipeCardSkeletonView,
   RecipeCardSkeletonListView,
+  NbTextView,
+  ToastView,
 };

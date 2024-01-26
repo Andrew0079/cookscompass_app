@@ -21,7 +21,7 @@ import { setError } from "../../redux/slices/error-slice";
 import { setLoading } from "../../redux/slices/loading-slice";
 import * as SplashScreen from "expo-splash-screen";
 import { setDiscoveryData } from "../../redux/slices/discovery-slice";
-import * as Font from "expo-font";
+import { useFonts } from "expo-font";
 
 const { Navigator: StackNavigator, Screen } = createStackNavigator();
 
@@ -46,7 +46,6 @@ const getRecipesByCategoryTags = async (tag: string) => {
 };
 
 function Navigator() {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
   const dispatch = useDispatch();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [appIsReady, setAppIsReady] = useState(false);
@@ -62,21 +61,25 @@ function Navigator() {
     (state: RootState) => state.error.value
   ) as unknown as { error: string; visible: boolean } | undefined;
 
-  // Load your fonts asynchronously
-  useEffect(() => {
-    async function loadFonts() {
-      try {
-        await Font.loadAsync({
-          "BioRhyme-Regular": require("../../../assets/fonts/BioRhyme/static/BioRhyme-Regular.ttf"),
-          FiraSansExtraCondensedRegular: require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-Regular.ttf"),
-        });
-        setFontsLoaded(true); // Set state to true when fonts are loaded
-      } catch (error) {
-        console.error("Error loading fonts", error);
-      }
-    }
-    loadFonts();
-  }, []);
+  let [fontsLoaded, fontError] = useFonts({
+    "FiraSansExtraCondensed-Thin": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-Thin.ttf"),
+    "FiraSansExtraCondensed-ThinItalic": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-ThinItalic.ttf"),
+    "FiraSansExtraCondensed-ExtraLight": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-ExtraLight.ttf"),
+    "FiraSansExtraCondensed-ExtraLightItalic": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-ExtraLightItalic.ttf"),
+    "FiraSansExtraCondensed-Light": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-Light.ttf"),
+    "FiraSansExtraCondensed-LightItalic": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-LightItalic.ttf"),
+    "FiraSansExtraCondensed-Regular": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-Regular.ttf"),
+    "FiraSansExtraCondensed-Medium": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-Medium.ttf"),
+    "FiraSansExtraCondensed-MediumItalic": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-MediumItalic.ttf"),
+    "FiraSansExtraCondensed-SemiBold": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-SemiBold.ttf"),
+    "FiraSansExtraCondensed-SemiBoldItalic": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-SemiBoldItalic.ttf"),
+    "FiraSansExtraCondensed-Bold": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-Bold.ttf"),
+    "FiraSansExtraCondensed-BoldItalic": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-BoldItalic.ttf"),
+    "FiraSansExtraCondensed-ExtraBold": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-ExtraBold.ttf"),
+    "FiraSansExtraCondensed-ExtraBoldItalic": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-ExtraBoldItalic.ttf"),
+    "FiraSansExtraCondensed-Black": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-Black.ttf"),
+    "FiraSansExtraCondensed-BlackItalic": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-BlackItalic.ttf"),
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -172,6 +175,10 @@ function Navigator() {
       }
     }
   }, [discoveryData, currentUser, fontsLoaded]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   return (
     <NativeBaseProvider theme={theme}>
