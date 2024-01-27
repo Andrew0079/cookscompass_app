@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { HStack, Box, Spinner, VStack } from "native-base";
 import { StyleSheet } from "react-native";
 import { ROUTES } from "../../../../utils/common";
@@ -11,7 +11,11 @@ import {
 import { Node } from "../../../../common/interfaces/interfaces";
 
 function Footer({ isLoading }: { isLoading: boolean }) {
-  return isLoading ? <Spinner size="sm" color="#CACCCE" /> : null;
+  return isLoading ? (
+    <Box padding={2}>
+      <Spinner variant="" size="lg" color="#CACCCE" />
+    </Box>
+  ) : null;
 }
 
 const renderRecipeCard = (
@@ -54,12 +58,12 @@ const renderRecipeCard = (
 function VerticalCardListView({
   navigation,
   data,
+  isLoadingOnScroll,
   loadingData,
   onEndReached,
   onHandleRecipeActionLikeClick,
+  onSetIsLoadingOnScroll,
 }) {
-  const [isLoading, setIsLoading] = useState(false);
-
   // Function to process data into pairs
   const processDataIntoPairs = (data) => {
     const pairs = [];
@@ -79,14 +83,13 @@ function VerticalCardListView({
         <FlashList
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.contentContainerStyle}
-          estimatedItemSize={200}
+          estimatedItemSize={350}
           data={dataPairs}
-          ListFooterComponent={<Footer isLoading={isLoading} />}
+          ListFooterComponent={<Footer isLoading={isLoadingOnScroll} />}
           onEndReachedThreshold={0.5}
           onEndReached={() => {
-            setIsLoading(true);
+            onSetIsLoadingOnScroll(true);
             onEndReached();
-            setIsLoading(false);
           }}
           renderItem={({ item: [firstNode, secondNode] }) => {
             return (

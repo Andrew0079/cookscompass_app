@@ -8,8 +8,9 @@ import { api } from "@api/api";
 import { VerticalCardListView, SearchScreenHeader, Filter } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 import { setError } from "../../../redux/slices/error-slice";
-import { RootState } from "../../../redux/store";
 import { handleRecipeActions } from "../../../utils/functions";
+import socket from "../../../services/socket-service";
+import { RootState } from "../../../redux/store";
 
 const difficulty = {
   "Under 1 hour": 60,
@@ -35,9 +36,14 @@ function SearchRecipes({ navigation }) {
   const [after, setAfter] = useState<string | null>(null);
   const [loadingData, setLoadingData] = useState<boolean>(true);
   const [liked, setLiked] = useState(null);
+  const [isLoadingOnScroll, setIsLoadingOnScroll] = useState(false);
 
   const dispatch = useDispatch();
   const toast = useToast();
+
+  const userId = useSelector(
+    (state: RootState) => state?.user?.value?.customUserId
+  );
 
   const handleSelectItem = (section: string, item: string) => {
     setFilters((prevFilters) => {
@@ -129,83 +135,107 @@ function SearchRecipes({ navigation }) {
   const getRecipesByFilterOnScroll = async () => {
     if (hasNextPage && after) {
       await fetchRecipes({ after }, true);
+      setIsLoadingOnScroll(false);
     }
   };
 
   const handleRecipeActionLikeClick = async (recipeId: string) => {
-    setLiked(recipeId);
+    // Capture the current state before making changes
+    const originalRecipes = [...recipes];
 
-    const likedRecipe = recipes.forEach((recipe) => {
-      console.log(recipe);
-    });
+    // Set the liked recipe in the state
+    const likedRecipe = recipes.find((recipe) => recipe.node.id === recipeId);
+    setLiked(likedRecipe);
 
-    // const nodeIndex = discovery.data.data.findIndex(
-    //   (recipe) => recipe.node.id === recipeId
-    // );
-    // try {
-    //   await handleRecipeActions(recipeId);
-    // } catch (error) {
-    //   toast.show({
-    //     placement: "top",
-    //     render: () => <ToastView text="Unable to perform like action" />,
-    //   });
-    //   // If the server call fails, revert the optimistic update
-    // }
+    try {
+      // Make the server-side request
+      await handleRecipeActions(recipeId);
+    } catch (error) {
+      // If the server call fails, revert the optimistic update
+      setRecipes(originalRecipes);
+      toast.show({
+        placement: "top",
+        render: () => <ToastView text="Unable to perform like action" />,
+      });
+    }
   };
 
   useEffect(() => {
     const handleLikeUpdates = () => {
       setRecipes((prevCategories) => {
         return prevCategories.map((category) => {
-          if (category?.data && category?.data?.data) {
-            const newData = category.data.data.map((node) => {
-              const currentRecipeId = node.node.id;
-              const currentCount = node.node.likes;
-              const likedRecipeId = liked?.recipeId;
-              const isLiked = liked?.isRecipeLiked;
+          if (category?.node) {
+            const node = category.node;
+            const currentRecipeId = node.id;
+            const currentCount = node.likes;
+            const likedRecipeId = liked?.node?.id;
+            const isLiked = node?.isRecipeLiked;
 
-              // user likes recipe
-              if (currentRecipeId === likedRecipeId && !isLiked) {
+            // If the current recipe is the liked/disliked recipe
+            if (currentRecipeId === likedRecipeId) {
+              if (!isLiked) {
                 return {
-                  ...node,
+                  ...category,
                   node: {
-                    ...node.node,
-                    likes: currentCount + 1,
+                    ...node,
+                    likes: parseInt(currentCount) + 1,
                     isRecipeLiked: true,
                   },
                 };
-              }
-              // user dislike recipe
-              if (currentRecipeId === likedRecipeId && isLiked) {
+              } else {
                 return {
-                  ...node,
+                  ...category,
                   node: {
-                    ...node.node,
-                    likes: currentCount - 1,
+                    ...node,
+                    likes: parseInt(currentCount) - 1,
                     isRecipeLiked: false,
                   },
                 };
-              } else {
-                return node;
               }
-            });
-            // Return the updated category with the new data
-            return {
-              ...category,
-              data: {
-                ...category.data,
-                data: newData,
-              },
-            };
+            } else {
+              // No changes if the current recipe is not the liked/disliked one
+              return category;
+            }
           } else {
+            // Return category unchanged if node does not exist
             return category;
           }
         });
       });
     };
-
     handleLikeUpdates();
   }, [liked]);
+
+  useEffect(() => {
+    const likeUpdateHandler = (data) => {
+      const currentRecipeId = data?.recipeId;
+      const newLikeCount = data?.newLikeCount;
+      const userActionId = parseInt(data?.userId) === parseInt(userId);
+
+      if (currentRecipeId && newLikeCount !== undefined && !userActionId) {
+        setRecipes((prevRecipes) => {
+          return prevRecipes.map((recipe) => {
+            if (recipe.node.id === currentRecipeId) {
+              return {
+                ...recipe,
+                node: {
+                  ...recipe.node,
+                  likes: newLikeCount,
+                },
+              };
+            }
+            return recipe;
+          });
+        });
+      }
+    };
+
+    socket.on("likeUpdate", likeUpdateHandler);
+
+    return () => {
+      socket.off("likeUpdate", likeUpdateHandler); // Clean up the event listener when the component unmounts
+    };
+  }, []);
 
   useEffect(() => {
     const fetchRandomRecipes = async () => {
@@ -231,8 +261,10 @@ function SearchRecipes({ navigation }) {
               loadingData={loadingData}
               navigation={navigation}
               data={recipes}
+              isLoadingOnScroll={isLoadingOnScroll}
               onEndReached={getRecipesByFilterOnScroll}
               onHandleRecipeActionLikeClick={handleRecipeActionLikeClick}
+              onSetIsLoadingOnScroll={setIsLoadingOnScroll}
             />
           )}
           {isFilterOpen && (
