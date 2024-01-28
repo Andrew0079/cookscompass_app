@@ -2,10 +2,6 @@ import React from "react";
 import { Input, Icon, HStack } from "native-base";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import {
-  Header,
-  // @ts-ignore
-} from "@components";
 
 function SearchScreenHeader({
   hasFilter,
@@ -21,62 +17,54 @@ function SearchScreenHeader({
   onSetFilters: (value: object | null) => void;
 }) {
   return (
-    <Header paddingBottom={5} borderBottomWidth={1} borderBottomColor="#CACCCE">
-      <HStack
-        space={2}
-        width="100%"
-        alignSelf="center"
-        justifyContent="center"
-        alignItems="center"
-        paddingTop={2}
-        paddingLeft={5}
-        paddingRight={5}
+    <HStack
+      space={2}
+      width="100%"
+      alignSelf="center"
+      justifyContent="center"
+      alignItems="center"
+      paddingBottom={2}
+      paddingLeft={6}
+      paddingRight={6}
+      borderBottomWidth={1}
+      borderBottomColor="#CACCCE"
+    >
+      <Input
+        placeholder="Search recipes..."
+        width={hasFilter ? "72%" : "83%"}
+        height={9}
+        variant="rounded"
+        fontSize="14"
+        onChangeText={(text) => {
+          const searchQuery = text === "" ? null : text;
+          onSetQuery(searchQuery);
+        }}
+      />
+      <TouchableOpacity
+        style={styles.touchableOpacity}
+        onPress={() => onSearch(true)}
       >
-        <Input
-          placeholder="Search recipes..."
-          width={hasFilter ? "72%" : "83%"}
-          height={9}
-          variant="rounded"
-          fontSize="14"
-          onChangeText={(text) => {
-            const searchQuery = text === "" ? null : text;
-            onSetQuery(searchQuery);
-          }}
-        />
-        <TouchableOpacity
-          style={styles.touchableOpacity}
-          onPress={() => onSearch(true)}
-        >
-          <Icon
-            size="6"
-            color="gray.500"
-            as={<MaterialIcons name="search" />}
-          />
-        </TouchableOpacity>
+        <Icon size="6" color="gray.500" as={<MaterialIcons name="search" />} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.touchableOpacity}
+        onPress={() => {
+          onSetIsFilterOpen((prevIsFilterOpen) => !prevIsFilterOpen);
+        }}
+      >
+        <Icon size="6" color="gray.500" as={<MaterialIcons name="tune" />} />
+      </TouchableOpacity>
+      {hasFilter && (
         <TouchableOpacity
           style={styles.touchableOpacity}
           onPress={() => {
-            onSetIsFilterOpen((prevIsFilterOpen) => !prevIsFilterOpen);
+            onSetFilters(null);
           }}
         >
-          <Icon size="6" color="gray.500" as={<MaterialIcons name="tune" />} />
+          <Icon size="6" color="gray.500" as={<MaterialIcons name="clear" />} />
         </TouchableOpacity>
-        {hasFilter && (
-          <TouchableOpacity
-            style={styles.touchableOpacity}
-            onPress={() => {
-              onSetFilters(null);
-            }}
-          >
-            <Icon
-              size="6"
-              color="gray.500"
-              as={<MaterialIcons name="clear" />}
-            />
-          </TouchableOpacity>
-        )}
-      </HStack>
-    </Header>
+      )}
+    </HStack>
   );
 }
 

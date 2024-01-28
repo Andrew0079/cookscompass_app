@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Center, Text } from "native-base";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   TouchableOpacity,
-  SafeAreaView,
   StyleSheet,
   Platform,
   Dimensions,
@@ -31,7 +31,7 @@ function BottomItem({ state, descriptors, navigation }) {
   const tabWidth = screenWidth / state.routes.length;
 
   return (
-    <SafeAreaView style={styles.bottomItemSafeAreView}>
+    <SafeAreaView style={styles.bottomItemSafeAreView} edges={["bottom"]}>
       <View style={styles.bottomItemView}>
         {state.routes.map((route, index: number) => {
           const key = `bottomItem-${index}`;
@@ -90,8 +90,6 @@ function BottomItem({ state, descriptors, navigation }) {
 function MainNavigator() {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
-  const { height, width } = Dimensions.get("window");
-
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
@@ -109,23 +107,21 @@ function MainNavigator() {
   }, []);
 
   return (
-    <View style={{ height, width }}>
-      <Tab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            display: keyboardVisible ? "none" : "flex",
-          },
-        }}
-        tabBar={(props) => <BottomItem {...props} />}
-      >
-        <Tab.Screen name="Discover" component={Discover} />
-        <Tab.Screen name="Community" component={Community} />
-        <Tab.Screen name="Menu" component={Menu} />
-        <Tab.Screen name="Search" component={SearchRecipes} />
-        <Tab.Screen name="Profile" component={Profile} />
-      </Tab.Navigator>
-    </View>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          display: keyboardVisible ? "none" : "flex",
+        },
+      }}
+      tabBar={(props) => <BottomItem {...props} />}
+    >
+      <Tab.Screen name="Discover" component={Discover} />
+      <Tab.Screen name="Community" component={Community} />
+      <Tab.Screen name="Menu" component={Menu} />
+      <Tab.Screen name="Search" component={SearchRecipes} />
+      <Tab.Screen name="Profile" component={Profile} />
+    </Tab.Navigator>
   );
 }
 

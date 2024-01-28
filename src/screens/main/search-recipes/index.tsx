@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View, StatusBar } from "react-native";
-import { useToast } from "native-base";
+import { StyleSheet, StatusBar, View, Platform } from "react-native";
+import { Box, VStack, useToast } from "native-base";
 // @ts-ignore
 import { ToastView } from "@components";
 // @ts-ignore
@@ -11,6 +11,7 @@ import { setError } from "../../../redux/slices/error-slice";
 import { handleRecipeActions } from "../../../utils/functions";
 import socket from "../../../services/socket-service";
 import { RootState } from "../../../redux/store";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const difficulty = {
   "Under 1 hour": 60,
@@ -26,6 +27,8 @@ const filterSections = {
   tags: false,
   cuisines: false,
 };
+
+const isIOS = Platform.OS === "ios";
 
 function SearchRecipes({ navigation }) {
   const [recipes, setRecipes] = useState([]);
@@ -245,38 +248,49 @@ function SearchRecipes({ navigation }) {
   }, []);
 
   return (
-    <View style={styles.searchRecipesContainer}>
-      <StatusBar backgroundColor="transparent" barStyle="dark-content" />
-      <View style={styles.topSection}>
-        <SearchScreenHeader
-          hasFilter={!!(filters && Object.keys(filters).length > 0)}
-          onSetIsFilterOpen={setIsFilterOpen}
-          onSearch={getRecipesByFilter}
-          onSetQuery={setQuery}
-          onSetFilters={setFilters}
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "white" }}
+      edges={isIOS ? ["top"] : undefined}
+    >
+      <View style={styles.searchRecipesContainer}>
+        <StatusBar
+          backgroundColor="white"
+          barStyle="dark-content"
+          translucent
         />
-        <SafeAreaView style={styles.safeAreaView}>
-          {!isFilterOpen && (
-            <VerticalCardListView
-              loadingData={loadingData}
-              navigation={navigation}
-              data={recipes}
-              isLoadingOnScroll={isLoadingOnScroll}
-              onEndReached={getRecipesByFilterOnScroll}
-              onHandleRecipeActionLikeClick={handleRecipeActionLikeClick}
-              onSetIsLoadingOnScroll={setIsLoadingOnScroll}
+        <VStack flex={1}>
+          <Box>
+            <SearchScreenHeader
+              hasFilter={!!(filters && Object.keys(filters).length > 0)}
+              onSetIsFilterOpen={setIsFilterOpen}
+              onSearch={getRecipesByFilter}
+              onSetQuery={setQuery}
+              onSetFilters={setFilters}
             />
-          )}
-          {isFilterOpen && (
-            <Filter
-              filters={filters}
-              onHandleSelectItem={handleSelectItem}
-              onEndReached={getRecipesByFilter}
-            />
-          )}
-        </SafeAreaView>
+          </Box>
+          <Box flex={1}>
+            {!isFilterOpen && (
+              <VerticalCardListView
+                loadingData={loadingData}
+                navigation={navigation}
+                data={recipes}
+                isLoadingOnScroll={isLoadingOnScroll}
+                onEndReached={getRecipesByFilterOnScroll}
+                onHandleRecipeActionLikeClick={handleRecipeActionLikeClick}
+                onSetIsLoadingOnScroll={setIsLoadingOnScroll}
+              />
+            )}
+            {isFilterOpen && (
+              <Filter
+                filters={filters}
+                onHandleSelectItem={handleSelectItem}
+                onEndReached={getRecipesByFilter}
+              />
+            )}
+          </Box>
+        </VStack>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -285,16 +299,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
-  topSection: {
-    flex: 4,
-  },
-  bottomSection: {
-    flex: 1,
-  },
   safeAreaView: {
     flex: 1,
-    alignContent: "center",
-    backgroundColor: "white",
+    backgroundColor: "red",
   },
 });
 

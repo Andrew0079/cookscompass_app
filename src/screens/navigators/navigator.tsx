@@ -1,7 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { NativeBaseProvider } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  CardStyleInterpolators,
+} from "@react-navigation/stack";
 import MainNavigator from "./main-navigator";
 import AuthNavigator from "./auth-navigator";
 // @ts-ignore
@@ -202,8 +205,11 @@ function Navigator() {
         </Modal>
         <StackNavigator
           screenOptions={{
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
             ...commonScreenOptions,
             headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
         >
           {isAuthenticated && (

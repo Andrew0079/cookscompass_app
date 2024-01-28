@@ -81,6 +81,7 @@ function VerticalCardListView({
         <RecipeCardSkeletonListView />
       ) : (
         <FlashList
+          bounces={false}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.contentContainerStyle}
           estimatedItemSize={350}
@@ -94,7 +95,6 @@ function VerticalCardListView({
           renderItem={({ item: [firstNode, secondNode] }) => {
             return (
               <Box
-                shadow={5}
                 width="95%"
                 alignSelf="center"
                 paddingTop={2}

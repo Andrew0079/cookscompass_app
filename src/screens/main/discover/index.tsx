@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { SafeAreaView, StyleSheet, ScrollView } from "react-native";
+import { StyleSheet, ScrollView, StatusBar, Platform } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Box, useToast, Divider, Image } from "native-base";
 import { HorizontalCardListView, CategoryRecipeCard } from "./components";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +25,8 @@ const data = [
   { title: "Yummy Soups", itemKey: "soup" },
   { title: "Healthy Smoothies", itemKey: "smoothie" },
 ];
+
+const isIOS = Platform.OS === "ios";
 
 function Discover({ navigation }) {
   const dispatch = useDispatch();
@@ -72,7 +75,8 @@ function Discover({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={isIOS ? ["top"] : undefined}>
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
       <View style={styles.headerArea} px={5}>
         <Image
           alt="logo"
@@ -84,9 +88,8 @@ function Discover({ navigation }) {
           Discover Recipes
         </NbTextView>
       </View>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView style={styles.scrollView} bounces={false}>
         <View
-          shadow={9}
           width="100%"
           marginTop={3} // Adjust as needed
           marginBottom={5}
@@ -174,7 +177,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.4)", // Adjust opacity for desired darkness
   },
   headerArea: {
-    paddingBottom: 10,
+    paddingBottom: 5,
     backgroundColor: "white",
     flexDirection: "row",
     alignItems: "center",

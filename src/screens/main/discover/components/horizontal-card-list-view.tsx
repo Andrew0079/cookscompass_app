@@ -31,20 +31,15 @@ function HorizontalCardListView({
         <NbTextView
           fontSize="lg"
           marginLeft={4}
-          paddingTop={2}
+          paddingTop={3}
+          paddingBottom={2}
           color="gray.500"
           fontWeight="800"
         >
           {title.toUpperCase()}
         </NbTextView>
       </View>
-      <Box
-        height={280}
-        marginBottom={4}
-        justifyContent="center"
-        shadow="9"
-        backgroundColor="transparent"
-      >
+      <Box marginBottom={4} justifyContent="center">
         <FlashList
           data={data}
           renderItem={({ item: { node } }: { item: { node: Node } }) => {
@@ -64,6 +59,7 @@ function HorizontalCardListView({
 
             return (
               <Box
+                height={270}
                 marginLeft={firstItemId === itemId ? 4 : 3}
                 marginRight={lastItemId === itemId ? 4 : 0}
               >
