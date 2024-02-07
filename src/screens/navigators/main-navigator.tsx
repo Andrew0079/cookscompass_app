@@ -10,21 +10,22 @@ import {
   Dimensions,
   Keyboard,
 } from "react-native";
-import { Discover, SearchRecipes, Menu, Profile, Community } from "../main";
-
-import { Ionicons } from "@expo/vector-icons"; // Import the icon library (Ionicons in this example)
+import { Discover, Recipes, Tools, Diary, Progress } from "../main";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"; // Import the icon library (Ionicons in this example)
 
 const Tab = createBottomTabNavigator();
 
 const isIOS = Platform.OS === "ios";
 
 function BottomItem({ state, descriptors, navigation }) {
-  const iconContainerByRouteName = {
-    Discover: "fast-food-outline",
-    Community: "people-outline",
-    Profile: "person-outline",
-    Menu: "cube-outline",
-    Search: "search-sharp",
+  const ionicIcons = {
+    Diary: "book",
+    Progress: "stats-chart",
+    Tools: "apps",
+  };
+  const materialIcons = {
+    Discover: "food-apple",
+    Recipes: "chef-hat",
   };
 
   const screenWidth = Dimensions.get("window").width;
@@ -58,6 +59,9 @@ function BottomItem({ state, descriptors, navigation }) {
             });
           };
 
+          const ionicIcon = ionicIcons[route.name];
+          const materialIcon = materialIcons[route.name];
+
           return (
             <TouchableOpacity
               key={key}
@@ -70,11 +74,18 @@ function BottomItem({ state, descriptors, navigation }) {
               onLongPress={onLongPress}
             >
               <Center>
-                <Ionicons
-                  name={iconContainerByRouteName[route.name]}
-                  color={focusedColor}
-                  size={23}
-                />
+                {ionicIcon && (
+                  <Ionicons name={ionicIcon} color={focusedColor} size={23} />
+                )}
+
+                {materialIcon && (
+                  <MaterialCommunityIcons
+                    name={materialIcon}
+                    color={focusedColor}
+                    size={23}
+                  />
+                )}
+
                 <Text fontSize={11} color={focusedColor}>
                   {route.name}
                 </Text>
@@ -116,11 +127,11 @@ function MainNavigator() {
       }}
       tabBar={(props) => <BottomItem {...props} />}
     >
+      <Tab.Screen name="Diary" component={Diary} />
+      <Tab.Screen name="Progress" component={Progress} />
+      <Tab.Screen name="Tools" component={Tools} />
       <Tab.Screen name="Discover" component={Discover} />
-      <Tab.Screen name="Community" component={Community} />
-      <Tab.Screen name="Menu" component={Menu} />
-      <Tab.Screen name="Search" component={SearchRecipes} />
-      <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name="Recipes" component={Recipes} />
     </Tab.Navigator>
   );
 }

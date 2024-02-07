@@ -30,7 +30,7 @@ const filterSections = {
 
 const isIOS = Platform.OS === "ios";
 
-function SearchRecipes({ navigation }) {
+function Recipes({ navigation }) {
   const [recipes, setRecipes] = useState([]);
   const [filters, setFilters] = useState<object | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
@@ -305,4 +305,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SearchRecipes;
+export default Recipes;

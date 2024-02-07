@@ -36,7 +36,7 @@ const renderRecipeCard = (
   const handleNavigation = (node: Node) => {
     navigation.navigate(ROUTES.RECIPE, {
       node: node,
-      path: ROUTES.SEARCH,
+      path: ROUTES.RECIPES,
     });
   };
 
