@@ -7,11 +7,12 @@ import { CameraView, TrackerHeaderView, NutritionView } from "./components";
 
 const isIOS = Platform.OS === "ios";
 
+// 9031100006587
 function Tracker({ route, navigation }) {
   const title = route.params.title;
 
   const [scan, setScan] = useState(false);
-  const [barcode, setBarcode] = useState<string | null>("9031100006587");
+  const [barcode, setBarcode] = useState<string | null>();
   const [nutrition, setNutrition] = useState();
 
   useEffect(() => {

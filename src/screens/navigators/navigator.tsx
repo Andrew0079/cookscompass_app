@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NativeBaseProvider } from "native-base";
+import { Image, NativeBaseProvider } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 import {
   createStackNavigator,
@@ -24,7 +24,8 @@ import { setError } from "../../redux/slices/error-slice";
 import { setLoading } from "../../redux/slices/loading-slice";
 import * as SplashScreen from "expo-splash-screen";
 import { setDiscoveryData } from "../../redux/slices/discovery-slice";
-import { useFonts } from "expo-font";
+import { Asset } from "expo-asset";
+import * as Font from "expo-font";
 
 const { Navigator: StackNavigator, Screen } = createStackNavigator();
 
@@ -48,23 +49,13 @@ const getRecipesByCategoryTags = async (tag: string) => {
   }
 };
 
-function Navigator() {
-  const dispatch = useDispatch();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [appIsReady, setAppIsReady] = useState(false);
-  const currentUser = useSelector((state: RootState) => state.user.value);
+const loadResourcesAsync = async () => {
+  const imageAssets = Asset.loadAsync([
+    require("../../../assets/backgrounds/background.png"),
+    // Add other images you need to preload here
+  ]);
 
-  const loading = useSelector((state: RootState) => state.loading.value);
-
-  const discoveryData = useSelector(
-    (state: RootState) => state.discovery.value
-  );
-
-  const error = useSelector(
-    (state: RootState) => state.error.value
-  ) as unknown as { error: string; visible: boolean } | undefined;
-
-  let [fontsLoaded, fontError] = useFonts({
+  const fontAssets = Font.loadAsync({
     "FiraSansExtraCondensed-Thin": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-Thin.ttf"),
     "FiraSansExtraCondensed-ThinItalic": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-ThinItalic.ttf"),
     "FiraSansExtraCondensed-ExtraLight": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-ExtraLight.ttf"),
@@ -83,6 +74,41 @@ function Navigator() {
     "FiraSansExtraCondensed-Black": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-Black.ttf"),
     "FiraSansExtraCondensed-BlackItalic": require("../../../assets/fonts/Fira_Sans_Extra_Condensed/FiraSansExtraCondensed-BlackItalic.ttf"),
   });
+
+  await Promise.all([imageAssets, fontAssets]);
+};
+
+function Navigator() {
+  const dispatch = useDispatch();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [appIsReady, setAppIsReady] = useState(false);
+  const [resourceReady, setResourceReady] = useState(false);
+  const currentUser = useSelector((state: RootState) => state.user.value);
+
+  const loading = useSelector((state: RootState) => state.loading.value);
+
+  const discoveryData = useSelector(
+    (state: RootState) => state.discovery.value
+  );
+
+  const error = useSelector(
+    (state: RootState) => state.error.value
+  ) as unknown as { error: string; visible: boolean } | undefined;
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        await loadResourcesAsync();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setResourceReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -162,24 +188,26 @@ function Navigator() {
   }, [currentUser]);
 
   useEffect(() => {
-    SplashScreen.preventAutoHideAsync();
-    if (appIsReady && fontsLoaded) {
-      if (currentUser?.emailVerified) {
-        if (discoveryData?.length === 5) {
-          SplashScreen.hideAsync();
+    const handleAppLoad = async () => {
+      await SplashScreen.preventAutoHideAsync();
+      if (appIsReady && resourceReady) {
+        if (currentUser?.emailVerified) {
+          if (discoveryData?.length === 5) {
+            await SplashScreen.hideAsync();
+            dispatch(setLoading(false));
+            setIsAuthenticated(true);
+          }
+        } else {
+          await SplashScreen.hideAsync();
           dispatch(setLoading(false));
-          setIsAuthenticated(true);
+          setIsAuthenticated(false);
         }
-      } else {
-        console.log("hey");
-        SplashScreen.hideAsync();
-        dispatch(setLoading(false));
-        setIsAuthenticated(false);
       }
-    }
-  }, [discoveryData, currentUser, fontsLoaded]);
+    };
+    handleAppLoad();
+  }, [discoveryData, currentUser]);
 
-  if (!fontsLoaded && !fontError) {
+  if (!resourceReady) {
     return null;
   }
 

@@ -77,10 +77,12 @@ function Discover({ navigation }) {
   return (
     <SafeAreaView style={styles.container} edges={isIOS ? ["top"] : undefined}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <View style={styles.headerArea} px={5}>
-        <NbTextView fontWeight="800" color="green.600" fontSize="24">
-          NutriZen
-        </NbTextView>
+      <View
+        style={styles.headerArea}
+        px={5}
+        borderBottomColor="gray.200"
+        borderBottomWidth={1}
+      >
         <NbTextView fontSize="xl" fontWeight="600">
           Discover Recipes
         </NbTextView>
@@ -148,6 +150,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    backgroundColor: "#f5f5f5",
   },
 
   headerImage: {
@@ -178,7 +181,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     alignContent: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
 });
 

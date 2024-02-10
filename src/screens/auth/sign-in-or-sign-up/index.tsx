@@ -6,7 +6,7 @@ import {
   StatusBar,
 } from "react-native";
 import { ImageBackground } from "react-native";
-import { VStack, Center, HStack, View, Image } from "native-base";
+import { VStack, Center, HStack, View } from "native-base";
 // @ts-ignore
 import { NbTextView, ThemedButton } from "@components";
 import { ROUTES } from "../../../utils/common";

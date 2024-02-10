@@ -21,13 +21,14 @@ function SearchScreenHeader({
       space={2}
       width="100%"
       alignSelf="center"
+      backgroundColor="white"
       justifyContent="center"
       alignItems="center"
       paddingBottom={2}
       paddingLeft={6}
       paddingRight={6}
       borderBottomWidth={1}
-      borderBottomColor="#CACCCE"
+      borderBottomColor="gray.200"
     >
       <Input
         placeholder="Search recipes..."

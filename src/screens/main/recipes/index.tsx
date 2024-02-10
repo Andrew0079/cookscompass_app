@@ -297,11 +297,10 @@ function Recipes({ navigation }) {
 const styles = StyleSheet.create({
   searchRecipesContainer: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#f5f5f5",
   },
   safeAreaView: {
     flex: 1,
-    backgroundColor: "red",
   },
 });
 
