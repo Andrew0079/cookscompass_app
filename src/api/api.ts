@@ -34,6 +34,8 @@ export default class Api {
   private FOOD_TRIVIA = "/recipes/random-food-trivia";
   private LIKE_RECIPE_ACTION = "/recipes/actions/likes";
 
+  private PARSED_NUTRITION_INFO_VIA_UPC = "/food-products/upc";
+
   constructor(baseURL) {
     this.api = axios.create({
       baseURL,
@@ -45,6 +47,7 @@ export default class Api {
         const token = this.getFirebaseToken();
         const userId = this.getUserId(); // Retrieve the userId
 
+        console.log(token);
         if (token) {
           config.headers["Authorization"] = `Bearer ${token}`;
         }
@@ -174,33 +177,38 @@ export default class Api {
     }
   }
 
-  createUser(data) {
+  async createUser(data) {
     return this.post(this.CREATE_USER, data);
   }
 
-  updateUser(data) {
+  async updateUser(data) {
     return this.post(this.UPDATE_USER, data);
   }
-  getUser(uid: string) {
+
+  async getUser(uid: string) {
     return this.get(`${this.GET_USER}/${uid}`);
   }
 
-  getRecipesByFilter(params = {}) {
+  async getRecipesByFilter(params = {}) {
     return this.get(this.RECIPES_FILTERED, params);
   }
 
-  getRecipeById(id: string) {
+  async getRecipeById(id: string) {
     return this.get(`${this.RECIPES_BY_ID}/${id}`);
   }
-  getRecipeByTag(tag: string) {
+  async getRecipeByTag(tag: string) {
     return this.get(`${this.RECIPES_BY_TAG}/${tag}`);
   }
 
-  getRandomFoodTrivia() {
+  async getRandomFoodTrivia() {
     return this.get(`${this.FOOD_TRIVIA}`);
   }
 
-  postLikeRecipeAction(recipeId: string) {
+  async getParsedNutritionInfoViaUpc(upc: string) {
+    return this.get(`${this.PARSED_NUTRITION_INFO_VIA_UPC}/${upc}`);
+  }
+
+  async postLikeRecipeAction(recipeId: string) {
     return this.post(`${this.LIKE_RECIPE_ACTION}/${recipeId}`);
   }
 }

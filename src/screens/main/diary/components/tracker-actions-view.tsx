@@ -7,31 +7,32 @@ import { NbTextView } from "@components";
 import WaterBottle from "./water-bottle";
 import WaterGlass from "./water-glass";
 import { Ionicons } from "@expo/vector-icons";
+import { ROUTES } from "../../../../utils/common";
 
 const trackingMap: { title: string; recommended: string; path?: string }[] = [
   {
     title: "Breakfast",
     recommended: "600-700g",
-    path: require("../../../../../assets/breakfast.png"),
+    path: require("../../../../../assets/png/breakfast.png"),
   },
   {
     title: "Lunch",
     recommended: "600-700g",
-    path: require("../../../../../assets/lunch.png"),
+    path: require("../../../../../assets/png/lunch.png"),
   },
   {
     title: "Dinner",
     recommended: "600-700g",
-    path: require("../../../../../assets/dinner.png"),
+    path: require("../../../../../assets/png/dinner.png"),
   },
   {
     title: "Snack",
     recommended: "600-700g",
-    path: require("../../../../../assets/dessert.png"),
+    path: require("../../../../../assets/png/dessert.png"),
   },
 ];
 
-function TrackerActionsView() {
+function TrackerActionsView({ navigation }) {
   return (
     <VStack space={4}>
       {trackingMap.map(({ title, recommended, path }, index: number) => (
@@ -63,7 +64,11 @@ function TrackerActionsView() {
           </VStack>
 
           {/* Section 3: Icon (20%) */}
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate(ROUTES.TRACKER, { title });
+            }}
+          >
             <Box flex={2} alignItems="center" justifyContent="center">
               <Icon
                 as={MaterialIcons}

@@ -68,7 +68,7 @@ const formatDate = (date: Date) => {
   }
 };
 
-function Diary() {
+function Diary({ navigation }) {
   const [date, setDate] = useState(new Date());
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
 
@@ -98,7 +98,7 @@ function Diary() {
           </View>
         </TouchableWithoutFeedback>
       )}
-      <DiaryHeaderView />
+      <DiaryHeaderView navigation={navigation} />
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -137,7 +137,7 @@ function Diary() {
               <Icon as={MaterialIcons} name="arrow-right" size={28} />
             </TouchableOpacity>
           </HStack>
-          <TrackerActionsView />
+          <TrackerActionsView navigation={navigation} />
         </VStack>
       </ScrollView>
     </SafeAreaView>

@@ -15,5 +15,8 @@ const ROUTES = {
   DISCOVER: "Discover",
   RECIPE: "Recipe",
   RECIPES: "Recipes",
+  TRACKER: "Tracker",
+  DIARY: "Diary",
+  PROFILE: "Profile",
 };
 export { getPlatFormStyle, ROUTES };

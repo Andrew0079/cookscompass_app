@@ -7,6 +7,7 @@ import Community from "./cookbook";
 import Recipe from "./recipe";
 import Diary from "./diary";
 import Progress from "./progress";
+import Tracker from "./tracker";
 
 export {
   Discover,
@@ -18,4 +19,5 @@ export {
   Recipe,
   Diary,
   Progress,
+  Tracker,
 };

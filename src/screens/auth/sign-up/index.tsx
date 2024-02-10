@@ -3,7 +3,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import validator from "validator";
 import { ROUTES } from "../../../utils/common";
 // @ts-ignore
-import { Header, NbTextView } from "@components";
+import { Header, NbTextView, ThemedButton } from "@components";
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,7 +16,6 @@ import {
 } from "react-native";
 import {
   VStack,
-  Button,
   HStack,
   IconButton,
   View,
@@ -167,7 +166,7 @@ function SignUp({ navigation, route }) {
         <Header>
           <IconButton
             paddingLeft={5}
-            icon={<FontAwesome name="chevron-left" size={18} color="black" />}
+            icon={<FontAwesome name="chevron-left" size={18} color="#18181b" />}
             onPress={() => {
               const prevRoute = isFromLogin
                 ? ROUTES.SIGN_IN
@@ -192,13 +191,13 @@ function SignUp({ navigation, route }) {
                 space={4}
               >
                 <Center>
-                  <NbTextView fontSize="3xl" fontWeight="800">
+                  <NbTextView fontSize="3xl" fontWeight="800" color="dark.50">
                     Create Account
                   </NbTextView>
-                  <NbTextView fontSize="xs" fontWeight="800">
+                  <NbTextView fontSize="xs" fontWeight="800" color="dark.50">
                     Fill your information below or register
                   </NbTextView>
-                  <NbTextView fontSize="xs" fontWeight="800">
+                  <NbTextView fontSize="xs" fontWeight="800" color="dark.50">
                     with your social account.
                   </NbTextView>
                 </Center>
@@ -210,7 +209,7 @@ function SignUp({ navigation, route }) {
                   ) => (
                     <Input
                       key={`key-${index}`}
-                      variant="rounded"
+                      borderRadius={10}
                       placeholder={placeholder}
                       height={10}
                       backgroundColor="white"
@@ -225,7 +224,7 @@ function SignUp({ navigation, route }) {
               <Checkbox value="accepted">
                 <HStack space={1}>
                   <NbTextView fontWeight="bold">Agree with</NbTextView>
-                  <NbTextView underline fontWeight="bold" color="#006ee6">
+                  <NbTextView underline fontWeight="bold" color="green.600">
                     Terms & conditions
                   </NbTextView>
                 </HStack>
@@ -237,15 +236,7 @@ function SignUp({ navigation, route }) {
               paddingTop={7}
               paddingBottom={1}
             >
-              <Button
-                variant="outline"
-                marginBottom={2}
-                rounded="3xl"
-                onPress={() => validateForm()}
-                width="70%"
-              >
-                <NbTextView fontWeight="800">Sign Up</NbTextView>
-              </Button>
+              <ThemedButton title="Sign Up" onPress={() => validateForm()} />
               <HStack
                 justifyContent="center"
                 paddingBottom={18}
@@ -254,7 +245,9 @@ function SignUp({ navigation, route }) {
                 space={1}
               >
                 <Divider width={20} />
-                <NbTextView fontWeight="800"> Or sign in with</NbTextView>
+                <NbTextView fontWeight="800" color="dark.50">
+                  Or sign in with
+                </NbTextView>
                 <Divider width={20} />
               </HStack>
               <HStack
@@ -286,7 +279,7 @@ function SignUp({ navigation, route }) {
                     navigation.navigate(ROUTES.SIGN_IN, { isFromSignUp: true });
                   }}
                 >
-                  <NbTextView underline color="#006ee6">
+                  <NbTextView underline color="green.600">
                     Sign In
                   </NbTextView>
                 </TouchableOpacity>

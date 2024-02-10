@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { StyleSheet, ScrollView, StatusBar, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Box, useToast, Divider, Image } from "native-base";
+import { View, Box, useToast, Divider } from "native-base";
 import { HorizontalCardListView, CategoryRecipeCard } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 // @ts-ignore
@@ -78,12 +78,9 @@ function Discover({ navigation }) {
     <SafeAreaView style={styles.container} edges={isIOS ? ["top"] : undefined}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <View style={styles.headerArea} px={5}>
-        <Image
-          alt="logo"
-          source={require("../../../../assets/brand.png")}
-          resizeMode="contain"
-          style={{ width: 120, height: 50 }}
-        />
+        <NbTextView fontWeight="800" color="green.600" fontSize="24">
+          NutriZen
+        </NbTextView>
         <NbTextView fontSize="xl" fontWeight="600">
           Discover Recipes
         </NbTextView>

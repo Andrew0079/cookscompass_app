@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import LottieView from "lottie-react-native";
-import { Center, HStack, VStack, Button } from "native-base";
+import { Center, HStack, VStack } from "native-base";
 import {
   SafeAreaView,
   StyleSheet,
@@ -17,6 +17,7 @@ import { setLoading } from "../../../redux/slices/loading-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { setError } from "../../../redux/slices/error-slice";
+import { ThemedButton } from "../../../components";
 
 const isIOS = Platform.OS === "ios";
 
@@ -52,24 +53,21 @@ function Verification({ navigation, route }) {
       <VStack flex={1} justifyContent="flex-start" paddingTop={isIOS ? 5 : 75}>
         <Center>
           <LottieView
-            source={require("../../../../assets/animation/lottie/email.json")}
+            source={require("../../../../assets/animation/lottie/email-an.json")}
             autoPlay
             loop
-            style={{ width: 200, height: 200 }}
+            style={{ width: 210, height: 210 }}
           />
           {isManual && !manualVerificationSent ? (
-            <Button
-              borderRadius={20}
-              variant="outline"
-              marginTop={5}
-              marginBottom={5}
+            <ThemedButton
+              width="50%"
+              title="Send Verification"
+              my={6}
               onPress={() => {
                 handleEmailVerification();
                 setManualVerificationSent(true);
               }}
-            >
-              <NbTextView fontWeight="800">Send Verification</NbTextView>
-            </Button>
+            />
           ) : (
             <Center>
               <NbTextView fontSize="xl" fontWeight="800">
@@ -82,7 +80,7 @@ function Verification({ navigation, route }) {
               <HStack marginBottom={5}>
                 <NbTextView>Didn't receive the email? </NbTextView>
                 <TouchableOpacity onPress={() => handleEmailVerification()}>
-                  <NbTextView fontWeight="bold" color="#006ee6">
+                  <NbTextView fontWeight="bold" color="green.600">
                     Click to resend
                   </NbTextView>
                 </TouchableOpacity>
@@ -96,8 +94,8 @@ function Verification({ navigation, route }) {
             }}
           >
             <HStack justifyContent="center" alignItems="center">
-              <FontAwesome name="arrow-left" size={13} color="#006ee6" />
-              <NbTextView style={{ marginLeft: 5 }} color="#006ee6">
+              <FontAwesome name="arrow-left" size={13} color="#16a34a" />
+              <NbTextView style={{ marginLeft: 5 }} color="green.600">
                 Back to log in
               </NbTextView>
             </HStack>

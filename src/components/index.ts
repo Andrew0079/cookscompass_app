@@ -12,6 +12,7 @@ import VerticalRecipeCardSkeletonView from "./skeletons/vertical-recipe-card-ske
 import RecipeCardSkeletonListView from "./skeletons/recipe-card-skeleton-list-view";
 import NbTextView from "./nb-text-view";
 import ToastView from "./toast-view";
+import ThemedButton from "./themed-button";
 
 export {
   Header,
@@ -28,4 +29,5 @@ export {
   RecipeCardSkeletonListView,
   NbTextView,
   ToastView,
+  ThemedButton,
 };

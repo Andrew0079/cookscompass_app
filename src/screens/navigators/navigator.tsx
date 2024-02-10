@@ -11,7 +11,7 @@ import AuthNavigator from "./auth-navigator";
 import { ActivityIndicator, Modal, Alert } from "@components";
 // @ts-ignore
 import { api } from "@api/api";
-import { Recipe } from "../main";
+import { Recipe, Tracker, Profile } from "../main";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/slices/user-slice";
 import { ROUTES } from "../../utils/common";
@@ -216,6 +216,8 @@ function Navigator() {
             <>
               <Screen name={ROUTES.MAIN} component={MainNavigator} />
               <Screen name={ROUTES.RECIPE} component={Recipe} />
+              <Screen name={ROUTES.TRACKER} component={Tracker} />
+              <Screen name={ROUTES.PROFILE} component={Profile} />
             </>
           )}
 

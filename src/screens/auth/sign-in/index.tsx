@@ -14,7 +14,6 @@ import validator from "validator";
 import {
   VStack,
   Input,
-  Button,
   HStack,
   IconButton,
   View,
@@ -27,6 +26,7 @@ import { ROUTES } from "@utils/common";
 import {
   Header,
   NbTextView,
+  ThemedButton,
   // @ts-ignore
 } from "@components";
 // @ts-ignore
@@ -146,7 +146,9 @@ function SignIn({ navigation, route }) {
           <Header>
             <IconButton
               paddingLeft={5}
-              icon={<FontAwesome name="chevron-left" size={18} color="black" />}
+              icon={
+                <FontAwesome name="chevron-left" size={18} color="#18181b" />
+              }
               onPress={() => {
                 const prevRoute = isFromSignUp
                   ? ROUTES.SIGN_UP
@@ -170,46 +172,44 @@ function SignIn({ navigation, route }) {
                   paddingRight={5}
                   paddingTop={30}
                 >
-                  <NbTextView fontSize="4xl" fontWeight="800">
+                  <NbTextView fontSize="4xl" fontWeight="800" color="dark.50">
                     Sign In
                   </NbTextView>
-                  <NbTextView fontSize="md" marginTop={-3} fontWeight="800">
+                  <NbTextView
+                    fontSize="md"
+                    marginTop={-3}
+                    fontWeight="800"
+                    color="dark.50"
+                  >
                     Hi! Welcome back. You've been missed.
                   </NbTextView>
                   <Input
-                    variant="rounded"
                     placeholder="Email"
+                    backgroundColor="white"
+                    borderRadius={10}
                     height={10}
-                    color="black"
                     onChangeText={(inputValue) => setEmail(inputValue)}
                   />
                   <Input
-                    variant="rounded"
+                    borderRadius={10}
                     placeholder="Password"
-                    color="black"
+                    backgroundColor="white"
                     height={10}
                     onChangeText={(inputValue) => setPassword(inputValue)}
                     secureTextEntry
                   />
                   <Box alignSelf="flex-end">
                     <TouchableOpacity>
-                      <NbTextView underline color="#006ee6">
+                      <NbTextView underline color="green.600">
                         Forgot your password?
                       </NbTextView>
                     </TouchableOpacity>
                   </Box>
 
-                  <Button
-                    variant="outline"
-                    rounded="3xl"
+                  <ThemedButton
+                    title=" Sign In"
                     onPress={() => validateForm()}
-                    color="white"
-                    width="80%"
-                  >
-                    <NbTextView textAlign="center" fontWeight="800">
-                      Sign In
-                    </NbTextView>
-                  </Button>
+                  />
                 </VStack>
               </KeyboardAvoidingView>
               <View flex={1}>
@@ -221,7 +221,9 @@ function SignIn({ navigation, route }) {
                   space={1}
                 >
                   <Divider width={20} />
-                  <NbTextView fontWeight="800"> Or sign in with</NbTextView>
+                  <NbTextView fontWeight="800" color="dark.50">
+                    Or sign in with
+                  </NbTextView>
                   <Divider width={20} />
                 </HStack>
                 <HStack
@@ -261,7 +263,7 @@ function SignIn({ navigation, route }) {
                       });
                     }}
                   >
-                    <NbTextView underline color="#006ee6">
+                    <NbTextView underline color="green.600">
                       Sign Up
                     </NbTextView>
                   </TouchableOpacity>
@@ -281,7 +283,7 @@ function SignIn({ navigation, route }) {
                   });
                 }}
               >
-                <NbTextView color="#006ee6">Verify Account?</NbTextView>
+                <NbTextView color="green.600">Verify Account?</NbTextView>
               </TouchableOpacity>
             </HStack>
           </SafeAreaView>

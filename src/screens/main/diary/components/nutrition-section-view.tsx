@@ -4,7 +4,7 @@ import PieChart from "react-native-pie-chart";
 // @ts-ignore
 import { NbTextView } from "@components";
 
-const sliceColor = ["#6495ED", "#C0C2C9"];
+const sliceColor = ["#16a34a", "#C0C2C9"];
 const series = [60, 100 - 60];
 
 function NutritionSectionView() {

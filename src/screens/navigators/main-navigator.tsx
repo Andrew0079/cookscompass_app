@@ -39,7 +39,7 @@ function BottomItem({ state, descriptors, navigation }) {
           const { options } = descriptors[route.key];
 
           const isFocused = state.index === index;
-          const focusedColor = isFocused ? "black" : "#86888A";
+          const focusedColor = isFocused ? "#16a34a" : "#a1a1aa";
 
           const onPress = () => {
             const event = navigation.emit({
